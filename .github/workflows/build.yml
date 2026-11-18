@@ -39,14 +39,21 @@ jobs:
           cp -R "build/Orbita_artefacts/Release/AU/Polaris Orbita.component" ~/Library/Audio/Plug-Ins/Components/
           killall -9 AudioComponentRegistrar || true
           auval -v aumu Orb1 Pslb
+      - name: The FM-1 firmware from the newest firmware release (every release holds everything)
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          T=$(gh release list -R "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' | grep '^fm1-' | head -1 || true)
+          if [ -n "$T" ]; then gh release download "$T" -R "$GITHUB_REPOSITORY" --pattern ORBITA-FM1.fwsc --clobber || true; fi
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.1.${{ github.run_number }}
           name: ORBITA 0.1.${{ github.run_number }} — Mac plug-in (VST3 · AU · App) and FM-1 edition
           make_latest: true
+          fail_on_unmatched_files: false
           files: |
             ORBITA-mac.zip
+            ORBITA-FM1.fwsc
             ORBITA-FM1.zip
             docs/Orbita-EN.pdf
             docs/Orbita-ES.pdf

@@ -1,0 +1,104 @@
+name: Build ÓRBITA for the FM-1 (firmware)
+on:
+  push:
+    branches: [main]
+    paths: ['firmware/**', 'docs/app.js', 'Orbita-FM1/Orbita-32.syx', '.github/workflows/firmware.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  VERSION: 1.8.2-or1
+  IDENTITY: FM-1_906
+jobs:
+  firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Tools (Pillow, fontTools; the JieLi toolchain)
+        run: |
+          pip install Pillow fonttools
+          sh firmware/firmware-src/tools/get_toolchain.sh "$HOME/.jieli"
+      - name: Three files of the JieLi AC79 SDK (Apache-2.0)
+        run: |
+          set -e
+          for url in https://github.com/Jieli-Tech/fw-AC79_AIoT_SDK.git https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git; do
+            rm -rf "$HOME/sdk"
+            if git clone --depth 1 --filter=blob:none --sparse --branch AC79NN_SDK_V1.2.1_2023-12-13 "$url" "$HOME/sdk"; then
+              git -C "$HOME/sdk" sparse-checkout set cpu/wl82/tools && break
+            fi
+          done
+          ls -la "$HOME/sdk/cpu/wl82/tools/uboot.boot" "$HOME/sdk/cpu/wl82/tools/cfg_tool.bin" "$HOME/sdk/cpu/wl82/tools/cfg/eq_cfg_hw.bin"
+      - name: ÓRBITA's tables from the web version, its voices, the Spanish screen
+        run: |
+          node firmware/tools/gen_orbita_tables.js
+          python3 firmware/tools/gen_bank.py
+          python3 firmware/tools/gen_lang.py
+          git diff --stat -- firmware/firmware-src/firmware/src firmware/firmware-src/tests
+      - name: Build
+        working-directory: firmware/firmware-src
+        run: |
+          export JIELI_TOOLCHAIN="$HOME/.jieli/toolchain" AC79_SDK="$HOME/sdk"
+          ./build.sh --release "$VERSION" --identity "$IDENTITY"
+      - name: Host tests (ÓRBITA against the web version, UI, audio, sequencer, storage, the updater)
+        working-directory: firmware/firmware-src
+        run: |
+          export AC79_SDK="$HOME/sdk"
+          cp build/felucca-$VERSION.fwsc build/felucca.fwsc
+          sh tests/run_tests.sh
+      - name: ÓRBITA's screens (splash, scenes, geometries, info, Spanish)
+        working-directory: firmware/firmware-src
+        run: |
+          HALI="-Ifirmware/hal -Ifirmware/bsp/chip -Ifirmware/bsp/boards/fm1 -Ifirmware/src"
+          cc -O1 -w "-DFELUCCA_VERSION=\"$VERSION\"" $HALI -Ibuild/gen -Itests -o build/orb_render tests/ui_render.c -lm
+          mkdir -p build/orb/ppm && ORB_SHOTS=1 build/orb_render build/orb
+          python3 -c "import glob; from PIL import Image; [Image.open(f).save(f[:-4] + '.png') for f in glob.glob('build/orb/ppm/*.ppm')]"
+          cat build/orb/report.txt || true
+      - name: Installer
+        run: |
+          mkdir -p install docs/firmware
+          cp firmware/firmware-src/build/felucca-$VERSION.fwsc install/ORBITA-FM1-$VERSION.fwsc
+          python3 firmware/tools/make_installer.py install/ORBITA-FM1-$VERSION.fwsc "$VERSION" "$IDENTITY" docs/firmware/index.html
+          cp install/ORBITA-FM1-$VERSION.fwsc ORBITA-FM1.fwsc
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ORBITA-FM1-${{ env.VERSION }}
+          path: |
+            ORBITA-FM1.fwsc
+            docs/firmware/index.html
+            firmware/firmware-src/build/orb/ppm/*.png
+      - name: Keep the installer in the repository (the web link)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add docs/firmware/index.html
+          git commit -m "ÓRBITA firmware installer $VERSION for the FM-1 (built by CI)" || exit 0
+          git pull --rebase && git push
+      - name: The plug-in and the voices from the newest plug-in release (every release holds everything: /releases/latest works for each)
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          T=$(gh release list -R "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' | grep '^v' | head -1 || true)
+          if [ -n "$T" ]; then gh release download "$T" -R "$GITHUB_REPOSITORY" --pattern ORBITA-mac.zip --pattern ORBITA-FM1.zip --clobber || true; fi
+          ls -la ORBITA-mac.zip ORBITA-FM1.zip 2>/dev/null || true
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: fm1-v${{ env.VERSION }}-r${{ github.run_number }}
+          name: ÓRBITA ${{ env.VERSION }} for the M-VAVE FM-1 (firmware)
+          make_latest: true
+          fail_on_unmatched_files: false
+          files: |
+            ORBITA-FM1.fwsc
+            ORBITA-mac.zip
+            ORBITA-FM1.zip
+            docs/firmware/index.html
+            docs/Orbita-EN.pdf
+            docs/Orbita-ES.pdf
+            docs/Orbita-EN-ES.pdf
+          body: |
+            ÓRBITA — a generative instrument for the M-VAVE FM-1 · Dark Funk Durcal design · built at Polaris Sound Lab · Mérida, Yucatán
+            Install: open https://drophlex.github.io/ORBITA/docs/firmware/ in Chrome or Edge with the FM-1 on USB and press Install (it backs up first and can take you back to the official firmware).
+            ORBITA-FM1.fwsc is the firmware package. This release also holds the Mac plug-in (ORBITA-mac.zip) and the voices-only edition (ORBITA-FM1.zip).
