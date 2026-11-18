@@ -126,7 +126,8 @@ const MSG = {
         bad: 'The voices did not check out. Press again to repeat the installation.', fail: e => `Stopped: ${e}. Nothing is half-written: press again.`,
         off: 'FM-1 found (official M-VAVE firmware).', offAsk: 'Send ÓRBITA’s 32 voices? The FM-1 will ask you where to save them; that bank’s current voices will be replaced.',
         offSent: '✓ Sent. Now choose on the FM-1 where to save the bank.', removed: '✓ The built-in voices are back on B1–B32.', removing: 'Removing…',
-        busy: 'Stop playback on the FM-1 and press again.' },
+        busy: 'Stop playback on the FM-1 and press again.',
+        builtin: 'ÓRBITA’s 32 voices will take slots B1–B32 (FM6). Choosing a B slot (also ANDROMEDA’s ALIGN moods that use one) will load ÓRBITA’s voice until you press “Remove”. Your projects and saved presets keep their own sounds. Install?' },
   es: { nomidi: 'Este navegador no tiene Web MIDI. Abre esta página en Chrome o Edge en una computadora.', denied: 'No se permitió el acceso MIDI. Pulsa el botón otra vez y elige Permitir.',
         search: 'Buscando el FM-1…', notfound: 'No se encontró el FM-1. Revisa el cable USB de datos, enciende el FM-1, cierra otras apps que lo usen y vuelve a pulsar.',
         fel: 'FM-1 encontrado', old: 'Este firmware no tiene banco de voces FM6 (necesita Felucca 1.4.1 o más nuevo, ANDROMEDA o Dark Funk Durcal).',
@@ -135,7 +136,8 @@ const MSG = {
         bad: 'Las voces no coincidieron. Vuelve a pulsar para repetir la instalación.', fail: e => `Se detuvo: ${e}. No queda nada a medias: vuelve a pulsar.`,
         off: 'FM-1 encontrado (firmware oficial de M-VAVE).', offAsk: '¿Enviar las 32 voces de ÓRBITA? El FM-1 te preguntará dónde guardarlas; las voces que tenga ese banco se reemplazan.',
         offSent: '✓ Enviado. Ahora elige en el FM-1 dónde guardar el banco.', removed: '✓ Las voces de fábrica regresaron a B1–B32.', removing: 'Quitando…',
-        busy: 'Detén la reproducción en el FM-1 y vuelve a pulsar.' }
+        busy: 'Detén la reproducción en el FM-1 y vuelve a pulsar.',
+        builtin: 'Las 32 voces de ÓRBITA ocuparán los slots B1–B32 (FM6). Elegir un slot B (también los moods de ALIGN de ANDROMEDA que usan uno) cargará la voz de ÓRBITA hasta que pulses “Quitar”. Tus proyectos y presets guardados conservan sus propios sonidos. ¿Instalar?' }
 };
 const EN = {}; document.querySelectorAll('[data-t]').forEach(e => (EN[e.dataset.t] = e.innerHTML));
 let lang = 'en'; try { if (localStorage.getItem('orbita-language') === 'es') lang = 'es'; } catch (e) {}
@@ -160,6 +162,9 @@ class Link {
     const w = this.wait; if (w && w.cmd === d[4]) { this.wait = null; clearTimeout(w.t); w.ok(Array.from(d.slice(5, -1))); } }
   req(cmd, args = [], ms = 1500) { return new Promise((ok, no) => { const t = setTimeout(() => { this.wait = null; no(new Error('no reply')); }, ms);
     this.wait = { cmd, ok, t }; try { this.output.send(flFrame(cmd, args)); } catch (e) { clearTimeout(t); this.wait = null; no(e); } }); }
+  async ask(cmd, args = [], ms = 1500, tries = 3) {   /* a question (INFO, LIST): asked again when a reply went missing */
+    for (let k = 1; ; k++) { try { return await this.req(cmd, args, ms); } catch (e) { if (k >= tries) throw e; await sleep(300); } }
+  }
   close() { this.input.onmidimessage = null; }
 }
 let midi = null, link = null, official = null;
@@ -168,40 +173,54 @@ async function find() {
   try { midi = midi || await navigator.requestMIDIAccess({ sysex: true }); } catch (e) { say(m('denied'), 'err'); return null; }
   say(m('search')); step(1);
   const ins = [...midi.inputs.values()], outs = [...midi.outputs.values()];
-  const pairs = []; for (const o of outs) { const i = ins.find(x => x.name === o.name) || ins.find(x => /fm.?1|felucca|andromeda|m-?vave/i.test(x.name)); if (i) pairs.push([i, o]); }
-  pairs.sort((a, b) => (/fm.?1|felucca|m-?vave/i.test(b[1].name) ? 1 : 0) - (/fm.?1|felucca|m-?vave/i.test(a[1].name) ? 1 : 0));
+  const FMRE = /fm.?1|felucca|andromeda|durcal|m-?vave/i;
+  let pairs = []; for (const o of outs) { const i = ins.find(x => x.name === o.name) || ins.find(x => FMRE.test(x.name)); if (i) pairs.push([i, o]); }
+  if (pairs.some(p => FMRE.test(p[1].name))) pairs = pairs.filter(p => FMRE.test(p[1].name));   /* (the probe is a non-commercial SysEx other gear ignores) */
   for (const [i, o] of pairs) {
     const l = new Link(i, o);
-    try { const info = parseInfo(await l.req(FL.INFO, [], 900)); return { kind: 'felucca', link: l, info, name: o.name }; } catch (e) { l.close(); }
+    try { const info = parseInfo(await l.ask(FL.INFO, [], 900, 2)); return { kind: 'felucca', link: l, info, name: o.name }; } catch (e) { l.close(); }
   }
   const o = outs.find(x => /fm.?1|m-?vave/i.test(x.name));
   return o ? { kind: 'official', out: o, name: o.name } : null;
 }
 async function verify() {
-  const L = parseList(await link.req(FL.FM6B_LIST, [], 2000));
+  const L = parseList(await link.ask(FL.FM6B_LIST, [], 2000));
   let good = L.has && L.name === 'ORBITA' && L.voices.length === 32;
   L.voices.forEach((v, k) => { const ok = v.used && v.name === NAMES[k]; good = good && ok; $('v' + k).className = 'v ' + (ok ? 'chk' : ''); });
   return good;
+}
+let writing = false;
+const log = t => console.log('[ORBITA FM-1]', t);
+window.addEventListener('beforeunload', e => { if (writing) { e.preventDefault(); e.returnValue = ''; } });
+async function transfer() {                     /* BEGIN, 32 WRITE, END: the old bank stays until END answers 0 */
+  const reqs = orbitaFeluccaRequests(BANK);
+  for (let n = 0; n < reqs.length; n++) {
+    const [cmd, args] = reqs[n];
+    const r = await link.req(cmd, args, cmd === FL.FM6B_WRITE ? 2000 : 5000);
+    const rc = cmd === FL.FM6B_WRITE ? r[1] : r[0];
+    if (rc === 3) { const e = new Error(m('busy')); e.fatal = true; throw e; }
+    if (rc === 4) { const e = new Error('flash'); e.fatal = true; throw e; }
+    if (rc !== 0) throw new Error('rc ' + rc + ' (cmd ' + cmd + ')');
+    if (cmd === FL.FM6B_WRITE) $('v' + args[0]).className = 'v done';
+    $('bar').value = n + 1;
+  }
 }
 async function install(dev) {
   link = dev.link; $('dev').textContent = `${dev.name} · ${dev.info.version}`;
   if (!dev.info.bank) { say(m('old'), 'err'); return; }
   say(m('fel')); $('remove').hidden = false;
-  const L = parseList(await link.req(FL.FM6B_LIST, [], 2000));
+  const L = parseList(await link.ask(FL.FM6B_LIST, [], 2000));
   const used = L.voices.filter(v => v.used).length;
-  if (L.has && used && L.name !== 'ORBITA' && !confirm(m('replace')(L.name || '—'))) return;
-  step(2); say(m('writing')); $('bar').hidden = false; $('bar').value = 0;
-  document.querySelectorAll('.v').forEach(v => (v.className = 'v'));
-  const reqs = orbitaFeluccaRequests(BANK);
-  for (let n = 0; n < reqs.length; n++) {
-    const [cmd, args] = reqs[n];
-    const r = await link.req(cmd, args, cmd === FL.FM6B_WRITE ? 1500 : 4000);
-    const rc = cmd === FL.FM6B_WRITE ? r[1] : r[0];
-    if (rc === 3) throw new Error(m('busy'));
-    if (rc !== 0) throw new Error('rc ' + rc + ' (cmd ' + cmd + ')');
-    if (cmd === FL.FM6B_WRITE) $('v' + args[0]).className = 'v done';
-    $('bar').value = n + 1;
+  if (L.has && used && L.name !== 'ORBITA') { if (!confirm(m('replace')(L.name || '—'))) return; }
+  else if (!(L.has && L.name === 'ORBITA') && !confirm(m('builtin'))) return;
+  step(2); writing = true;
+  for (let attempt = 1; ; attempt++) {
+    say(m('writing')); $('bar').hidden = false; $('bar').value = 0;
+    document.querySelectorAll('.v').forEach(v => (v.className = 'v'));
+    try { await transfer(); break; }
+    catch (e) { if (attempt >= 3 || e.fatal) throw e; log('retry: ' + e.message); await sleep(800); }
   }
+  writing = false;
   await sleep(300); say(m('verify'));
   if (await verify()) { say(m('ok'), 'good'); step(3); $('howFel').hidden = false; $('howOff').hidden = true; $('done').style.display = 'block'; }
   else say(m('bad'), 'err');
@@ -220,14 +239,14 @@ $('go').onclick = async () => {
       document.querySelectorAll('.v').forEach(v => (v.className = 'v done'));
       say(m('offSent'), 'good'); step(3); $('howFel').hidden = true; $('howOff').hidden = false; $('done').style.display = 'block';
     }
-  } catch (e) { say(m('fail')(e.message), 'err'); }
-  finally { $('go').disabled = false; }
+  } catch (e) { say(m('fail')(e.message), 'err'); log(e.stack || e); }
+  finally { writing = false; $('go').disabled = false; }
 };
 $('remove').onclick = async () => {
-  if (!link) return; $('remove').disabled = true; say(m('removing'));
+  if (!link) return; $('remove').disabled = true; $('go').disabled = true; writing = true; say(m('removing'));
   try { for (const [cmd, args] of emptyBankRequests()) { const r = await link.req(cmd, args, 4000); if (r[0] !== 0) throw new Error('rc ' + r[0]); }
     document.querySelectorAll('.v').forEach(v => (v.className = 'v')); say(m('removed'), 'good'); }
-  catch (e) { say(m('fail')(e.message), 'err'); } finally { $('remove').disabled = false; }
+  catch (e) { say(m('fail')(e.message), 'err'); } finally { writing = false; $('remove').disabled = false; $('go').disabled = false; }
 };
 </script>
 </body>
