@@ -40,12 +40,12 @@ slicer_track 556
 slice_render 436
 slc_rev 120
 fm1_alnk0_irq 4196
-fm1_timer5_irq 14959
+fm1_timer5_irq 15646
 click_render 30
 mod_begin 170
 mod_voice 30
 mod_end 6
-perf_begin 28
+perf_begin 34
 perf_mute 18
 perf_pre 26
 perf_block 854
