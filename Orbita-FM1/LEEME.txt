@@ -1,0 +1,22 @@
+POLARIS SOUND LAB  /  ÓRBITA
+Edición FM‑1  •  Banco DX7 y cuatro clips MIDI
+
+PRIMERA ESCUCHA
+1. Si ya usas M‑VAVE FM1 Open V14, abre el Workbench oficial, conecta el FM‑1 por USB y abre su biblioteca DX7. https://open.m-vave.com/
+2. Exporta el grupo de destino para conservar tus sonidos anteriores. Importa una sola voz desde «voces» para empezar. «Orbita-32.syx» contiene el grupo completo de 32. Comprueba en el editor el destino de la escritura antes de guardarlo en el hardware.
+3. Selecciona la voz en una pista del FM‑1. Conecta audífonos o lleva la salida de audio a tu interfaz. Si tienes otro firmware, usa un editor compatible con ese firmware y con importación de voces Yamaha DX7.
+4. En Ableton Live, habilita la salida MIDI Track del FM‑1, arrastra un archivo de «escenas» a una pista MIDI y envía esa pista al canal de entrada de la pista del FM‑1 (canal 1 de forma predeterminada para la primera pista de Open V14). Los clips siguen el tempo de Live. Los nombres indican el tempo sugerido.
+
+TIMBRES
+SUB — bajos. BELL — campanas. HALO — capas suaves. REED — lengüetas.
+DUST — percusión. KEY — teclas eléctricas. WIRE — cuerdas metálicas. TIDE — colchones lentos.
+Cada familia usa tres parejas portadora/moduladora. Sus cuatro variaciones modifican intensidad, afinación fina y realimentación. Prueba ORSUB1 con Perigeo, ORKEY2 con Isoclina, ORHALO3 con Lagrange y ORDUST4 con Sideral.
+
+PATRONES
+Los cuatro clips duran cuatro compases de 4/4 en re menor. Perigeo reparte cinco ataques en dieciséis pasos, Isoclina siete, Lagrange tres y Sideral once. La rotación desplaza el primer ataque. Las frases cambian de grado en cada compás.
+
+ALCANCE
+El FM‑1 sintetiza las voces en su propio motor. Los patrones se reproducen desde Live u otro secuenciador MIDI. La carpeta modulo contiene además el código fuente de un instrumento para fm1-dock con gráfica de Lissajous y secuenciador euclidiano en la pantalla física. Consulta modulo/COMPILAR.txt. La imagen compilada para el chip está pendiente. Se verificaron longitud, encabezados y checksums de los SysEx, y la estructura de los cuatro clips. La audición y escritura en una unidad física están pendientes.
+
+Compatibilidad documentada — https://github.com/m-vave/fm1_open
+Especificación de voz — https://github.com/francoiswnel/DX7Dump/blob/master/sysex-format.txt

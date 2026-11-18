@@ -1,0 +1,13 @@
+ÓRBITA / módulo para fm1-dock
+Código fuente de un instrumento monofónico para el entorno comunitario fm1-dock. Es independiente de las voces DX7 que acompañan a este paquete.
+
+Mantén pulsada una tecla para iniciar un patrón de semicorcheas. La nota fija la portadora y la velocidad modifica la intensidad. K1 controla la relación FM 1–8. K2 distribuye 1–16 ataques por ciclo. K3 desplaza la fase rítmica 0–15 pasos. K4 controla el reloj interno de 40–200 BPM. También acepta CC 20–23. La pantalla muestra una figura de Lissajous que responde a K1 y K3, y los dieciséis pasos del patrón en la franja inferior.
+
+Para desarrolladores con el entorno de compilación Linux del proyecto:
+1. Prepara fm1-dock, su toolchain JieLi y los archivos del SDK AC79 según su sección Build it. https://github.com/joakimeriksson/fm1-dock
+2. Copia la carpeta orbita de este paquete en modules/orbita dentro del proyecto.
+3. Desde la raíz del proyecto, ejecuta python3 tools/hbmod.py modules/orbita para generar build/modules/orbita.dock. Sigue la guía de fm1-dock para validar el módulo en emulación antes de cargarlo en un instrumento con ese firmware anfitrión.
+
+Pruebas ejecutadas con GCC en Linux y la interfaz hb_module.h: compilación, eventos de nota y controles, salida estéreo no silenciosa, liberación de nota, límites de la pantalla y conteo de pulsos para las 256 combinaciones de densidad y rotación. Faltan la compilación para la arquitectura JieLi y la prueba en hardware. Se entrega el proyecto fuente con licencia GPL‑3.0‑only.
+
+El botón EDIT cambia el idioma de la pantalla entre español e inglés.
