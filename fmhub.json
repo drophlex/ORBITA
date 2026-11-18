@@ -1,12 +1,12 @@
 {
-  "what": "ORBITA, the generative instrument, inside the FM-1: three FM voices play euclidean rhythms over a scale while the screen draws their orbits. Four scenes; density, phase, FM ratio, geometry and scale on the knobs. The web version's own notes and voices.",
+  "what": "A generative instrument for the FM-1. Three FM voices play interlocking rhythms while the screen draws their orbits live: Lissajous figures, polar roses, epicycles. Pick one of four scenes, turn density, phase and FM ratio, and it keeps evolving. Same notes and voices as the web version.",
   "author": "Polaris Sound Lab",
   "kinds": [
-    "other"
+    "synth"
   ],
   "play": "https://drophlex.github.io/ORBITA/",
   "cheat": "https://github.com/drophlex/ORBITA/blob/main/docs/Orbita-EN.pdf",
   "image": "docs/images/fmhub-card.png",
   "color": "#CEFE65",
-  "sounds": "Own: ORBITA's FM voices (the web version's, synthesized) and its 32 DX7 voices (Polaris Sound Lab). CC0 VSCO-2 / VCSL samples kept from Felucca."
+  "sounds": "own: ORBITA's synthesized FM voices and its 32 DX7 voices, made by Polaris Sound Lab; CC0: the VSCO-2 and VCSL samples kept from Felucca"
 }
