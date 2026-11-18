@@ -8,7 +8,7 @@ permissions:
   contents: write
 env:
   VERSION: 1.8.2-or1
-  IDENTITY: FM-1_906
+  IDENTITY: FM-1_908
 jobs:
   firmware:
     runs-on: ubuntu-latest
