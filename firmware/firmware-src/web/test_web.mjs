@@ -397,6 +397,7 @@ function mockTables() {
   const dj = DESC;
   if (!existsSync(dj)) { console.log("editor: mock tables == firmware (no build/host/desc.json)        skip"); return; }
   const fw = JSON.parse(readFileSync(dj, "utf8"));
+  fw.ENG = fw.ENG.filter((e) => e.name !== "ORBITA");   /* ÓRBITA's own voices: the last engine, its screens only (not in G_ENGSEL, ENGINE_ORDER or the editor) */
   const m = E.makeMockDevice({ auto: false }), T = m.tables;
   m.stop();
   const norm = (d) => ({ label: d.label, fmt: d.fmt, min: d.min, max: d.max, def: d.def, names: d.names || null, unit: d.unit || "" });
