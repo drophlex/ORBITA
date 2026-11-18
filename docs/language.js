@@ -50,7 +50,8 @@ const translations = {
   "Guía de instalación": "Install guide",
   "diseño de Dark Funk Durcal · construido en Polaris Sound Lab": "Dark Funk Durcal design · built at Polaris Sound Lab",
   "DONAR": "DONATE",
-  "Instalar": "Install"
+  "Instalar": "Install",
+  "Instalar en el FM1 ▸": "Install on the FM1 ▸"
 };
 let language = 'en';
 try { if(localStorage.getItem('orbita-language') === 'es') language = 'es'; } catch {}

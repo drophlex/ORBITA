@@ -12,7 +12,7 @@
 |---|---|---|
 | 🌐 **Web** | Play now in your browser, on a computer or a phone. Nothing to install. | **[drophlex.github.io/ORBITA](https://drophlex.github.io/ORBITA/)** |
 | 🎛 **Mac · Ableton Live** (VST3 · AU · App) | Open Terminal and paste:<br>`curl -fsSL https://drophlex.github.io/ORBITA/install.sh \| bash` | [ORBITA-mac.zip](https://github.com/drophlex/ORBITA/releases/latest/download/ORBITA-mac.zip) |
-| 🎹 **M-VAVE FM-1** | 32 DX7 voices to import with the M-VAVE Workbench, plus four MIDI scenes | [ORBITA-FM1.zip](https://github.com/drophlex/ORBITA/releases/latest/download/ORBITA-FM1.zip) |
+| 🎹 **M-VAVE FM-1** | Connect the FM-1 by USB, open the installer in Chrome or Edge and press one button. It writes the 32 voices and checks them. | **[drophlex.github.io/ORBITA/fm1](https://drophlex.github.io/ORBITA/fm1/)** · [ORBITA-FM1.zip](https://github.com/drophlex/ORBITA/releases/latest/download/ORBITA-FM1.zip) |
 
 **Step-by-step install guide with pictures: [drophlex.github.io/ORBITA/guide](https://drophlex.github.io/ORBITA/guide/)**
 
@@ -25,7 +25,12 @@
 
 1. **Web**: press **▶ Play**, pick a **scene**, then move **Density** (how many hits in 16 steps), **Phase** (where they fall) and **FM ratio** (warm to metallic). Tap a voice's name to mute it. *Connections and downloads* exports a MIDI clip or plays your FM-1 over USB on channels 1–3.
 2. **Ableton Live**: after installing, go to *Settings → Plug-ins → Use VST3 Plug-in System Folders → Rescan*, then drag **Polaris Orbita** onto a MIDI track. Turn on **Sequence with Live** and press play: *Pulses / 16* spreads the hits over the bar, following Live's tempo.
-3. **FM-1**: in the [M-VAVE Workbench](https://open.m-vave.com/), **export your group first**, then import one voice from `voces/` (or `Orbita-32.syx` for all 32) and save it to the FM-1. Drag a clip from `escenas/` onto a Live track routed to the FM-1.
+3. **FM-1**: open the [one-click installer](https://drophlex.github.io/ORBITA/fm1/) with the FM-1 on USB.
+   - **ANDROMEDA, Dark Funk Durcal or Felucca:** the voices land on FM6 SLOT **B1–B32**. Pick a track, hold EDIT and press the 2nd white key (FM6), then turn HOME's KNOB 4. *Remove* brings the built-in voices back.
+   - **Official M-VAVE firmware:** the FM-1 asks which bank (A–D) to save to.
+   - You can also play the `escenas/` MIDI clips into it from Live.
+
+<p align="center"><img src="docs/img/fm1-installer.jpg" width="560" alt="The FM-1 installer"></p>
 
 Everything is in English by default, with Spanish one click away: in the web header, in the plug-in's panel, and with EDIT on the fm1-dock module.
 
@@ -40,13 +45,13 @@ Everything is in English by default, with Spanish one click away: in the web hea
 | `Orbita-FM1/` | The 32 DX7 voices, the full bank, four MIDI clips and the source of an ÓRBITA module for the community firmware [fm1-dock](https://github.com/joakimeriksson/fm1-dock) |
 | `tools/manual/` | The manual's sources (`shots.mjs` → `manual.py` → `pdf.mjs`) |
 
-**Status.** The web version is complete. The plug-in is built and checked automatically on macOS, but it hasn't been played inside Live yet. The FM-1 voices passed format and checksum checks, but nobody has listened to them on a real FM-1 yet. The fm1-dock module is source only: it isn't built for the FM-1's JieLi chip yet and hasn't been tested on hardware.
+**Status.** The web version is complete. The plug-in is built and checked automatically on macOS, but it hasn't been played inside Live yet. The FM-1 installer was tested on a computer against the FM-1 firmware's own code (ANDROMEDA's) with `tools/fm1-check`: every reply, the names read back, each voice loaded and played, and *Remove*. It hasn't been tried on a physical FM-1 yet, nor on the official firmware. The fm1-dock module is source only: it isn't built for the FM-1's JieLi chip yet and hasn't been tested on hardware.
 
 ---
 
 ### En español
 
-**Un instrumento generativo: síntesis FM, ritmos euclidianos y gráficos de fase.** Tócalo en el navegador ([drophlex.github.io/ORBITA](https://drophlex.github.io/ORBITA/)) o en Ableton Live. Para instalarlo en Mac, pega en Terminal `curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash`. También puedes cargar sus 32 voces en tu M-VAVE FM-1 con el Workbench de M-VAVE: exporta primero tu grupo para no perder tus sonidos. Tienes la guía paso a paso en [drophlex.github.io/ORBITA/guide](https://drophlex.github.io/ORBITA/guide/) y el manual en [español](docs/Orbita-ES.pdf).
+**Un instrumento generativo: síntesis FM, ritmos euclidianos y gráficos de fase.** Tócalo en el navegador ([drophlex.github.io/ORBITA](https://drophlex.github.io/ORBITA/)) o en Ableton Live. Para instalarlo en Mac, pega en Terminal `curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash`. Para tu M-VAVE FM-1 hay un **[instalador de un clic](https://drophlex.github.io/ORBITA/fm1/)**: conecta el FM-1 por USB, ábrelo en Chrome o Edge, pulsa el botón y él escribe y comprueba las 32 voces. Tienes la guía paso a paso en [drophlex.github.io/ORBITA/guide](https://drophlex.github.io/ORBITA/guide/) y el manual en [español](docs/Orbita-ES.pdf).
 
 ---
 

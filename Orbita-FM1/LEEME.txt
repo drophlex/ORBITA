@@ -1,6 +1,12 @@
 POLARIS SOUND LAB  /  ÓRBITA
 Edición FM‑1  •  Banco DX7 y cuatro clips MIDI
 
+INSTALADOR DE UN CLIC / ONE-CLICK INSTALLER
+Conecta el FM-1 por USB, abre https://drophlex.github.io/ORBITA/fm1/ en Chrome o Edge y pulsa «Conectar e instalar ÓRBITA».
+Con ANDROMEDA, Dark Funk Durcal o Felucca las voces quedan en FM6 SLOT B1–B32 y se comprueban; con el firmware oficial el FM-1 pregunta dónde guardar el banco.
+Connect the FM-1 by USB, open https://drophlex.github.io/ORBITA/fm1/ in Chrome or Edge and press "Connect and install ÓRBITA".
+Lo que sigue es la instalación manual con el Workbench. / What follows is the manual install with the Workbench.
+
 PRIMERA ESCUCHA
 1. Si ya usas M‑VAVE FM1 Open V14, abre el Workbench oficial, conecta el FM‑1 por USB y abre su biblioteca DX7. https://open.m-vave.com/
 2. Exporta el grupo de destino para conservar tus sonidos anteriores. Importa una sola voz desde «voces» para empezar. «Orbita-32.syx» contiene el grupo completo de 32. Comprueba en el editor el destino de la escritura antes de guardarlo en el hardware.

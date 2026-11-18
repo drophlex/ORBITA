@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#171a18">
+<title>ÓRBITA · FM-1 installer — Polaris Sound Lab</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#e9e8df;color:#1a1c19;font:16px/1.55 Inter,Arial,sans-serif}
+.wrap{max-width:860px;margin:auto;padding:0 5vw 40px}
+header{display:flex;align-items:center;justify-content:space-between;height:66px;border-bottom:1px solid #b0b2a7}
+.brand{font-weight:900;letter-spacing:-.5px}.brand b{font:28px Arial;vertical-align:middle}.brand span{font-weight:400}
+.mono,small,.tag,footer{font:11px/1.4 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:1px}
+nav{display:flex;gap:8px}nav button{font:inherit;cursor:pointer;border:1px solid #a4a69b;border-radius:4px;padding:5px 10px;background:transparent}
+nav button.on{background:#1a1c19;color:#e9e8df;border-color:#1a1c19}
+h1{font-size:clamp(48px,8vw,88px);line-height:.95;letter-spacing:-.08em;margin:28px 0 6px;font-weight:750}
+.lead{font-size:18px;color:#3c4136;margin:6px 0 20px}
+.box{border:1px solid #adb0a3;border-radius:10px;background:#f2f1e9;padding:22px;margin:16px 0}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.step{border:1px solid #c3c5b8;border-radius:8px;padding:12px 14px;background:#ecebe2;font-size:14px}
+.step b{display:block;font:700 11px 'IBM Plex Mono',monospace;letter-spacing:1px;margin-bottom:4px}
+.step.on{border-color:#1a1c19;background:#cefe65}.step.ok{border-color:#5f8a2c}
+.big{display:block;width:100%;font:700 20px Inter,Arial;cursor:pointer;border:1px solid #24271d;border-radius:8px;padding:18px;background:#cefe65;color:#1a1c19}
+.big:disabled{opacity:.45;cursor:default}
+.ghost{font:600 14px Inter,Arial;cursor:pointer;border:1px solid #a4a69b;border-radius:6px;padding:9px 14px;background:transparent;margin-top:10px}
+#status{font-size:16px;margin:14px 0 4px;min-height:1.5em}#status.err{color:#a3341f}#status.good{color:#3d6b12;font-weight:700}
+#dev{font:12px 'IBM Plex Mono',monospace;color:#53584b}
+progress{width:100%;height:12px;accent-color:#434c35;margin-top:10px}
+.voices{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:14px}
+.v{font:10px 'IBM Plex Mono',monospace;text-align:center;padding:6px 0;border-radius:4px;background:#d5d7cb;color:#53584b}
+.v.done{background:#ceff78;color:#1a1c19}.v.chk{background:#1a1c19;color:#ceff78}
+h2{font-size:26px;letter-spacing:-1px;margin:24px 0 6px}
+ol li{margin:8px 0}
+.note{font-size:14px;color:#53584b;border-left:3px solid #af9af1;padding:4px 0 4px 12px;margin:12px 0}
+.warn{border-left-color:#f1a07d}
+.k{display:inline-block;border:1px solid #24271d;border-radius:3px;padding:0 6px;font:700 12px 'IBM Plex Mono',monospace;background:#fff}
+#done{display:none}
+footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:24px 0;color:#606457;border-top:1px solid #b4b7aa;margin-top:30px}
+footer a{color:#606457;text-decoration:none}footer a:hover{color:#1a1c19}
+.don{border:1px solid #a4a69b;border-radius:99px;padding:3px 10px;font-weight:700}
+@media(max-width:700px){.steps{grid-template-columns:1fr}.voices{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a class="brand" href="../" style="color:inherit;text-decoration:none"><b>✳</b> POLARIS <span>SOUND LAB</span></a>
+<nav class="mono"><button id="bEn">English</button><button id="bEs">Español</button></nav></header>
+
+<small data-t="kick">ÓRBITA · FM-1 INSTALLER</small>
+<h1>Órbita → FM-1</h1>
+<p class="lead" data-t="lead">Connect your FM-1 and press one button: the installer finds it, writes ÓRBITA's 32 voices and checks them.</p>
+
+<div class="steps">
+  <div class="step" id="s1"><b>1</b><span data-t="s1">Connect the FM-1 to this computer with a USB data cable and turn it on.</span></div>
+  <div class="step" id="s2"><b>2</b><span data-t="s2">Use Chrome or Edge. Press the button and allow MIDI.</span></div>
+  <div class="step" id="s3"><b>3</b><span data-t="s3">Wait for the check mark. Keep the cable connected while it writes (a few seconds).</span></div>
+</div>
+
+<div class="box">
+  <button class="big" id="go" data-t="go">Connect and install ÓRBITA</button>
+  <div id="status"></div><div id="dev"></div>
+  <progress id="bar" max="34" value="0" hidden></progress>
+  <div class="voices" id="voices"></div>
+  <button class="ghost" id="remove" hidden data-t="remove">Remove ÓRBITA's voices (back to the built-in ones)</button>
+</div>
+
+<div id="done" class="box">
+  <h2 data-t="doneH">Play ÓRBITA on your FM-1</h2>
+  <div id="howFel">
+    <ol>
+      <li data-t="f1">With <span class="k">ALGORITHM</span> pick a track (T1–T4).</li>
+      <li data-t="f2">Hold <span class="k">EDIT</span> and press the <b>2nd white key</b>: the track becomes <b>FM6</b>.</li>
+      <li data-t="f3">Press <span class="k">HOME</span> and turn <b>KNOB 4 (SLOT)</b> to <b>B1 … B32</b>: these are ÓRBITA's voices, ORSUB1 … ORTIDE4.</li>
+      <li data-t="f4">Play the keys. To keep the sound with the track, save the project (<span class="k">SAVE</span>) as usual.</li>
+    </ol>
+  </div>
+  <div id="howOff" hidden>
+    <ol>
+      <li data-t="o1">The FM-1 shows that it received a 32-voice bank: choose the bank (A, B, C or D) to save it in, on the FM-1.</li>
+      <li data-t="o2">Pick a track and choose a voice of that bank: ORSUB1 … ORTIDE4.</li>
+    </ol>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px">
+    <tr><td><b>B1–B4</b> SUB</td><td><b>B5–B8</b> BELL</td><td><b>B9–B12</b> HALO</td><td><b>B13–B16</b> REED</td></tr>
+    <tr><td><b>B17–B20</b> DUST</td><td><b>B21–B24</b> KEY</td><td><b>B25–B28</b> WIRE</td><td><b>B29–B32</b> TIDE</td></tr>
+  </table>
+  <p class="note" data-t="scenes">Now play ÓRBITA's scenes into it: the web version (Connections → Detect FM1 / MIDI) or the MIDI clips in ORBITA-FM1.zip from Ableton Live.</p>
+  <p><a href="../" class="ghost" style="display:inline-block;text-decoration:none;color:inherit" data-t="openWeb">Open ÓRBITA on the web ▶</a></p>
+</div>
+
+<h2 data-t="whichH">Which FM-1 firmware?</h2>
+<p data-t="which1"><b>ANDROMEDA, Dark Funk Durcal, Felucca (1.4.1 or newer):</b> the installer talks to the FM-1, writes the voices as the FM6 voice bank (B1–B32), reads them back and checks every name. Your music, projects and presets are not touched. The built-in B voices come back with “Remove”.</p>
+<p data-t="which2"><b>Official M-VAVE firmware (V15, V16, FM1 Open):</b> it gets the standard DX7 32-voice bank; the FM-1 asks you where to save it. That bank's previous voices are replaced: if you want to keep them, export them first with the M-VAVE Workbench. This path cannot be checked from the computer.</p>
+<p class="note warn" data-t="safe">Only voices are written: no firmware is changed. On ANDROMEDA, Dark Funk Durcal and Felucca a cut cable leaves the old voices or the new ones, never a mix.</p>
+<p class="note" data-t="help">Nothing happens? Try another USB cable (many only charge), close other music apps that use the FM-1 (Workbench, editors, DAWs) and reload this page. Full manual: <a href="../Orbita-EN.pdf">English</a> · <a href="../Orbita-ES.pdf">Español</a> · <a href="../guide/">install guide</a>.</p>
+
+<footer class="mono"><span>POLARIS SOUND LAB · ÓRBITA</span>
+<span><span data-t="credit">Dark Funk Durcal design · built at Polaris Sound Lab</span> · <a href="https://www.instagram.com/polaris.sound.lab/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.youtube.com/@PolarisSoundLab" target="_blank" rel="noopener">YouTube</a> · <a class="don" id="don" target="_blank" rel="noopener">♥ <span data-t="donate">DONATE</span></a></span></footer>
+</div>
+<script src="orbita-fm1.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+$('don').href = 'https://www.paypal.com/donate/?business=drophlex' + '%40' + 'gmail.com&no_recurring=0&item_name=ORBITA&currency_code=USD';
+const ES = {
+  kick: 'ÓRBITA · INSTALADOR PARA FM-1', lead: 'Conecta tu FM-1 y pulsa un botón: el instalador lo encuentra, escribe las 32 voces de ÓRBITA y las comprueba.',
+  s1: 'Conecta el FM-1 a esta computadora con un cable USB de datos y enciéndelo.', s2: 'Usa Chrome o Edge. Pulsa el botón y permite el MIDI.',
+  s3: 'Espera la palomita. No desconectes el cable mientras escribe (unos segundos).', go: 'Conectar e instalar ÓRBITA',
+  remove: 'Quitar las voces de ÓRBITA (volver a las de fábrica)', doneH: 'Toca ÓRBITA en tu FM-1',
+  f1: 'Con <span class="k">ALGORITHM</span> elige una pista (T1–T4).', f2: 'Mantén <span class="k">EDIT</span> y pulsa la <b>2ª tecla blanca</b>: la pista pasa a <b>FM6</b>.',
+  f3: 'Pulsa <span class="k">HOME</span> y gira la <b>PERILLA 4 (SLOT)</b> a <b>B1 … B32</b>: son las voces de ÓRBITA, ORSUB1 … ORTIDE4.',
+  f4: 'Toca las teclas. Para conservar el sonido con la pista, guarda el proyecto (<span class="k">SAVE</span>) como siempre.',
+  o1: 'El FM-1 muestra que recibió un banco de 32 voces: elige en el FM-1 el banco (A, B, C o D) donde guardarlo.', o2: 'Elige una pista y una voz de ese banco: ORSUB1 … ORTIDE4.',
+  scenes: 'Ahora tócale las escenas de ÓRBITA: desde la versión web (Conexiones → Detectar FM1 / MIDI) o con los clips MIDI de ORBITA-FM1.zip desde Ableton Live.',
+  openWeb: 'Abrir ÓRBITA en la web ▶', whichH: '¿Qué firmware tiene tu FM-1?',
+  which1: '<b>ANDROMEDA, Dark Funk Durcal, Felucca (1.4.1 o más nuevo):</b> el instalador habla con el FM-1, escribe las voces como el banco de voces de FM6 (B1–B32), las vuelve a leer y comprueba cada nombre. Tu música, proyectos y presets no se tocan. Las voces B de fábrica regresan con “Quitar”.',
+  which2: '<b>Firmware oficial de M-VAVE (V15, V16, FM1 Open):</b> recibe el banco estándar DX7 de 32 voces; el FM-1 te pregunta dónde guardarlo. Las voces que tenía ese banco se reemplazan: si quieres conservarlas, expórtalas antes con el Workbench de M-VAVE. Esta vía no se puede comprobar desde la computadora.',
+  safe: 'Sólo se escriben voces: no se cambia ningún firmware. En ANDROMEDA, Dark Funk Durcal y Felucca un cable desconectado deja las voces anteriores o las nuevas, nunca una mezcla.',
+  help: '¿No pasa nada? Prueba otro cable USB (muchos sólo cargan), cierra otras apps de música que usen el FM-1 (Workbench, editores, DAW) y recarga esta página. Manual completo: <a href="../Orbita-ES.pdf">Español</a> · <a href="../Orbita-EN.pdf">English</a> · <a href="../guide/">guía de instalación</a>.',
+  credit: 'diseño de Dark Funk Durcal · construido en Polaris Sound Lab', donate: 'DONAR'
+};
+const MSG = {
+  en: { nomidi: 'This browser has no Web MIDI. Open this page in Chrome or Edge on a computer.', denied: 'MIDI access was not allowed. Press the button again and choose Allow.',
+        search: 'Looking for the FM-1…', notfound: 'No FM-1 found. Check the USB data cable, turn the FM-1 on, close other apps using it and press again.',
+        fel: 'FM-1 found', old: 'This firmware has no FM6 voice bank (it needs Felucca 1.4.1 or newer, ANDROMEDA or Dark Funk Durcal).',
+        replace: n => `The FM-1 has a voice bank named “${n}”. Replace it with ÓRBITA? (It cannot be read back from here: keep its file if you want it again.)`,
+        writing: 'Writing the voices…', verify: 'Reading them back…', ok: '✓ ÓRBITA is installed and checked: 32 voices in B1–B32.',
+        bad: 'The voices did not check out. Press again to repeat the installation.', fail: e => `Stopped: ${e}. Nothing is half-written: press again.`,
+        off: 'FM-1 found (official M-VAVE firmware).', offAsk: 'Send ÓRBITA’s 32 voices? The FM-1 will ask you where to save them; that bank’s current voices will be replaced.',
+        offSent: '✓ Sent. Now choose on the FM-1 where to save the bank.', removed: '✓ The built-in voices are back on B1–B32.', removing: 'Removing…',
+        busy: 'Stop playback on the FM-1 and press again.' },
+  es: { nomidi: 'Este navegador no tiene Web MIDI. Abre esta página en Chrome o Edge en una computadora.', denied: 'No se permitió el acceso MIDI. Pulsa el botón otra vez y elige Permitir.',
+        search: 'Buscando el FM-1…', notfound: 'No se encontró el FM-1. Revisa el cable USB de datos, enciende el FM-1, cierra otras apps que lo usen y vuelve a pulsar.',
+        fel: 'FM-1 encontrado', old: 'Este firmware no tiene banco de voces FM6 (necesita Felucca 1.4.1 o más nuevo, ANDROMEDA o Dark Funk Durcal).',
+        replace: n => `El FM-1 tiene un banco de voces llamado “${n}”. ¿Reemplazarlo por ÓRBITA? (No se puede leer desde aquí: conserva su archivo si lo quieres de nuevo.)`,
+        writing: 'Escribiendo las voces…', verify: 'Volviendo a leerlas…', ok: '✓ ÓRBITA está instalada y comprobada: 32 voces en B1–B32.',
+        bad: 'Las voces no coincidieron. Vuelve a pulsar para repetir la instalación.', fail: e => `Se detuvo: ${e}. No queda nada a medias: vuelve a pulsar.`,
+        off: 'FM-1 encontrado (firmware oficial de M-VAVE).', offAsk: '¿Enviar las 32 voces de ÓRBITA? El FM-1 te preguntará dónde guardarlas; las voces que tenga ese banco se reemplazan.',
+        offSent: '✓ Enviado. Ahora elige en el FM-1 dónde guardar el banco.', removed: '✓ Las voces de fábrica regresaron a B1–B32.', removing: 'Quitando…',
+        busy: 'Detén la reproducción en el FM-1 y vuelve a pulsar.' }
+};
+const EN = {}; document.querySelectorAll('[data-t]').forEach(e => (EN[e.dataset.t] = e.innerHTML));
+let lang = 'en'; try { if (localStorage.getItem('orbita-language') === 'es') lang = 'es'; } catch (e) {}
+const m = k => MSG[lang][k];
+function setLang(l) {
+  lang = l; document.documentElement.lang = l; try { localStorage.setItem('orbita-language', l); } catch (e) {}
+  document.querySelectorAll('[data-t]').forEach(e => (e.innerHTML = (l === 'es' ? ES : EN)[e.dataset.t] ?? EN[e.dataset.t]));
+  $('bEn').classList.toggle('on', l === 'en'); $('bEs').classList.toggle('on', l === 'es');
+}
+$('bEn').onclick = () => setLang('en'); $('bEs').onclick = () => setLang('es'); setLang(lang);
+
+const BANK = orbitaBank(), NAMES = orbitaNames(BANK);
+$('voices').innerHTML = NAMES.map((n, i) => `<div class="v" id="v${i}">B${i + 1}<br>${n}</div>`).join('');
+const say = (t, cls = '') => { $('status').textContent = t; $('status').className = cls; };
+const step = n => ['s1', 's2', 's3'].forEach((s, i) => { $(s).classList.toggle('on', i === n); $(s).classList.toggle('ok', i < n); });
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* one request at a time to the Felucca editor protocol, its reply by command */
+class Link {
+  constructor(input, output) { this.input = input; this.output = output; this.wait = null; input.onmidimessage = e => this.rx(e.data); }
+  rx(d) { if (d.length < 6 || d[0] !== 0xF0 || d[1] !== 0x7D || d[2] !== 0x46 || d[3] !== 0x4C || d[d.length - 1] !== 0xF7) return;
+    const w = this.wait; if (w && w.cmd === d[4]) { this.wait = null; clearTimeout(w.t); w.ok(Array.from(d.slice(5, -1))); } }
+  req(cmd, args = [], ms = 1500) { return new Promise((ok, no) => { const t = setTimeout(() => { this.wait = null; no(new Error('no reply')); }, ms);
+    this.wait = { cmd, ok, t }; try { this.output.send(flFrame(cmd, args)); } catch (e) { clearTimeout(t); this.wait = null; no(e); } }); }
+  close() { this.input.onmidimessage = null; }
+}
+let midi = null, link = null, official = null;
+async function find() {
+  if (!navigator.requestMIDIAccess) { say(m('nomidi'), 'err'); return null; }
+  try { midi = midi || await navigator.requestMIDIAccess({ sysex: true }); } catch (e) { say(m('denied'), 'err'); return null; }
+  say(m('search')); step(1);
+  const ins = [...midi.inputs.values()], outs = [...midi.outputs.values()];
+  const pairs = []; for (const o of outs) { const i = ins.find(x => x.name === o.name) || ins.find(x => /fm.?1|felucca|andromeda|m-?vave/i.test(x.name)); if (i) pairs.push([i, o]); }
+  pairs.sort((a, b) => (/fm.?1|felucca|m-?vave/i.test(b[1].name) ? 1 : 0) - (/fm.?1|felucca|m-?vave/i.test(a[1].name) ? 1 : 0));
+  for (const [i, o] of pairs) {
+    const l = new Link(i, o);
+    try { const info = parseInfo(await l.req(FL.INFO, [], 900)); return { kind: 'felucca', link: l, info, name: o.name }; } catch (e) { l.close(); }
+  }
+  const o = outs.find(x => /fm.?1|m-?vave/i.test(x.name));
+  return o ? { kind: 'official', out: o, name: o.name } : null;
+}
+async function verify() {
+  const L = parseList(await link.req(FL.FM6B_LIST, [], 2000));
+  let good = L.has && L.name === 'ORBITA' && L.voices.length === 32;
+  L.voices.forEach((v, k) => { const ok = v.used && v.name === NAMES[k]; good = good && ok; $('v' + k).className = 'v ' + (ok ? 'chk' : ''); });
+  return good;
+}
+async function install(dev) {
+  link = dev.link; $('dev').textContent = `${dev.name} · ${dev.info.version}`;
+  if (!dev.info.bank) { say(m('old'), 'err'); return; }
+  say(m('fel')); $('remove').hidden = false;
+  const L = parseList(await link.req(FL.FM6B_LIST, [], 2000));
+  const used = L.voices.filter(v => v.used).length;
+  if (L.has && used && L.name !== 'ORBITA' && !confirm(m('replace')(L.name || '—'))) return;
+  step(2); say(m('writing')); $('bar').hidden = false; $('bar').value = 0;
+  document.querySelectorAll('.v').forEach(v => (v.className = 'v'));
+  const reqs = orbitaFeluccaRequests(BANK);
+  for (let n = 0; n < reqs.length; n++) {
+    const [cmd, args] = reqs[n];
+    const r = await link.req(cmd, args, cmd === FL.FM6B_WRITE ? 1500 : 4000);
+    const rc = cmd === FL.FM6B_WRITE ? r[1] : r[0];
+    if (rc === 3) throw new Error(m('busy'));
+    if (rc !== 0) throw new Error('rc ' + rc + ' (cmd ' + cmd + ')');
+    if (cmd === FL.FM6B_WRITE) $('v' + args[0]).className = 'v done';
+    $('bar').value = n + 1;
+  }
+  await sleep(300); say(m('verify'));
+  if (await verify()) { say(m('ok'), 'good'); step(3); $('howFel').hidden = false; $('howOff').hidden = true; $('done').style.display = 'block'; }
+  else say(m('bad'), 'err');
+}
+$('go').onclick = async () => {
+  $('go').disabled = true;
+  try {
+    if (link) { link.close(); link = null; }
+    const dev = await find();
+    if (!dev) { if (midi) say(m('notfound'), 'err'); return; }
+    if (dev.kind === 'felucca') await install(dev);
+    else {
+      $('dev').textContent = dev.name; say(m('off'));
+      if (!confirm(m('offAsk'))) return;
+      step(2); dev.out.send(Array.from(BANK)); await sleep(1500);
+      document.querySelectorAll('.v').forEach(v => (v.className = 'v done'));
+      say(m('offSent'), 'good'); step(3); $('howFel').hidden = true; $('howOff').hidden = false; $('done').style.display = 'block';
+    }
+  } catch (e) { say(m('fail')(e.message), 'err'); }
+  finally { $('go').disabled = false; }
+};
+$('remove').onclick = async () => {
+  if (!link) return; $('remove').disabled = true; say(m('removing'));
+  try { for (const [cmd, args] of emptyBankRequests()) { const r = await link.req(cmd, args, 4000); if (r[0] !== 0) throw new Error('rc ' + r[0]); }
+    document.querySelectorAll('.v').forEach(v => (v.className = 'v')); say(m('removed'), 'good'); }
+  catch (e) { say(m('fail')(e.message), 'err'); } finally { $('remove').disabled = false; }
+};
+</script>
+</body>
+</html>
