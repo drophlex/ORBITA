@@ -17,7 +17,7 @@ h1{font-size:clamp(56px,8vw,104px);line-height:.95;letter-spacing:-.085em;margin
 .lead{font-size:19px;max-width:720px;color:#3c4136}
 .hero{margin:26px 0 8px;border-radius:10px;overflow:hidden;border:1px solid #b4b7aa;box-shadow:0 18px 40px -26px #0006}
 .hero img{display:block;width:100%}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:28px 0}
 .card{border:1px solid #adb0a3;border-radius:8px;padding:20px;background:#f2f1e9;display:flex;flex-direction:column;gap:10px}
 .card h3{margin:0;font-size:22px;letter-spacing:-.6px}.card p{margin:0;font-size:14px;color:#53584b}
 .btn{display:inline-block;text-align:center;text-decoration:none;color:#1a1c19;font-weight:700;border:1px solid #24271d;border-radius:4px;padding:12px 14px;background:#cefe65;margin-top:auto}
@@ -29,7 +29,7 @@ ol{padding-left:22px}ol li{margin:9px 0}
 .cmd{display:flex;gap:8px;align-items:stretch;margin:12px 0;flex-wrap:wrap}
 .cmd code{flex:1;min-width:260px;background:#191d19;color:#e8ebe1;border-radius:6px;padding:13px 14px;font:13px/1.4 'IBM Plex Mono',ui-monospace,monospace;overflow-x:auto;white-space:nowrap}
 .cmd button{font:inherit;font-weight:700;cursor:pointer;border:1px solid #24271d;border-radius:6px;background:#cefe65;padding:0 16px}
-.two{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start}
+.keys{border-collapse:collapse;margin:14px 0;font-size:14px;width:100%}.keys td,.keys th{border-bottom:1px solid #0002;padding:6px 8px;text-align:left;vertical-align:top}.two{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start}
 .shot{border:1px solid #b4b7aa;border-radius:8px;overflow:hidden}.shot img{display:block;width:100%}
 .note{font-size:14px;color:#53584b;border-left:3px solid #af9af1;padding:4px 0 4px 12px;margin:14px 0}
 a{color:#1a1c19}
@@ -62,6 +62,9 @@ footer a{color:#606457;text-decoration:none;display:inline-flex;align-items:cent
   <div class="card"><small>M-VAVE FM-1</small><h3 data-l="en">FM-1 edition</h3><h3 data-l="es">Edición FM-1</h3>
     <p data-l="en">32 DX7 voices for your FM-1 and four MIDI scenes.</p><p data-l="es">32 voces DX7 para tu FM-1 y cuatro escenas MIDI.</p>
     <a class="btn" href="../fm1/"><span data-l="en">One-click installer ▶</span><span data-l="es">Instalador de un clic ▶</span></a></div>
+  <div class="card"><small>M-VAVE FM-1 · FIRMWARE</small><h3 data-l="en">All of ÓRBITA</h3><h3 data-l="es">ÓRBITA completo</h3>
+    <p data-l="en">The scenes, the phase plane and the web's voices on the FM-1 itself. Beta.</p><p data-l="es">Las escenas, el plano de fase y las voces de la web en el propio FM-1. Beta.</p>
+    <a class="btn" href="#firmware"><span data-l="en">How to install ↓</span><span data-l="es">Cómo instalar ↓</span></a></div>
 </div>
 
 <div class="hero"><img src="../img/web-en.jpg" alt="ÓRBITA in the browser: the phase plane, the scene memory and the 16-step sequencer"></div>
@@ -141,8 +144,44 @@ footer a{color:#606457;text-decoration:none;display:inline-flex;align-items:cent
   <div class="shot"><img src="../img/web-downloads.jpg" alt="Connections and downloads in the web version"></div></div>
 </section>
 
+<section id="firmware">
+  <span class="tag">04 · ÓRBITA FIRMWARE · BETA</span>
+  <h2 data-l="en">The whole of ÓRBITA on the FM-1</h2><h2 data-l="es">ÓRBITA completo en el FM-1</h2>
+  <p data-l="en">A firmware that turns the FM-1 into ÓRBITA itself: the four scenes, the phase plane on its screen, the same patterns as the web (density, phase, geometry, scale) and the web's own three voices, SUB, PRISM and CRYSTAL. It runs on Felucca 1.8.2's drivers (GPL-3.0) with a screen of its own.</p>
+  <p data-l="es">Un firmware que convierte el FM-1 en ÓRBITA: las cuatro escenas, el plano de fase en su pantalla, los mismos patrones que la web (densidad, fase, geometría, escala) y las tres voces originales de la web, SUB, PRISM y CRYSTAL. Corre sobre los drivers de Felucca 1.8.2 (GPL-3.0) con una pantalla propia.</p>
+  <div class="two"><div>
+  <p><a class="btn" href="../firmware/"><span data-l="en">Open the firmware installer ▶</span><span data-l="es">Abrir el instalador del firmware ▶</span></a></p>
+  <ol data-l="en">
+    <li>Connect the FM-1 with a USB <b>data</b> cable and turn it on. Use Chrome or Edge on a computer.</li>
+    <li>Open <a href="../firmware/">the installer</a>, press <b>Install</b> and allow MIDI. When it asks, save the backup of your FM-1 to your computer.</li>
+    <li>Wait until it says <b>Done</b>: the FM-1 restarts showing three orbits and <b>O R B I T A</b>. Don't unplug it while it writes.</li>
+    <li>To go back: the same page has <b>Return to official firmware</b> (pick M-VAVE's FM-1.fwsc, V15 or V16).</li>
+  </ol>
+  <ol data-l="es">
+    <li>Conecta el FM-1 con un cable USB <b>de datos</b> y enciéndelo. Usa Chrome o Edge en una computadora.</li>
+    <li>Abre <a href="../firmware/">el instalador</a>, pulsa <b>Instalar</b> y permite el MIDI. Cuando lo pida, guarda el respaldo de tu FM-1 en la computadora.</li>
+    <li>Espera a que diga <b>Listo</b>: el FM-1 se reinicia mostrando tres órbitas y <b>O R B I T A</b>. No lo desconectes mientras escribe.</li>
+    <li>Para volver: la misma página tiene <b>Volver al firmware oficial</b> (elige el FM-1.fwsc de M-VAVE, V15 o V16).</li>
+  </ol>
+  <table class="keys">
+    <tr><th data-l="en">Control</th><th data-l="es">Control</th><th data-l="en">On ÓRBITA</th><th data-l="es">En ÓRBITA</th></tr>
+    <tr><td>PLAY</td><td data-l="en">start / stop</td><td data-l="es">arranca / detiene</td></tr>
+    <tr><td>PRESETS · OCT− / OCT+</td><td data-l="en">scene: Mérida Ring, Skewed Crystal, Lunar Drift, Discrete Acid</td><td data-l="es">escena: Mérida Ring, Skewed Crystal, Lunar Drift, Discrete Acid</td></tr>
+    <tr><td>KNOB 1 · 2 · 3 · 4</td><td data-l="en">density · phase · FM ratio · scale</td><td data-l="es">densidad · fase · relación FM · escala</td></tr>
+    <tr><td>ALGO</td><td data-l="en">geometry</td><td data-l="es">geometría</td></tr>
+    <tr><td>SELECT</td><td data-l="en">tempo (40–220 BPM)</td><td data-l="es">tempo (40–220 BPM)</td></tr>
+    <tr><td>FX · SCL · ENV</td><td data-l="en">mute SUB · PRISM · CRYSTAL</td><td data-l="es">silenciar SUB · PRISM · CRYSTAL</td></tr>
+    <tr><td>LFO</td><td data-l="en">voice set: ORIGINAL (the web's) or one of four sets of the 32 FM voices</td><td data-l="es">juego de voces: ORIGINAL (las de la web) o uno de cuatro juegos de las 32 voces FM</td></tr>
+    <tr><td>EDIT · HOME</td><td data-l="en">English / Español · info</td><td data-l="es">English / Español · información</td></tr>
+  </table>
+  <p class="note" data-l="en"><b>Beta.</b> Built and tested on a computer: its notes match the web's in every setting (42,480 notes), its voices match the web's sound, and the complete Felucca test suite (audio, storage, the updater, power cuts) passes. It has not been tried on a physical FM-1 yet: try it with the backup saved.</p>
+  <p class="note" data-l="es"><b>Beta.</b> Compilado y probado en computadora: sus notas coinciden con las de la web en cada ajuste (42,480 notas), sus voces suenan como las de la web y pasa todo el conjunto de pruebas de Felucca (audio, memoria, el actualizador, cortes de corriente). Aún no se ha probado en un FM-1 físico: pruébalo con el respaldo guardado.</p>
+  </div>
+  <div class="shot"><img src="../img/fm1-scene0.png" alt="ÓRBITA on the FM-1's screen: the scene, the phase plane and the three voices' steps" style="image-rendering:pixelated"><img src="../img/fm1-scene3.png" alt="Discrete Acid on the FM-1" style="image-rendering:pixelated;margin-top:10px"></div></div>
+</section>
+
 <section id="manual">
-  <span class="tag">04 · MANUAL</span>
+  <span class="tag">05 · MANUAL</span>
   <h2 data-l="en">User manual</h2><h2 data-l="es">Manual de usuario</h2>
   <p data-l="en">17 illustrated pages, from installing to playing: web, Ableton Live and FM-1, recipes and answers.</p>
   <p data-l="es">17 páginas ilustradas, de la instalación a tocar: web, Ableton Live y FM-1, recetas y respuestas.</p>

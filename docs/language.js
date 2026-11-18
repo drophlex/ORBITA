@@ -52,7 +52,9 @@ const translations = {
   "DONAR": "DONATE",
   "diseño de Dark Funk Durcal · creado en Polaris Sound Lab · Mérida, Yucatán": "Dark Funk Durcal design · built at Polaris Sound Lab · Mérida, Yucatán",
   "Instalar": "Install",
-  "Instalar en el FM1 ▸": "Install on the FM1 ▸"
+  "Instalar en el FM1 ▸": "Install on the FM1 ▸",
+  "ÓRBITA completo en el FM1 (beta) ▸": "All of ÓRBITA on the FM1 (beta) ▸",
+  "Voces para el FM1 ▸": "Voices for the FM1 ▸"
 };
 let language = 'en';
 try { if(localStorage.getItem('orbita-language') === 'es') language = 'es'; } catch {}
