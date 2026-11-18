@@ -38,6 +38,7 @@ footer{display:flex;justify-content:space-between;align-items:center;gap:12px;fl
 footer a{color:#606457;text-decoration:none}footer a:hover{color:#1a1c19}
 .don{border:1px solid #a4a69b;border-radius:99px;padding:3px 10px;font-weight:700}
 @media(max-width:700px){.steps{grid-template-columns:1fr}.voices{grid-template-columns:repeat(4,1fr)}}
+.sig{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:2px 0 10px;font:11px/1.4 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.8px;color:#53584b}.sig a{color:#53584b;text-decoration:none}.sig a:hover{color:#1a1c19}.sig .don{border:1px solid #a4a69b;border-radius:99px;padding:2px 10px;font-weight:700;color:#1a1c19}
 </style>
 </head>
 <body>
@@ -46,7 +47,7 @@ footer a{color:#606457;text-decoration:none}footer a:hover{color:#1a1c19}
 <nav class="mono"><button id="bEn">English</button><button id="bEs">Español</button></nav></header>
 
 <small data-t="kick">ÓRBITA · FM-1 INSTALLER</small>
-<h1>Órbita → FM-1</h1>
+<h1>Órbita → FM-1</h1><div class="sig"><span data-t="sig">Dark Funk Durcal design · built at Polaris Sound Lab · Mérida, Yucatán</span> <a class="don" href="https://www.paypal.com/donate/?business=drophlex%40gmail.com&amp;no_recurring=0&amp;item_name=ORBITA&amp;currency_code=USD" target="_blank" rel="noopener">♥ <span data-t="donate2">DONATE</span></a></div>
 <p class="lead" data-t="lead">Connect your FM-1 and press one button: the installer finds it, writes ÓRBITA's 32 voices and checks them.</p>
 
 <div class="steps">
@@ -94,7 +95,7 @@ footer a{color:#606457;text-decoration:none}footer a:hover{color:#1a1c19}
 <p class="note" data-t="help">Nothing happens? Try another USB cable (many only charge), close other music apps that use the FM-1 (Workbench, editors, DAWs) and reload this page. Full manual: <a href="../Orbita-EN.pdf">English</a> · <a href="../Orbita-ES.pdf">Español</a> · <a href="../guide/">install guide</a>.</p>
 
 <footer class="mono"><span>POLARIS SOUND LAB · ÓRBITA</span>
-<span><span data-t="credit">Dark Funk Durcal design · built at Polaris Sound Lab</span> · <a href="https://www.instagram.com/polaris.sound.lab/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.youtube.com/@PolarisSoundLab" target="_blank" rel="noopener">YouTube</a> · <a class="don" id="don" target="_blank" rel="noopener">♥ <span data-t="donate">DONATE</span></a></span></footer>
+<span><span data-t="credit">Dark Funk Durcal design · built at Polaris Sound Lab · Mérida, Yucatán</span> · <a href="https://www.instagram.com/polaris.sound.lab/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.youtube.com/@PolarisSoundLab" target="_blank" rel="noopener">YouTube</a> · <a class="don" id="don" target="_blank" rel="noopener">♥ <span data-t="donate">DONATE</span></a></span></footer>
 </div>
 <script src="orbita-fm1.js"></script>
 <script>
@@ -115,7 +116,7 @@ const ES = {
   which2: '<b>Firmware oficial de M-VAVE (V15, V16, FM1 Open):</b> recibe el banco estándar DX7 de 32 voces; el FM-1 te pregunta dónde guardarlo. Las voces que tenía ese banco se reemplazan: si quieres conservarlas, expórtalas antes con el Workbench de M-VAVE. Esta vía no se puede comprobar desde la computadora.',
   safe: 'Sólo se escriben voces: no se cambia ningún firmware. En ANDROMEDA, Dark Funk Durcal y Felucca un cable desconectado deja las voces anteriores o las nuevas, nunca una mezcla.',
   help: '¿No pasa nada? Prueba otro cable USB (muchos sólo cargan), cierra otras apps de música que usen el FM-1 (Workbench, editores, DAW) y recarga esta página. Manual completo: <a href="../Orbita-ES.pdf">Español</a> · <a href="../Orbita-EN.pdf">English</a> · <a href="../guide/">guía de instalación</a>.',
-  credit: 'diseño de Dark Funk Durcal · construido en Polaris Sound Lab', donate: 'DONAR'
+  credit: 'diseño de Dark Funk Durcal · creado en Polaris Sound Lab · Mérida, Yucatán', donate: 'DONAR', sig: 'diseño de Dark Funk Durcal · creado en Polaris Sound Lab · Mérida, Yucatán', donate2: 'DONAR'
 };
 const MSG = {
   en: { nomidi: 'This browser has no Web MIDI. Open this page in Chrome or Edge on a computer.', denied: 'MIDI access was not allowed. Press the button again and choose Allow.',

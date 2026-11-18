@@ -114,7 +114,7 @@ public:
             const char* enNames[] = {"FM ratio", "FM index", "Phase", "Pulses / 16", "MIDI root note", "Output", "Sequence with Live"};
             for(int i=0;i<7;++i) labels[i].setText(en?enNames[i]:esNames[i],juce::dontSendNotification);
             synth.state.state.setProperty("uiLanguage",en?"en":"es",nullptr);
-            credit.setButtonText(en?juce::String::fromUTF8("Dark Funk Durcal design · built at Polaris Sound Lab"):juce::String::fromUTF8("diseño de Dark Funk Durcal · construido en Polaris Sound Lab"));
+            credit.setButtonText(en?juce::String::fromUTF8("Dark Funk Durcal design · built at Polaris Sound Lab · Mérida, Yucatán"):juce::String::fromUTF8("diseño de Dark Funk Durcal · creado en Polaris Sound Lab · Mérida, Yucatán"));
             donate.setButtonText(en?juce::String::fromUTF8("♥ DONATE"):juce::String::fromUTF8("♥ DONAR"));
             repaint();
         }
@@ -141,7 +141,7 @@ public:
             donate.setURL(juce::URL("https://www.paypal.com/donate/?business=drophlex%40gmail.com&no_recurring=0&item_name=ORBITA&currency_code=USD"));
             for(auto* b : {&credit,&insta,&tube,&donate}) { b->setFont(juce::Font(juce::FontOptions(11.f)),false,juce::Justification::centredLeft); b->setColour(juce::HyperlinkButton::textColourId,juce::Colour(0xff7fb59b)); addAndMakeVisible(*b); }
             donate.setColour(juce::HyperlinkButton::textColourId,juce::Colour(0xffa5f8cd));
-            localise(); setSize(480,456);
+            localise(); setSize(480,470);
             startTimerHz(12);
         }
         void resized() override {
@@ -149,7 +149,7 @@ public:
             for(int i=0;i<7;++i) labels[i].setBounds(16,146+i*38,150,32);
             for(int i=0;i<6;++i) knobs[i].setBounds(168,146+i*38,getWidth()-185,32);
             sequence.setBounds(168,146+6*38,42,32);
-            credit.setBounds(12,424,262,22); insta.setBounds(276,424,64,22); tube.setBounds(340,424,58,22); donate.setBounds(400,424,70,22);
+            credit.setBounds(12,420,456,20); insta.setBounds(12,442,66,20); tube.setBounds(82,442,62,20); donate.setBounds(390,442,80,20);
         }
         void paint(juce::Graphics& g) override {
             g.fillAll(juce::Colour(0xff102221));

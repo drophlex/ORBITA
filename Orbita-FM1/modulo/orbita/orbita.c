@@ -101,6 +101,8 @@ static void draw(uint32_t full) {
     if (full || geometry != last_geometry) {
         host->fill(0,HB_TOP,240,240-HB_TOP,0);
         host->text(0,34,240,1,"POLARIS / ORBITA",0xffff,1);
+        host->text(0,52,240,0,english ? "DARK FUNK DURCAL DESIGN" : "DISENO DE DARK FUNK DURCAL",HB_RGB(120,245,180),1);
+        host->text(0,182,240,0,"POLARIS SOUND LAB / MERIDA YUC",HB_RGB(120,245,180),1);
         for (uint32_t i = 0; i < 128; ++i) {
             int x = 119 + cycle[(2*i+rot*16)&255] * 87 / 32768;
             int y = 112 + cycle[(2*i*r)&255] * 41 / 32768;

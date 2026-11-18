@@ -48,8 +48,9 @@ const translations = {
   "Manual de usuario ↗": "User manual ↗",
   "Plug-in Mac (VST3 · AU) ↓": "Mac plug-in (VST3 · AU) ↓",
   "Guía de instalación": "Install guide",
-  "diseño de Dark Funk Durcal · construido en Polaris Sound Lab": "Dark Funk Durcal design · built at Polaris Sound Lab",
+  "diseño de Dark Funk Durcal · construido en Polaris Sound Lab": "Dark Funk Durcal design · built at Polaris Sound Lab · Mérida, Yucatán",
   "DONAR": "DONATE",
+  "diseño de Dark Funk Durcal · creado en Polaris Sound Lab · Mérida, Yucatán": "Dark Funk Durcal design · built at Polaris Sound Lab · Mérida, Yucatán",
   "Instalar": "Install",
   "Instalar en el FM1 ▸": "Install on the FM1 ▸"
 };

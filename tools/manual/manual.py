@@ -90,7 +90,7 @@ def build():
 <div class="ctitle">Órbita</div><div class="csub">{T('a generative instrument · FM synthesis, euclidean rhythms, phase plots', 'un instrumento generativo · síntesis FM, ritmos euclidianos, gráficos de fase')}</div>
 <div class="cmeta">{T('USER MANUAL', 'MANUAL DE USUARIO')} · WEB · VST3 · AU · M-VAVE FM-1</div>
 <div class="clang">{'ENGLISH · ESPAÑOL' if L == 'both' else T('ENGLISH EDITION', 'EDICIÓN EN ESPAÑOL')}</div>
-<div class="cfoot">Dark Funk Durcal {T('design', 'diseño')} · {T('built at', 'construido en')} <b>POLARIS SOUND LAB</b> · Mérida, Yucatán, México<br>
+<div class="cfoot">Dark Funk Durcal {T('design', 'diseño')} · {T('built at', 'creado en')} <b>POLARIS SOUND LAB</b> · Mérida, Yucatán, México · <a href="{DON}">♥ {T('DONATE', 'DONAR')}</a><br>
 <a href="{IG}">Instagram @polaris.sound.lab</a> · <a href="{YT}">YouTube @PolarisSoundLab</a> · <a href="{WEB}">drophlex.github.io/ORBITA</a></div></div>''', 'coverp')
     # 2 welcome
     toc = [T('Quick start', 'Inicio rápido'), T('The screen', 'La pantalla'), T('The phase plane', 'El plano de fase'), T('Scenes', 'Escenas'),
