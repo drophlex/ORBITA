@@ -39,7 +39,7 @@ jobs:
           cp -R "build/Orbita_artefacts/Release/AU/Polaris Orbita.component" ~/Library/Audio/Plug-Ins/Components/
           killall -9 AudioComponentRegistrar || true
           auval -v aumu Orb1 Pslb
-      - name: The FM-1 firmware from the newest firmware release (every release holds everything)
+      - name: The FM-1 firmware from the newest firmware release, so every release holds everything
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
           T=$(gh release list -R "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' | grep '^fm1-' | head -1 || true)
