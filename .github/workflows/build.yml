@@ -50,9 +50,10 @@ jobs:
             ORBITA-FM1.zip
             docs/Orbita-EN.pdf
             docs/Orbita-ES.pdf
+            docs/Orbita-EN-ES.pdf
           body: |
             ORBITA — a generative FM instrument · Dark Funk Durcal design · built at Polaris Sound Lab
             Mac (Ableton Live): paste in Terminal → curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash   (or unzip ORBITA-mac.zip and open Install-ORBITA.command)
             M-VAVE FM-1: ORBITA-FM1.zip — 32 DX7 voices to import with the M-VAVE Workbench, four MIDI clips, the manuals.
             Web: https://drophlex.github.io/ORBITA/ · Guide / Guía: https://drophlex.github.io/ORBITA/guide/
-            Manuals / Manuales: Orbita-EN.pdf · Orbita-ES.pdf
+            Manuals / Manuales: Orbita-EN.pdf · Orbita-ES.pdf · Orbita-EN-ES.pdf
