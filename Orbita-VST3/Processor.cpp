@@ -105,6 +105,7 @@ public:
         juce::Label labels[7];
         juce::Slider knobs[6];
         juce::ToggleButton sequence;
+        juce::HyperlinkButton credit, insta, tube, donate;
         std::unique_ptr<State::SliderAttachment> links[6];
         std::unique_ptr<State::ButtonAttachment> sequenceLink;
         void localise() {
@@ -113,6 +114,8 @@ public:
             const char* enNames[] = {"FM ratio", "FM index", "Phase", "Pulses / 16", "MIDI root note", "Output", "Sequence with Live"};
             for(int i=0;i<7;++i) labels[i].setText(en?enNames[i]:esNames[i],juce::dontSendNotification);
             synth.state.state.setProperty("uiLanguage",en?"en":"es",nullptr);
+            credit.setButtonText(en?juce::String::fromUTF8("Dark Funk Durcal design · built at Polaris Sound Lab"):juce::String::fromUTF8("diseño de Dark Funk Durcal · construido en Polaris Sound Lab"));
+            donate.setButtonText(en?juce::String::fromUTF8("♥ DONATE"):juce::String::fromUTF8("♥ DONAR"));
             repaint();
         }
         void timerCallback() override {repaint(0,0,getWidth(),145);}
@@ -130,9 +133,15 @@ public:
             sequenceLink=std::make_unique<State::ButtonAttachment>(synth.state,"auto",sequence);
             addAndMakeVisible(language);
             language.addItem(juce::String::fromUTF8("Español"),1); language.addItem("English",2);
-            language.setSelectedId(synth.state.state.getProperty("uiLanguage","es").toString()=="en"?2:1,juce::dontSendNotification);
+            language.setSelectedId(synth.state.state.getProperty("uiLanguage","en").toString()=="es"?1:2,juce::dontSendNotification);
             language.onChange=[this]{localise();};
-            localise(); setSize(480,428);
+            credit.setURL(juce::URL("https://github.com/drophlex/ORBITA"));
+            insta.setButtonText("Instagram"); insta.setURL(juce::URL("https://www.instagram.com/polaris.sound.lab/"));
+            tube.setButtonText("YouTube"); tube.setURL(juce::URL("https://www.youtube.com/@PolarisSoundLab"));
+            donate.setURL(juce::URL("https://www.paypal.com/donate/?business=drophlex%40gmail.com&no_recurring=0&item_name=ORBITA&currency_code=USD"));
+            for(auto* b : {&credit,&insta,&tube,&donate}) { b->setFont(juce::Font(juce::FontOptions(11.f)),false,juce::Justification::centredLeft); b->setColour(juce::HyperlinkButton::textColourId,juce::Colour(0xff7fb59b)); addAndMakeVisible(*b); }
+            donate.setColour(juce::HyperlinkButton::textColourId,juce::Colour(0xffa5f8cd));
+            localise(); setSize(480,456);
             startTimerHz(12);
         }
         void resized() override {
@@ -140,6 +149,7 @@ public:
             for(int i=0;i<7;++i) labels[i].setBounds(16,146+i*38,150,32);
             for(int i=0;i<6;++i) knobs[i].setBounds(168,146+i*38,getWidth()-185,32);
             sequence.setBounds(168,146+6*38,42,32);
+            credit.setBounds(12,424,262,22); insta.setBounds(276,424,64,22); tube.setBounds(340,424,58,22); donate.setBounds(400,424,70,22);
         }
         void paint(juce::Graphics& g) override {
             g.fillAll(juce::Colour(0xff102221));

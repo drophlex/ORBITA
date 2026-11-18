@@ -45,10 +45,14 @@ const translations = {
   "paso": "step",
   "Tocar": "Play",
   "Detener": "Stop",
-  "Manual de usuario ↗": "User manual ↗"
+  "Manual de usuario ↗": "User manual ↗",
+  "Plug-in Mac (VST3 · AU) ↓": "Mac plug-in (VST3 · AU) ↓",
+  "Guía de instalación": "Install guide",
+  "diseño de Dark Funk Durcal · construido en Polaris Sound Lab": "Dark Funk Durcal design · built at Polaris Sound Lab",
+  "DONAR": "DONATE"
 };
-let language = 'es';
-try { if(localStorage.getItem('orbita-language') === 'en') language = 'en'; } catch {}
+let language = 'en';
+try { if(localStorage.getItem('orbita-language') === 'es') language = 'es'; } catch {}
 function tr(key) { return language === 'en' ? translations[key] || key : key; }
 const textBindings = [];
 function bindLabels(root) {

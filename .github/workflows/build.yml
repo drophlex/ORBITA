@@ -1,0 +1,58 @@
+name: Build ORBITA plug-in (macOS)
+on:
+  push:
+    branches: [main]
+    paths: ['Orbita-VST3/**', 'Orbita-FM1/**', 'installer/**', 'docs/*.pdf', '.github/workflows/build.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Engine test
+        run: c++ -std=c++17 Orbita-VST3/test.cpp -o test-orbita && ./test-orbita
+      - name: Configure (universal arm64 + x86_64)
+        run: cmake -S Orbita-VST3 -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+      - name: Build VST3 + AU + Standalone
+        run: cmake --build build --config Release -j 4 -- -quiet
+      - name: Sign (ad-hoc) and package
+        run: |
+          set -e
+          A=build/Orbita_artefacts/Release
+          mkdir -p pkg/ORBITA
+          cp -R "$A/VST3/Polaris Orbita.vst3" "$A/AU/Polaris Orbita.component" "$A/Standalone/Polaris Orbita.app" pkg/ORBITA/
+          for b in pkg/ORBITA/*.vst3 pkg/ORBITA/*.component pkg/ORBITA/*.app; do codesign --force --deep -s - "$b"; done
+          cp installer/Install-ORBITA.command docs/Orbita-EN.pdf docs/Orbita-ES.pdf pkg/ORBITA/
+          chmod +x pkg/ORBITA/Install-ORBITA.command
+          cd pkg && ditto -c -k --keepParent ORBITA ../ORBITA-mac.zip
+          cd .. && rm -rf fm && mkdir -p fm && cp -R Orbita-FM1 fm/ && cp docs/Orbita-EN.pdf docs/Orbita-ES.pdf fm/Orbita-FM1/ && cd fm && zip -qr ../ORBITA-FM1.zip Orbita-FM1
+      - name: Validate with pluginval
+        run: |
+          curl -sSL -o pv.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip
+          unzip -q pv.zip
+          ./pluginval.app/Contents/MacOS/pluginval --strictness-level 8 --validate-in-process --skip-gui-tests --timeout-ms 300000 --validate "build/Orbita_artefacts/Release/VST3/Polaris Orbita.vst3"
+      - name: Validate AU (auval)
+        run: |
+          mkdir -p ~/Library/Audio/Plug-Ins/Components
+          cp -R "build/Orbita_artefacts/Release/AU/Polaris Orbita.component" ~/Library/Audio/Plug-Ins/Components/
+          killall -9 AudioComponentRegistrar || true
+          auval -v aumu Orb1 Pslb
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.${{ github.run_number }}
+          name: ORBITA 0.1.${{ github.run_number }} — Mac plug-in (VST3 · AU · App) and FM-1 edition
+          make_latest: true
+          files: |
+            ORBITA-mac.zip
+            ORBITA-FM1.zip
+            docs/Orbita-EN.pdf
+            docs/Orbita-ES.pdf
+          body: |
+            ORBITA — a generative FM instrument · Dark Funk Durcal design · built at Polaris Sound Lab
+            Mac (Ableton Live): paste in Terminal → curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash   (or unzip ORBITA-mac.zip and open Install-ORBITA.command)
+            M-VAVE FM-1: ORBITA-FM1.zip — 32 DX7 voices to import with the M-VAVE Workbench, four MIDI clips, the manuals.
+            Web: https://drophlex.github.io/ORBITA/ · Guide / Guía: https://drophlex.github.io/ORBITA/guide/
+            Manuals / Manuales: Orbita-EN.pdf · Orbita-ES.pdf
