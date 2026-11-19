@@ -449,30 +449,88 @@ function mutate() {
 }
 $('#newOrbit').onclick = newOrbit; $('#mutate').onclick = mutate;
 
-// ------------------------------------------------------------------ MIDI clip (4 bars, one track per voice)
+// ------------------------------------------------------------------ MIDI clip and WAV loop (4 bars), dragged onto the DAW or downloaded
 function vlq(n) { const a = [n & 127]; while ((n >>= 7) > 0) a.unshift((n & 127) | 128); return a; }
-function midiClip() {
-  const ppq = 480, st = 120, tempo = Math.round(60000000 / P[G.BPM]), tracks = [];
-  const track0 = [0, 255, 81, 3, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255, 0, 255, 88, 4, 4, 2, 24, 8, 0, 255, 47, 0];
+function midiClip() {   // one track, one channel (channel 1): every voice together, as Live expects on one MIDI track
+  const ppq = 480, st = 120, tempo = Math.round(60000000 / curBpm()), ev = [];
   for (let l = 0; l < NL; l++) {
     if (P[LP(l, L.ON)] < 0.5) continue;
-    const steps = Math.round(P[LP(l, L.STEPS)]), gate = Math.max(30, Math.round(P[LP(l, L.GATE)] * st * 0.92)), ev = [];
+    const steps = Math.round(P[LP(l, L.STEPS)]), gate = Math.max(30, Math.round(P[LP(l, L.GATE)] * st * 0.92));
     for (let gs = 0; gs < 64; gs++) { const s = gs % steps; if (!Mirror.X.ox_hit(l, s)) continue; const n = Mirror.X.ox_note(l, s), v = Mirror.X.ox_vel(l, s);
-      const sw = (gs & 1) ? Math.round(P[G.SWING] * 0.33 * st) : 0; ev.push([gs * st + sw, 0x90 | l, n, v], [gs * st + sw + gate, 0x80 | l, n, 0]); }
-    ev.sort((a, b) => a[0] - b[0] || (a[1] & 0xf0) - (b[1] & 0xf0));
-    const name = [...new TextEncoder().encode(T(LANE_NAMES[l]))];
-    const d = [0, 255, 3, name.length, ...name]; let last = 0; for (const e of ev) { d.push(...vlq(e[0] - last), e[1], e[2], e[3]); last = e[0]; }
-    d.push(...vlq(Math.max(0, 64 * st - last)), 255, 47, 0); tracks.push(d);
+      const sw = (gs & 1) ? Math.round(P[G.SWING] * 0.33 * st) : 0; ev.push([gs * st + sw, 0x90, n, v], [Math.min(64 * st - 1, gs * st + sw + gate), 0x80, n, 0]); }
   }
-  const chunk = d => [77, 84, 114, 107, (d.length >>> 24) & 255, (d.length >> 16) & 255, (d.length >> 8) & 255, d.length & 255, ...d];
-  const n = tracks.length + 1, bytes = [77, 84, 104, 100, 0, 0, 0, 6, 0, 1, 0, n, ppq >> 8, ppq & 255, ...chunk(track0)];
-  for (const t of tracks) bytes.push(...chunk(t));
-  return new Uint8Array(bytes);
+  ev.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const name = [...new TextEncoder().encode('ORBITA ' + (sceneTitle || ''))];
+  const d = [0, 255, 3, name.length, ...name, 0, 255, 81, 3, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255, 0, 255, 88, 4, 4, 2, 24, 8];
+  let last = 0; for (const e of ev) { d.push(...vlq(e[0] - last), e[1], e[2], e[3]); last = e[0]; }
+  d.push(...vlq(Math.max(0, 64 * st - last)), 255, 47, 0);
+  return new Uint8Array([77, 84, 104, 100, 0, 0, 0, 6, 0, 0, 0, 1, ppq >> 8, ppq & 255, 77, 84, 114, 107, (d.length >>> 24) & 255, (d.length >> 16) & 255, (d.length >> 8) & 255, d.length & 255, ...d]);
 }
-function clipName() { return 'ORBITA-' + (sceneTitle || 'orbit').normalize('NFD').replace(/[^\w]+/g, '-').replace(/-+$/, '') + '-' + Math.round(P[G.BPM]) + 'bpm.mid'; }
-function toB64(u) { let s = ''; for (let i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s); }
-if (plugin) $('#drag').addEventListener('pointerdown', () => { Bridge.call('dragMidi', clipName(), toB64(midiClip())); toast(T('Drag the clip onto a MIDI track')); });
-else $('#drag').onclick = () => { const a = document.createElement('a'), url = URL.createObjectURL(new Blob([midiClip()], { type: 'audio/midi' })); a.href = url; a.download = clipName(); a.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast(T('MIDI clip saved')); };
+function curBpm() { return plugin && syncOn && tele[2] > 1 ? tele[2] : P[G.BPM]; }
+// the loop as audio: a separate copy of the engine plays one bar to fill the echo and the reverb, then four bars are kept,
+// so the file loops without a gap
+function wavLoop() {
+  const X = new WebAssembly.Instance(new WebAssembly.Module(b64bytes(WASM_B64)), {}).exports, sr = 48000;
+  X.ox_init(sr); for (let i = 0; i < NP; i++) X.ox_param(i, P[i]); X.ox_param(G.BPM, curBpm());
+  if (target !== null) { const tp = sceneParams(target); for (let i = 0; i < NP; i++) X.ox_target(i, tp[i]); X.ox_param(G.GRAVITY, P[G.GRAVITY]); }
+  custom.forEach((m, l) => { if (m !== null) X.ox_custom(l, m); });
+  X.ox_param(G.CHAOS, P[G.CHAOS]); X.ox_play();
+  const bar = Math.round(sr * 60 / curBpm() * 4), pre = bar, len = bar * 4, L = new Float32Array(len), R = new Float32Array(len);
+  let n = 0; const mem = () => X.memory.buffer;
+  while (n < pre + len) { const k = Math.min(128, pre + len - n); X.ox_process(k); const a = new Float32Array(mem(), X.ox_out_l(), k), b = new Float32Array(mem(), X.ox_out_r(), k);
+    for (let i = 0; i < k; i++) { const j = n + i - pre; if (j >= 0) { L[j] = a[i]; R[j] = b[i]; } } n += k; }
+  // the first bar of the loop also gets the tail of the bar before it (it was rendered), so the seam is the music's own
+  const out = new DataView(new ArrayBuffer(44 + len * 4)); const w = (o, s) => { for (let i = 0; i < s.length; i++) out.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); out.setUint32(4, 36 + len * 4, true); w(8, 'WAVEfmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 2, true); out.setUint32(24, sr, true); out.setUint32(28, sr * 4, true); out.setUint16(32, 4, true); out.setUint16(34, 16, true); w(36, 'data'); out.setUint32(40, len * 4, true);
+  for (let i = 0; i < len; i++) { out.setInt16(44 + i * 4, Math.max(-1, Math.min(1, L[i])) * 32767, true); out.setInt16(46 + i * 4, Math.max(-1, Math.min(1, R[i])) * 32767, true); }
+  return new Uint8Array(out.buffer);
+}
+function clipName(ext) { return 'ORBITA-' + (sceneTitle || 'orbit').normalize('NFD').replace(/[^\w]+/g, '-').replace(/-+$/, '') + '-' + Math.round(curBpm()) + 'bpm.' + ext; }
+function toB64(u) { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
+function download(bytes, name, type) { const a = document.createElement('a'), url = URL.createObjectURL(new Blob([bytes], { type })); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); }
+function hookDrag(id, make, ext, type) {
+  if (plugin) $(id).addEventListener('pointerdown', () => { Bridge.call('dragFile', clipName(ext), toB64(make())); toast(T('Drag it onto a track in your DAW')); });
+  else $(id).onclick = () => { download(make(), clipName(ext), type); toast(T(ext === 'mid' ? 'MIDI clip saved' : 'Audio loop saved')); };
+}
+hookDrag('#drag', midiClip, 'mid', 'audio/midi');
+hookDrag('#dragWav', wavLoop, 'wav', 'audio/wav');
+
+// a MIDI clip dropped on ÓRBITA: its key becomes the scale and the root, its rhythm becomes the steps of the lane under it
+function readMidiNotes(buf) {
+  const b = new Uint8Array(buf), notes = []; let p = 0; const u32 = () => (b[p++] << 24 | b[p++] << 16 | b[p++] << 8 | b[p++]) >>> 0, u16 = () => b[p++] << 8 | b[p++];
+  if (String.fromCharCode(...b.subarray(0, 4)) !== 'MThd') throw Error('not a MIDI file');
+  p = 4; const hl = u32(); u16(); const ntr = u16(), div = u16(); p = 8 + hl;
+  for (let t = 0; t < ntr && p < b.length; t++) {
+    p += 4; const len = u32(), end = p + len; let tick = 0, run = 0;
+    const vlq2 = () => { let v = 0, c; do { c = b[p++]; v = (v << 7) | (c & 127); } while (c & 128 && p < end); return v; };
+    while (p < end) { tick += vlq2(); let st = b[p]; if (st < 0x80) st = run; else p++;
+      if (st === 0xff) { p++; const l = vlq2(); p += l; } else if (st === 0xf0 || st === 0xf7) { const l = vlq2(); p += l; }
+      else { run = st; const hi = st & 0xf0, d1 = b[p++], d2 = (hi === 0xc0 || hi === 0xd0) ? 0 : b[p++]; if (hi === 0x90 && d2 > 0) notes.push([tick / div * 4, d1, d2]); } }
+    p = end;
+  }
+  return notes;   // [sixteenth, note, velocity]
+}
+function learnClip(notes, lane) {
+  if (!notes.length) return;
+  const pcs = new Array(12).fill(0); notes.forEach(([, n]) => pcs[n % 12]++);
+  let best = [-1e9, 0, 0];
+  for (let r = 0; r < 12; r++) for (let sc = 0; sc < SCALE_SEMIS.length; sc++) {
+    const set = SCALE_SEMIS[sc].map(x => (x + r) % 12); let sc2 = 0; pcs.forEach((c, pc) => sc2 += set.includes(pc) ? c : -2 * c);
+    sc2 += pcs[r] * 0.5 - set.length * 0.05; if (sc2 > best[0]) best = [sc2, r, sc]; }
+  setP(G.ROOT, best[1], { noHist: true }); setP(G.SCALE, best[2], { noHist: true });
+  const steps = Math.round(P[LP(lane, L.STEPS)]); let m = 0; notes.forEach(([s]) => { const q = Math.round(s); if (q < 16) m |= 1 << (q % steps); });
+  if (m) { custom[lane] = m; Mirror.X.ox_custom(lane, m); Bridge.send({ t: 'custom', lane, mask: m }); }
+  refresh(); commit(); toast(T('From the clip') + ': ' + NOTES[best[1]] + ' ' + T(SCALES[best[2]]) + ' · ' + T(LANE_NAMES[lane]));
+}
+const SCALE_SEMIS = [[0, 2, 3, 5, 7, 9, 10], [0, 2, 3, 5, 7, 8, 10], [0, 3, 5, 7, 10], [0, 1, 3, 5, 7, 8, 10], [0, 2, 4, 6, 7, 9, 11], [0, 2, 4, 7, 9], [0, 1, 4, 5, 7, 8, 10], [0, 2, 4, 6, 8, 10], [0, 2, 3, 5, 7, 8, 11], [0, 2, 3, 7, 8]];
+addEventListener('dragover', e => { e.preventDefault(); document.body.classList.add('dropping'); });
+addEventListener('dragleave', e => { if (!e.relatedTarget) document.body.classList.remove('dropping'); });
+addEventListener('drop', async e => {
+  e.preventDefault(); document.body.classList.remove('dropping');
+  const f = [...(e.dataTransfer.files || [])].find(x => /\.midi?$/i.test(x.name)); if (!f) { toast(T('Drop a .mid file')); return; }
+  const row = e.target.closest && e.target.closest('.lane'); const lane = row ? +row.dataset.l : (selLane >= 0 ? selLane : 0);
+  try { learnClip(readMidiNotes(await f.arrayBuffer()), lane); } catch (err) { toast(err.message); }
+});
 
 // ------------------------------------------------------------------ keys (on screen, the computer's keyboard)
 let heldMask = 0, kbOct = 4; const downKeys = new Set();
@@ -534,12 +592,12 @@ $('#theme').onclick = () => { document.documentElement.classList.toggle('night')
 function helpHtml() {
   const en = `<small>QUICK GUIDE</small><h2>ÓRBITA 2</h2><p>Four FM voices play euclidean rhythms over a scale. Each voice draws its orbit: every bright dot is a note, the ring is where it is now.</p>
   <h4>PLAY</h4><ol><li><b>▶ Play</b> (or the space bar). Pick a <b>scene</b>, or press <b>✦ NEW ORBIT</b> for a fresh, musical one; <b>≈ MUTATE</b> changes a few things and keeps the feel.</li><li><b>DENSITY</b> is how many notes in a cycle, <b>PHASE</b> where they fall (and which notes), <b>FM RATIO</b> warm to metallic.</li><li>Click a dot on the screen or a cell in a lane to add or remove that note.</li></ol>
-  <h4>THE THINGS NOBODY ELSE HAS</h4><ol><li><b>GRAVITY</b>: press <b>B</b> and pick a second scene (or right-click it). Turn GRAVITY and the whole sound glides from one world to the other: rhythm, harmony, timbre and space. Automate it in your DAW for transitions.</li><li><b>EVOLVE</b>: the orbit wanders by itself, a little every bar, and never far from home.</li><li><b>TIME MACHINE</b>: every change and every evolution is kept. Heard something great a minute ago? Click it and it's back.</li><li><b>HARMONY keys</b>: in HARMONY, hold a chord on your keyboard and the orbit plays only those notes. TRANSPOSE moves everything to the key you press. PLAY plays a voice like a synth.</li><li><b>Polymeter</b>: give each voice its own STEPS (7, 10, 12…) and the four cycles drift and meet again.</li><li><b>⇣ MIDI</b>: drag 4 bars (one track per voice) onto your DAW, or turn on <b>MIDI OUT</b> to play your other instruments live.</li></ol>
+  <h4>THE THINGS NOBODY ELSE HAS</h4><ol><li><b>GRAVITY</b>: press <b>B</b> and pick a second scene (or right-click it). Turn GRAVITY and the whole sound glides from one world to the other: rhythm, harmony, timbre and space. Automate it in your DAW for transitions.</li><li><b>EVOLVE</b>: the orbit wanders by itself, a little every bar, and never far from home.</li><li><b>TIME MACHINE</b>: every change and every evolution is kept. Heard something great a minute ago? Click it and it's back.</li><li><b>HARMONY keys</b>: in HARMONY, hold a chord on your keyboard and the orbit plays only those notes. TRANSPOSE moves everything to the key you press. PLAY plays a voice like a synth.</li><li><b>Polymeter</b>: give each voice its own STEPS (7, 10, 12…) and the four cycles drift and meet again.</li><li><b>⇣ MIDI</b>: drag 4 bars (all the voices on one channel) onto your DAW, or turn on <b>MIDI OUT</b> to play your other instruments live (channel 1). <b>⇣ WAV</b> drags a 4-bar audio loop. Drop a MIDI clip on ÓRBITA (on a lane) and it takes the clip's key and rhythm.</li><li><b>PLAY and STOP are ÓRBITA's own</b>, like XO: it plays without starting your DAW. With SYNC on it follows the DAW's tempo, and the DAW's play starts it on the bar.</li></ol>
   <h4>SOUND</h4><p>Click a voice's name to open its sound: FM ratio and index, envelopes, filter, detune, sends. Six models: SUB, PRISM, CRYSTAL, HALO, GLASS, DUST.</p>
   <p class="hint">Free and open source · Dark Funk Durcal design · built at Polaris Sound Lab, Mérida, Yucatán, México.</p>`;
   const es = `<small>GUÍA RÁPIDA</small><h2>ÓRBITA 2</h2><p>Cuatro voces FM tocan ritmos euclidianos sobre una escala. Cada voz dibuja su órbita: cada punto brillante es una nota, el anillo es donde está ahora.</p>
   <h4>TOCAR</h4><ol><li><b>▶ Tocar</b> (o la barra espaciadora). Elige una <b>escena</b> o pulsa <b>✦ NUEVA ÓRBITA</b> para una nueva y musical; <b>≈ MUTAR</b> cambia algunas cosas y conserva la sensación.</li><li><b>DENSIDAD</b> es cuántas notas hay en un ciclo, <b>FASE</b> dónde caen (y qué notas), <b>RELACIÓN FM</b> de cálido a metálico.</li><li>Haz clic en un punto de la pantalla o en una celda de un carril para poner o quitar esa nota.</li></ol>
-  <h4>LO QUE NADIE MÁS TIENE</h4><ol><li><b>GRAVEDAD</b>: pulsa <b>B</b> y elige una segunda escena (o clic derecho sobre ella). Gira GRAVEDAD y todo el sonido se desliza de un mundo al otro: ritmo, armonía, timbre y espacio. Automatízala en tu DAW para las transiciones.</li><li><b>EVOLUCIÓN</b>: la órbita vaga sola, un poco cada compás, sin alejarse de casa.</li><li><b>MÁQUINA DEL TIEMPO</b>: cada cambio y cada evolución se guarda. ¿Oíste algo genial hace un minuto? Haz clic y vuelve.</li><li><b>Teclas de ARMONÍA</b>: en ARMONÍA, mantén un acorde en tu teclado y la órbita toca sólo esas notas. TRANSPONER lleva todo a la tecla que pulses. TOCAR toca una voz como un sinte.</li><li><b>Polimetría</b>: dale a cada voz sus propios PASOS (7, 10, 12…) y los cuatro ciclos se desfasan y se vuelven a encontrar.</li><li><b>⇣ MIDI</b>: arrastra 4 compases (una pista por voz) a tu DAW, o activa <b>MIDI OUT</b> para tocar tus otros instrumentos en vivo.</li></ol>
+  <h4>LO QUE NADIE MÁS TIENE</h4><ol><li><b>GRAVEDAD</b>: pulsa <b>B</b> y elige una segunda escena (o clic derecho sobre ella). Gira GRAVEDAD y todo el sonido se desliza de un mundo al otro: ritmo, armonía, timbre y espacio. Automatízala en tu DAW para las transiciones.</li><li><b>EVOLUCIÓN</b>: la órbita vaga sola, un poco cada compás, sin alejarse de casa.</li><li><b>MÁQUINA DEL TIEMPO</b>: cada cambio y cada evolución se guarda. ¿Oíste algo genial hace un minuto? Haz clic y vuelve.</li><li><b>Teclas de ARMONÍA</b>: en ARMONÍA, mantén un acorde en tu teclado y la órbita toca sólo esas notas. TRANSPONER lleva todo a la tecla que pulses. TOCAR toca una voz como un sinte.</li><li><b>Polimetría</b>: dale a cada voz sus propios PASOS (7, 10, 12…) y los cuatro ciclos se desfasan y se vuelven a encontrar.</li><li><b>⇣ MIDI</b>: arrastra 4 compases (todas las voces en un canal) a tu DAW, o activa <b>MIDI OUT</b> para tocar tus otros instrumentos en vivo (canal 1). <b>⇣ WAV</b> arrastra un loop de audio de 4 compases. Suelta un clip MIDI sobre ÓRBITA (sobre un carril) y toma la tonalidad y el ritmo del clip.</li><li><b>TOCAR y DETENER son propios de ÓRBITA</b>, como XO: suena sin arrancar tu DAW. Con SYNC sigue el tempo del DAW, y el play del DAW lo arranca en el compás.</li></ol>
   <h4>SONIDO</h4><p>Haz clic en el nombre de una voz para abrir su sonido: relación e índice FM, envolventes, filtro, desafinación, envíos. Seis modelos: SUBGRAVE, PRISMA, CRISTAL, HALO, VIDRIO, POLVO.</p>
   <p class="hint">Libre y gratuito · diseño de Dark Funk Durcal · desarrollado en Polaris Sound Lab, Mérida, Yucatán, México.</p>`;
   $('#helpBody').innerHTML = (LANG === 'es' ? es : en) + `<div class="go"><button class="tb" onclick="document.getElementById('help').classList.remove('show')">${T('Close')}</button></div>`;

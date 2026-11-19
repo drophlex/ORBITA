@@ -43,8 +43,11 @@ const ES = {
   'Follow the DAW\'s tempo and transport': 'Seguir el tempo y el transporte del DAW', 'A new orbit: scale, geometry, rhythm and sound, all musical': 'Una órbita nueva: escala, geometría, ritmo y sonido, todo musical',
   'Change a few things, keep the feel': 'Cambia algunas cosas y conserva la sensación', 'Back one step in the time machine': 'Un paso atrás en la máquina del tiempo',
   'Drag it onto a MIDI track (plug-in) or download it (web): 4 bars, one track per voice': 'Arrástralo a una pista MIDI (plug-in) o descárgalo (web): 4 compases, una pista por voz',
-  'Send the notes out of the plug-in too, to play your other instruments (channels 1-4)': 'Envía también las notas fuera del plug-in, para tocar tus otros instrumentos (canales 1-4)',
+  'Send the notes out of the plug-in too, to play your other instruments (channel 1)': 'Envía también las notas fuera del plug-in, para tocar tus otros instrumentos (canal 1)',
   'Paper or night': 'Papel o noche', 'Quick guide': 'Guía rápida', 'The next scene you click becomes GRAVITY\'s target': 'La siguiente escena que pulses será el destino de GRAVEDAD',
+  'Drag it onto a track in your DAW': 'Arrástralo a una pista de tu DAW', 'Audio loop saved': 'Loop de audio guardado', 'From the clip': 'Del clip', 'Drop a .mid file': 'Suelta un archivo .mid',
+  'Drag it onto a MIDI track (plug-in) or download it (web): 4 bars, all the voices on one channel': 'Arrástralo a una pista MIDI (plug-in) o descárgalo (web): 4 compases, todas las voces en un canal',
+  'Drag the audio onto a track (plug-in) or download it (web): a 4-bar loop': 'Arrastra el audio a una pista (plug-in) o descárgalo (web): un loop de 4 compases',
   'MIDI out on': 'Salida MIDI activada', 'MIDI out off': 'Salida MIDI desactivada', 'Following the DAW': 'Siguiendo al DAW', 'Own tempo': 'Tempo propio'
 };
 let LANG = 'en';

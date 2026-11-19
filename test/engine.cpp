@@ -53,6 +53,10 @@ int main() {
     // 120 bpm: a 16th = 6000 samples = 46.875 blocks
     int bad = 0; for (size_t i = 1; i < at.size(); i++) { long d = at[i] - at[i-1]; if (d < 46 || d > 48) bad++; }
     printf("sync: %zu steps, %d irregular\n", at.size(), bad); CHECK(at.size() >= 8 && bad == 0, "sync irregular"); CHECK(!at.empty() && at[0] == 0, "first step not at the start"); }
+  // 4b. XO transport: ÓRBITA's own play survives the DAW's stop; the DAW's own start stops with it
+  { E.init(48000); float L[128], R[128]; E.play(); E.host(true, 120, 0, true); E.process(L, R, 128); E.host(false, 120, 1, true); E.process(L, R, 128);
+    CHECK(E.playing, "own play stopped by the DAW"); E.stop(); E.host(true, 120, 2, true); E.process(L, R, 128); CHECK(E.playing, "DAW play didn't start it");
+    E.host(false, 120, 3, true); E.process(L, R, 128); CHECK(!E.playing, "DAW stop didn't stop what the DAW started"); CHECK(E.bpm() == 120, "tempo not the DAW's"); }
   // 5. gravity morph
   { E.init(48000); E.setTarget(G_DENSITY, 13); E.setParam(G_GRAVITY, 1); E.computeEff(); CHECK((int)E.eff[G_DENSITY] == 13, "gravity"); E.setParam(G_GRAVITY, 0); E.computeEff(); CHECK((int)E.eff[G_DENSITY] == 7, "gravity back"); }
   printf(fails ? "%d FAILED\n" : "all ok\n", fails); return fails ? 1 : 0;

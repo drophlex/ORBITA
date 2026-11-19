@@ -109,7 +109,7 @@ struct Engine {
   Voice v[NL][POLY]; uint32_t vAge = 1; Rng rnd;
   // sequencer
   bool playing = false; long gstep = -1; double ctr = 0, nextAt = 0; int lastStepLen = 0;
-  bool hostSync = false, hostPlaying = false; float hostBpm = 120; double hostStep = 0; bool hostNew = false;
+  bool hostSync = false, hostPlaying = false, ownPlay = false; float hostBpm = 0; double hostStep = 0; bool hostNew = false;
   uint16_t custom[NL] = {0, 0, 0, 0}; uint8_t useCustom[NL] = {0, 0, 0, 0};
   int evoPhase = 0, evoDen = 0; float evoRatio = 0;
   // keyboard
@@ -152,7 +152,7 @@ struct Engine {
         default: eff[i] = a; }
     }
   }
-  float bpm() const { return hostSync && hostPlaying ? clampf(hostBpm, 20, 400) : eff[G_BPM]; }
+  float bpm() const { return hostSync && hostBpm > 1 ? clampf(hostBpm, 20, 400) : eff[G_BPM]; }   // with SYNC, the DAW's tempo even while it is stopped
   float stepLen() const { return sr * 15.f / bpm(); }
   int lanePulses(int l) const { return clampi((int)eff[G_DENSITY] + evoDen + (int)eff[LPID(l, L_PULSES)], 1, (int)eff[LPID(l, L_STEPS)]); }
   int phaseEff() const { return (int)eff[G_PHASE] + evoPhase; }
@@ -213,15 +213,19 @@ struct Engine {
   }
 
   // ---------------------------------------------------------------- transport
-  void play() { if (!playing) { playing = true; gstep = -1; ctr = 0; nextAt = 0; evoPhase = evoDen = 0; } }
-  void stop() { playing = false; allOff(); flushOffs(0); }
+  // the transport works like XO: ÓRBITA's own PLAY and STOP are independent of the DAW. With SYNC on, the DAW's
+  // play starts it locked to the bar and the DAW's stop stops it only if the DAW started it.
+  void start() { if (!playing) { playing = true; gstep = -1; ctr = 0; nextAt = 0; evoPhase = evoDen = 0; } }
+  void play() { ownPlay = true; start(); }
+  void halt() { playing = false; allOff(); flushOffs(0); }
+  void stop() { ownPlay = false; halt(); }
   void flushOffs(int at) { for (int i = 0; i < nOff; i++) pushEv(0, offs[i].lane, offs[i].note, 0, at); nOff = 0; }
   void host(bool on, float b, double ppq, bool sync) {
     hostSync = sync; hostBpm = b;
     if (!sync) { hostPlaying = false; return; }
-    if (on && !hostPlaying) { playing = true; evoPhase = evoDen = 0; }
-    if (!on && hostPlaying) stop();
-    hostPlaying = on; hostStep = ppq * 4.0; hostNew = true;
+    if (on && !hostPlaying) { start(); evoPhase = evoDen = 0; }
+    if (!on && hostPlaying && !ownPlay) halt();
+    hostPlaying = on; hostStep = ppq * 4.0; hostNew = on;
   }
 
   void step(long gs, int at) {

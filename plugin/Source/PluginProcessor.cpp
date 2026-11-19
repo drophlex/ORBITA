@@ -109,7 +109,7 @@ void OrbitaProcessor::processBlock(juce::AudioBuffer<float>& buf, juce::MidiBuff
       eng->nev = 0; eng->process(tl, tr, len);
       std::memcpy(L + pos, tl, sizeof(float) * (size_t)len); if (R) std::memcpy(R + pos, tr, sizeof(float) * (size_t)len);
       if (mo) for (int k = 0; k < eng->nev; k++) { const auto& e = eng->ev[k]; const int at = pos + juce::jlimit(0, len - 1, e.at);
-        out.addEvent(e.kind ? juce::MidiMessage::noteOn(e.lane + 1, e.note, (juce::uint8)juce::jmax(1, (int)e.vel)) : juce::MidiMessage::noteOff(e.lane + 1, e.note), at); }
+        out.addEvent(e.kind ? juce::MidiMessage::noteOn(1, e.note, (juce::uint8)juce::jmax(1, (int)e.vel)) : juce::MidiMessage::noteOff(1, e.note), at); }
       pos += len;
     }
   };

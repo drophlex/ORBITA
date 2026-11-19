@@ -31,11 +31,11 @@ juce::WebBrowserComponent::Options OrbitaEditor::makeOptions() {
     .withNativeFunction("msg", [this](const juce::Array<juce::var>& a, Completion done) { if (a.size() > 0) proc.message(juce::JSON::parse(a[0].toString())); done(juce::var()); })
     .withNativeFunction("getState", [this](const juce::Array<juce::var>&, Completion done) { done(proc.stateForPage()); })
     .withNativeFunction("setUi", [this](const juce::Array<juce::var>& a, Completion done) { if (a.size() > 0) proc.setUi(a[0].toString()); done(juce::var()); })
-    .withNativeFunction("dragMidi", [this](const juce::Array<juce::var>& a, Completion done) {
-      // a[0] file name, a[1] the .mid in base64: written to a temporary folder and dragged out of the plug-in onto a track
+    .withNativeFunction("dragFile", [this](const juce::Array<juce::var>& a, Completion done) {
+      // a[0] file name (.mid or .wav), a[1] its bytes in base64: written to a temporary folder and dragged out of the plug-in onto a track
       if (a.size() < 2) { done(false); return; }
       juce::MemoryOutputStream mo; juce::Base64::convertFromBase64(mo, a[1].toString());
-      auto dir = juce::File::getSpecialLocation(juce::File::tempDirectory).getChildFile("ORBITA MIDI"); dir.createDirectory();
+      auto dir = juce::File::getSpecialLocation(juce::File::tempDirectory).getChildFile("ORBITA clips"); dir.createDirectory();
       auto f = dir.getChildFile(juce::File::createLegalFileName(a[0].toString()));
       const bool ok = f.replaceWithData(mo.getData(), mo.getDataSize());
       if (ok) juce::DragAndDropContainer::performExternalDragDropOfFiles({ f.getFullPathName() }, false, this);

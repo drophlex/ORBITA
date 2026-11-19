@@ -127,6 +127,7 @@ footer .credit{display:flex;align-items:center;gap:10px}footer a{text-decoration
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#1a1c19;color:#eef1e6;border-radius:99px;padding:9px 16px;font:12px var(--mono);letter-spacing:.5px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .plugonly{display:none}.isplug .plugonly{display:revert}.isplug .webonly{display:none}
+body.dropping #app{outline:3px dashed var(--c1);outline-offset:-6px}
 button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #8466aa;outline-offset:1px}
 @media (max-width:1100px){.main{grid-template-columns:1fr}.screen{min-height:380px}.bottom{grid-template-columns:1fr}.drawer .knobs{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media (max-width:760px){#app{padding:0 10px 16px}.top{flex-wrap:wrap;height:auto;padding:8px 0;gap:8px}.transport{margin-left:0}.hidem{display:none}
@@ -147,8 +148,9 @@ button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{ou
   <button id="mutate" class="tb hidem" data-t-title="Change a few things, keep the feel">≈ <span data-t>MUTATE</span></button>
   <button id="undo" class="tb hidem" data-t-title="Back one step in the time machine">↶</button>
   <div class="sp"></div>
-  <button id="drag" class="tb" data-t-title="Drag it onto a MIDI track (plug-in) or download it (web): 4 bars, one track per voice">⇣ MIDI</button>
-  <button id="midiOut" class="tb plugonly" data-t-title="Send the notes out of the plug-in too, to play your other instruments (channels 1-4)">MIDI OUT</button>
+  <button id="drag" class="tb" data-t-title="Drag it onto a MIDI track (plug-in) or download it (web): 4 bars, all the voices on one channel">⇣ MIDI</button>
+  <button id="dragWav" class="tb" data-t-title="Drag the audio onto a track (plug-in) or download it (web): a 4-bar loop">⇣ WAV</button>
+  <button id="midiOut" class="tb plugonly" data-t-title="Send the notes out of the plug-in too, to play your other instruments (channel 1)">MIDI OUT</button>
   <button id="theme" class="tb hidem" data-t-title="Paper or night">◐</button>
   <button id="helpBtn" class="tb" data-t-title="Quick guide">?</button>
   <select id="lang" class="lang" aria-label="Language / Idioma"><option value="en">EN</option><option value="es">ES</option></select>
