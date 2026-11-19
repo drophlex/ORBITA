@@ -213,8 +213,8 @@ struct Engine {
   }
 
   // ---------------------------------------------------------------- transport
-  // the transport works like XO: ÓRBITA's own PLAY and STOP are independent of the DAW. With SYNC on, the DAW's
-  // play starts it locked to the bar and the DAW's stop stops it only if the DAW started it.
+  // the transport works like XO: ÓRBITA's own PLAY and STOP are independent of the DAW. With SYNC on it runs at the
+  // DAW's tempo and, while the DAW plays too, on the DAW's bar.
   void start() { if (!playing) { playing = true; gstep = -1; ctr = 0; nextAt = 0; evoPhase = evoDen = 0; } }
   void play() { ownPlay = true; start(); }
   void halt() { playing = false; allOff(); flushOffs(0); }
@@ -223,9 +223,8 @@ struct Engine {
   void host(bool on, float b, double ppq, bool sync) {
     hostSync = sync; hostBpm = b;
     if (!sync) { hostPlaying = false; return; }
-    if (on && !hostPlaying) { start(); evoPhase = evoDen = 0; }
-    if (!on && hostPlaying && !ownPlay) halt();
-    hostPlaying = on; hostStep = ppq * 4.0; hostNew = on;
+    // the DAW's play and stop never start or stop ÓRBITA (only its own PLAY / STOP do); while both play it lines up on the DAW's bar
+    hostPlaying = on; hostStep = ppq * 4.0; hostNew = on && playing;
   }
 
   void step(long gs, int at) {
@@ -297,7 +296,7 @@ struct Engine {
     const float ka = 1.f / n;
 
     // host sync: follow the song position (re-align when it jumps)
-    if (hostSync && hostPlaying && hostNew) {
+    if (hostSync && hostPlaying && hostNew && playing) {
       hostNew = false;
       const double hs = hostStep, swS = eff[G_SWING] * 0.33 * sl;
       double fb = (double)(long)hs; if (fb > hs) fb -= 1; const long base = (long)fb; const double frac = hs - fb;

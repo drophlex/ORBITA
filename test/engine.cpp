@@ -48,15 +48,15 @@ int main() {
   { E.init(48000); E.play(); float L[128], R[128]; int ons = 0, offs = 0;
     for (int b = 0; b < 3000; b++) { E.nev = 0; E.process(L, R, 128); for (int k = 0; k < E.nev; k++) { if (E.ev[k].kind) ons++; else offs++; CHECK(E.ev[k].at >= 0 && E.ev[k].at < 128, "event out of the block"); } }
     E.nev = 0; E.stop(); offs += E.nev; printf("events: %d note on, %d note off\n", ons, offs); CHECK(ons > 50 && ons == offs, "on/off mismatch"); }
-  { E.init(48000); float L[128], R[128]; double ppq = 0; const double bpm = 120, ppqPerBlock = 128.0 / 48000 * bpm / 60; std::vector<long> at;
+  { E.init(48000); E.play(); float L[128], R[128]; double ppq = 0; const double bpm = 120, ppqPerBlock = 128.0 / 48000 * bpm / 60; std::vector<long> at;
     for (int b = 0; b < 400; b++) { E.host(true, bpm, ppq, true); long before = E.gstep; E.nev = 0; E.process(L, R, 128); if (E.gstep != before) at.push_back(b); ppq += ppqPerBlock; }
     // 120 bpm: a 16th = 6000 samples = 46.875 blocks
     int bad = 0; for (size_t i = 1; i < at.size(); i++) { long d = at[i] - at[i-1]; if (d < 46 || d > 48) bad++; }
     printf("sync: %zu steps, %d irregular\n", at.size(), bad); CHECK(at.size() >= 8 && bad == 0, "sync irregular"); CHECK(!at.empty() && at[0] == 0, "first step not at the start"); }
   // 4b. XO transport: ÓRBITA's own play survives the DAW's stop; the DAW's own start stops with it
   { E.init(48000); float L[128], R[128]; E.play(); E.host(true, 120, 0, true); E.process(L, R, 128); E.host(false, 120, 1, true); E.process(L, R, 128);
-    CHECK(E.playing, "own play stopped by the DAW"); E.stop(); E.host(true, 120, 2, true); E.process(L, R, 128); CHECK(E.playing, "DAW play didn't start it");
-    E.host(false, 120, 3, true); E.process(L, R, 128); CHECK(!E.playing, "DAW stop didn't stop what the DAW started"); CHECK(E.bpm() == 120, "tempo not the DAW's"); }
+    CHECK(E.playing, "own play stopped by the DAW"); E.stop(); E.host(true, 120, 2, true); E.process(L, R, 128); CHECK(!E.playing, "the DAW's play started it");
+    CHECK(E.bpm() == 120, "tempo not the DAW's"); }
   // 5. gravity morph
   { E.init(48000); E.setTarget(G_DENSITY, 13); E.setParam(G_GRAVITY, 1); E.computeEff(); CHECK((int)E.eff[G_DENSITY] == 13, "gravity"); E.setParam(G_GRAVITY, 0); E.computeEff(); CHECK((int)E.eff[G_DENSITY] == 7, "gravity back"); }
   printf(fails ? "%d FAILED\n" : "all ok\n", fails); return fails ? 1 : 0;
