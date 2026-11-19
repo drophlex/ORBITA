@@ -4,6 +4,7 @@ import os, math, sys
 OUT = sys.argv[1] if len(sys.argv) > 1 else '/home/claude/man/orbita2'
 HERE = os.path.dirname(os.path.abspath(__file__))
 L = 'en'
+ED = 'all'   # 'web', 'vst' or 'all'
 def T(en, es): return es if L == 'es' else en
 WEB = 'https://drophlex.github.io/ORBITA/'
 GUIDE = WEB + 'guide/'
@@ -49,14 +50,16 @@ def euclid_svg(pulses, steps=16, col='#ceff78'):
     out.append(f'<text x="{c}" y="{c + 5}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" font-weight="700">{pulses}/{steps}</text></svg>'); return ''.join(out)
 
 PAGES = []
-def page(title, body, cls=''): PAGES.append((cls, body, title))
+def EDNAME(): return {'web': T('WEB EDITION', 'EDICIÓN WEB'), 'vst': T('PLUG-IN EDITION · VST3 · AU · APP', 'EDICIÓN PLUG-IN · VST3 · AU · APP'), 'all': 'WEB · VST3 · AU · APP'}[ED]
+def page(title, body, cls='', ed=('web', 'vst', 'all')):
+    if ED in ed: PAGES.append((cls, body, title))
 
 def build():
     global PAGES; PAGES = []
     # 1 cover
     page('', f'''<div class="cover"><div class="cart">{orbit_svg()}</div>
 <div class="ctitle">Órbita 2</div><div class="csub">{T('a generative FM instrument · four voices, euclidean rhythms, orbits you can hear', 'un instrumento FM generativo · cuatro voces, ritmos euclidianos, órbitas que se escuchan')}</div>
-<div class="cmeta">{T('USER MANUAL', 'MANUAL DE USUARIO')} · WEB · VST3 · AU · APP</div>
+<div class="cmeta">{T('USER MANUAL', 'MANUAL DE USUARIO')} · {EDNAME()}</div>
 <div class="clang">{'ENGLISH · ESPAÑOL' if L == 'both' else T('ENGLISH EDITION', 'EDICIÓN EN ESPAÑOL')}</div>
 <div class="cfoot">Dark Funk Durcal {T('design', 'diseño')} · {T('built at', 'desarrollado en')} <b>POLARIS SOUND LAB</b> · Mérida, Yucatán, México · <a href="{DON}">♥ {T('DONATE', 'DONAR')}</a><br>
 <a href="{IG}">Instagram @polaris.sound.lab</a> · <a href="{YT}">YouTube @PolarisSoundLab</a> · <a href="{WEB}">drophlex.github.io/ORBITA</a></div></div>''', 'coverp')
@@ -186,14 +189,25 @@ def build():
     # 11 DAW
     page(T('In your DAW', 'En tu DAW'), f'''{kick(T('In your DAW', 'En tu DAW'))}<h1>{T('A generator for <i>your whole studio</i>.', 'Un generador para <i>todo tu estudio</i>.')}</h1>
 {table([T('Feature', 'Función'), T('How', 'Cómo')], [
-  ('SYNC', T('On: ÓRBITA follows the DAW\'s tempo and position (it locks to the bar when you press play or jump). Off: its own tempo and ▶.', 'Activado: ÓRBITA sigue el tempo y la posición del DAW (se alinea al compás cuando pulsas play o saltas). Desactivado: su propio tempo y ▶.')),
-  ('MIDI OUT', T('The notes ÓRBITA plays also leave the plug-in: Sub on channel 1, Prism 2, Crystal 3, Halo 4. In Live, put another MIDI track\'s input on ÓRBITA (MIDI From: the ÓRBITA track) to play any instrument with an orbit.', 'Las notas que toca ÓRBITA también salen del plug-in: Subgrave en el canal 1, Prisma 2, Cristal 3, Halo 4. En Live, pon la entrada de otra pista MIDI en ÓRBITA (MIDI From: la pista de ÓRBITA) para tocar cualquier instrumento con una órbita.')),
-  ('⇣ MIDI', T('Press and drag it onto a MIDI track: a 4-bar clip with one track per voice, at the current tempo and swing. On the web it downloads the .mid file.', 'Púlsalo y arrástralo a una pista MIDI: un clip de 4 compases con una pista por voz, al tempo y swing actuales. En la web descarga el archivo .mid.')),
-  (T('Automation', 'Automatización'), T('63 parameters: Gravity, Density, Phase, FM ratio, Evolve, Chaos, Bloom, Space, Echo, Warmth and the rest of the mix, root, scale, geometry, keys mode, and for each voice On, Level, Pulses, Steps, Rotate, FM index, Cutoff, Ratio, Echo and Space sends.', '63 parámetros: Gravity, Density, Phase, FM ratio, Evolve, Chaos, Bloom, Space, Echo, Warmth y el resto de la mezcla, tónica, escala, geometría, modo de teclas y, por voz, On, Level, Pulses, Steps, Rotate, FM index, Cutoff, Ratio y los envíos de Echo y Space.')),
-  (T('The project', 'El proyecto'), T('Everything is saved with your set: every value, GRAVITY\'s target, the steps you clicked, your four slots, the language and the theme.', 'Todo se guarda con tu set: cada valor, el destino de GRAVEDAD, los pasos que pulsaste, tus cuatro ranuras, el idioma y el tema.'))])}
-{img('top', T('The plug-in adds SYNC and MIDI OUT to the top bar.', 'El plug-in añade SYNC y MIDI OUT a la barra superior.'))}
-{tip(T('Layer it: MIDI OUT into a drum rack (Sub as kick, Crystal as hats) and keep ÓRBITA\'s own sound for the bells. Or set its MASTER to 0 and use it only as a generator.', 'En capas: MIDI OUT a un drum rack (Subgrave como bombo, Cristal como hats) y deja el sonido de ÓRBITA para las campanas. O pon su SALIDA en 0 y úsalo sólo como generador.'))}
-{note(T('Tested: the engine (ÓRBITA 1\'s notes and rhythms in every case, levels, silence after stop, every note on with its note off, steady sync) and the plug-in with pluginval at strictness 8 and auval. It hasn\'t been played inside Live by us yet: tell us how it goes.', 'Probado: el motor (las notas y ritmos de ÓRBITA 1 en todos los casos, niveles, silencio al detener, cada nota con su apagado, sincronía estable) y el plug-in con pluginval en rigor 8 y auval. Todavía no lo hemos tocado dentro de Live: cuéntanos cómo te va.'))}''')
+  (T('PLAY / STOP (like XO)', 'TOCAR / DETENER (como XO)'), T('ÓRBITA\'s own PLAY and STOP are independent of the DAW: it plays with Live stopped, to try ideas. With <b>SYNC</b> on (the default) it always runs at the DAW\'s tempo; the DAW\'s play starts it on the bar, and the DAW\'s stop stops it only if the DAW started it.', 'TOCAR y DETENER de ÓRBITA son independientes del DAW: suena con Live detenido, para probar ideas. Con <b>SYNC</b> activado (lo normal) siempre va al tempo del DAW; el play del DAW lo arranca en el compás, y el stop del DAW lo detiene sólo si el DAW lo arrancó.')),
+  ('⇣ MIDI', T('Press and drag it onto a MIDI track: 4 bars, every voice together on <b>one channel</b> (1), at the current tempo and swing.', 'Púlsalo y arrástralo a una pista MIDI: 4 compases, todas las voces juntas en <b>un canal</b> (1), al tempo y swing actuales.')),
+  ('⇣ WAV', T('Press and drag it onto an audio track: a 4-bar loop rendered by a copy of the engine (a bar first, so the echo and reverb tails loop).', 'Púlsalo y arrástralo a una pista de audio: un loop de 4 compases hecho por una copia del motor (primero un compás, para que las colas de eco y reverb hagan loop).')),
+  (T('Drop a MIDI clip', 'Suelta un clip MIDI'), T('Drag a .mid from Live or the Finder onto ÓRBITA (onto a lane): ÓRBITA takes the clip\'s key (the best root and scale) and its rhythm on that lane.', 'Arrastra un .mid desde Live o el Finder sobre ÓRBITA (sobre un carril): ÓRBITA toma la tonalidad del clip (la mejor tónica y escala) y su ritmo en ese carril.')),
+  ('MIDI OUT', T('The notes ÓRBITA plays also leave the plug-in on channel 1. In Live, set another MIDI track\'s input to the ÓRBITA track to play any instrument with an orbit.', 'Las notas que toca ÓRBITA también salen del plug-in por el canal 1. En Live, pon la entrada de otra pista MIDI en la pista de ÓRBITA para tocar cualquier instrumento con una órbita.')),
+  (T('Automation', 'Automatización'), T('63 parameters: Gravity, Density, Phase, FM ratio, Evolve, Chaos, Bloom, Space, Echo, Warmth and the mix, root, scale, geometry, keys mode, and per voice On, Level, Pulses, Steps, Rotate, FM index, Cutoff, Ratio and the sends.', '63 parámetros: Gravity, Density, Phase, FM ratio, Evolve, Chaos, Bloom, Space, Echo, Warmth y la mezcla, tónica, escala, geometría, modo de teclas, y por voz On, Level, Pulses, Steps, Rotate, FM index, Cutoff, Ratio y los envíos.')),
+  (T('The project', 'El proyecto'), T('Everything is saved with your set: every value, GRAVITY\'s target, the steps you clicked, your slots, the language and the theme.', 'Todo se guarda con tu set: cada valor, el destino de GRAVEDAD, los pasos que pulsaste, tus ranuras, el idioma y el tema.'))])}
+{img('top', T('The plug-in adds SYNC and MIDI OUT to the top bar; ⇣ MIDI and ⇣ WAV are dragged.', 'El plug-in añade SYNC y MIDI OUT a la barra superior; ⇣ MIDI y ⇣ WAV se arrastran.'))}
+{tip(T('Layer it: MIDI OUT into a drum rack (Sub as kick, Crystal as hats) and keep ÓRBITA\'s own sound for the bells. Or set MASTER to 0 and use it only as a generator.', 'En capas: MIDI OUT a un drum rack (Subgrave como bombo, Cristal como hats) y deja el sonido de ÓRBITA para las campanas. O pon SALIDA en 0 y úsalo sólo como generador.'))}
+{note(T('Tested: the engine (ÓRBITA 1\'s notes and rhythms in every case, levels, silence after stop, every note on with its note off, steady sync, the XO transport) and the plug-in with pluginval at strictness 8 and auval. It hasn\'t been played inside Live by us yet: tell us how it goes.', 'Probado: el motor (las notas y ritmos de ÓRBITA 1 en todos los casos, niveles, silencio al detener, cada nota con su apagado, sincronía estable, el transporte tipo XO) y el plug-in con pluginval en rigor 8 y auval. Todavía no lo hemos tocado dentro de Live: cuéntanos cómo te va.'))}''', ed=('vst', 'all'))
+    page(T('Connections and files', 'Conexiones y archivos'), f'''{kick(T('Connections and files', 'Conexiones y archivos'))}<h1>{T('Take it <i>anywhere</i>.', 'Llévala a <i>cualquier lado</i>.')}</h1>
+{table([T('Feature', 'Función'), T('How', 'Cómo')], [
+  ('⇣ MIDI', T('Downloads 4 bars as a .mid, every voice on one channel (1): drag it into any DAW.', 'Descarga 4 compases como .mid, todas las voces en un canal (1): arrástralo a cualquier DAW.')),
+  ('⇣ WAV', T('Downloads a 4-bar audio loop (48 kHz), rendered by a copy of the engine so its tails loop.', 'Descarga un loop de audio de 4 compases (48 kHz), hecho por una copia del motor para que sus colas hagan loop.')),
+  (T('Drop a MIDI clip', 'Suelta un clip MIDI'), T('Drop a .mid on the page (on a lane): ÓRBITA takes its key and its rhythm.', 'Suelta un .mid sobre la página (sobre un carril): ÓRBITA toma su tonalidad y su ritmo.')),
+  (T('MIDI out (Chrome, Edge)', 'Salida MIDI (Chrome, Edge)'), T('In <i>Connections, downloads…</i> press <b>Find FM-1 / MIDI</b> and pick an output: the four voices play your FM-1 or any synth, on channels 1 to 4.', 'En <i>Conexiones, descargas…</i> pulsa <b>Detectar FM-1 / MIDI</b> y elige una salida: las cuatro voces tocan tu FM-1 o cualquier sinte, en los canales 1 a 4.')),
+  (T('Saved for you', 'Guardado para ti'), T('The page remembers your sound, your slots, the language and the theme in this browser.', 'La página recuerda tu sonido, tus ranuras, el idioma y el tema en este navegador.'))])}
+{img('top', T('The top bar: PLAY, BPM, NEW ORBIT, MUTATE, ↶, ⇣ MIDI, ⇣ WAV, theme, guide, language and ♥.', 'La barra superior: TOCAR, BPM, NUEVA ÓRBITA, MUTAR, ↶, ⇣ MIDI, ⇣ WAV, tema, guía, idioma y ♥.'))}
+{tip(T('Want it in your DAW with sync, automation and MIDI OUT? The plug-in edition is the same instrument: see its manual.', '¿La quieres en tu DAW con sincronía, automatización y MIDI OUT? La edición plug-in es el mismo instrumento: mira su manual.'))}''', ed=('web',))
     # 12 fx + recipes
     page(T('Effects and recipes', 'Efectos y recetas'), f'''{kick(T('Effects, mix and recipes', 'Efectos, mezcla y recetas'))}<h1>{T('Space, echo, <i>warmth</i>.', 'Espacio, eco, <i>calidez</i>.')}</h1>
 <div class="two"><div>{img('macros')}</div><div>{table([T('Knob', 'Perilla'), T('What it does', 'Qué hace')], [
@@ -233,8 +247,10 @@ def render(lang):
 
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
-    for lang in ('en', 'es'): open(os.path.join(OUT, f'manual_{lang}.html'), 'w').write(render(lang))
-    en = render('en'); es = render('es')
-    both = en.replace('ENGLISH EDITION', 'ENGLISH · ESPAÑOL').replace('</body></html>', '') + es.split('</section>', 1)[1]
-    open(os.path.join(OUT, 'manual_en_es.html'), 'w').write(both)
-    print('ok', len(PAGES), 'pages per language')
+    for ED in ('all', 'web', 'vst'):
+        tag = '' if ED == 'all' else ED + '_'
+        for lang in ('en', 'es'): open(os.path.join(OUT, f'{tag}manual_{lang}.html'), 'w').write(render(lang))
+        en = render('en'); es = render('es')
+        both = en.replace('ENGLISH EDITION', 'ENGLISH · ESPAÑOL').replace('</body></html>', '') + es.split('</section>', 1)[1]
+        open(os.path.join(OUT, f'{tag}manual_en_es.html'), 'w').write(both)
+        print('ok', ED, len(PAGES), 'pages per language')

@@ -19,10 +19,17 @@
 
 **Step-by-step install guide with pictures: [drophlex.github.io/ORBITA/guide](https://drophlex.github.io/ORBITA/guide/)**
 
-## Manual
+## Manuals
 
-**ÓRBITA 2** (web and plug-in), 13 illustrated pages: **[English](docs/Orbita-EN.pdf)** · **[Español](docs/Orbita-ES.pdf)** · [English + Español](docs/Orbita-EN-ES.pdf)
-**ÓRBITA 1 and the FM-1 edition** (firmware, voices, fm1-dock), 17 pages: [English](docs/Orbita-1-EN.pdf) · [Español](docs/Orbita-1-ES.pdf) · [English + Español](docs/Orbita-1-EN-ES.pdf)
+Illustrated, in English and Spanish, one for each edition:
+
+| Edition | English | Español | Both |
+|---|---|---|---|
+| 🎛 **Plug-in** (VST3 · AU · App, Ableton Live) | [EN](docs/ORBITA-VST-Manual-EN.pdf) | [ES](docs/ORBITA-VST-Manual-ES.pdf) | [EN + ES](docs/ORBITA-VST-Manual-EN-ES.pdf) |
+| 🌐 **Web** | [EN](docs/ORBITA-Web-Manual-EN.pdf) | [ES](docs/ORBITA-Web-Manual-ES.pdf) | [EN + ES](docs/ORBITA-Web-Manual-EN-ES.pdf) |
+| 🪐 **M-VAVE FM-1** (firmware, voices, fm1-dock; ÓRBITA 1) | [EN](docs/Orbita-1-EN.pdf) | [ES](docs/Orbita-1-ES.pdf) | [EN + ES](docs/Orbita-1-EN-ES.pdf) |
+
+The complete ÓRBITA 2 manual (web and plug-in together): [EN](docs/Orbita-EN.pdf) · [ES](docs/Orbita-ES.pdf) · [EN + ES](docs/Orbita-EN-ES.pdf)
 
 ## Quick guide
 

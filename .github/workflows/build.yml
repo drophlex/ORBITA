@@ -24,7 +24,7 @@ jobs:
           mkdir -p pkg/ORBITA
           cp -R "$A/VST3/Polaris Orbita.vst3" "$A/AU/Polaris Orbita.component" "$A/Standalone/Polaris Orbita.app" pkg/ORBITA/
           for b in pkg/ORBITA/*.vst3 pkg/ORBITA/*.component pkg/ORBITA/*.app; do codesign --force --deep -s - "$b"; done
-          cp installer/Install-ORBITA.command docs/Orbita-EN.pdf docs/Orbita-ES.pdf pkg/ORBITA/
+          cp installer/Install-ORBITA.command docs/ORBITA-VST-Manual-EN.pdf docs/ORBITA-VST-Manual-ES.pdf pkg/ORBITA/
           chmod +x pkg/ORBITA/Install-ORBITA.command
           cd pkg && ditto -c -k --keepParent ORBITA ../ORBITA-mac.zip
           cd .. && rm -rf fm && mkdir -p fm && cp -R Orbita-FM1 fm/ && cp docs/Orbita-1-EN.pdf docs/Orbita-1-ES.pdf fm/Orbita-FM1/ && cd fm && zip -qr ../ORBITA-FM1.zip Orbita-FM1
@@ -61,6 +61,10 @@ jobs:
             docs/Orbita-EN-ES.pdf
             docs/Orbita-1-EN.pdf
             docs/Orbita-1-ES.pdf
+            docs/ORBITA-VST-Manual-EN.pdf
+            docs/ORBITA-VST-Manual-ES.pdf
+            docs/ORBITA-Web-Manual-EN.pdf
+            docs/ORBITA-Web-Manual-ES.pdf
           body: |
             ORBITA 2 — a generative FM instrument: four voices, GRAVITY, EVOLVE, the time machine · Dark Funk Durcal design · built at Polaris Sound Lab
             Mac (Ableton Live): paste in Terminal → curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash   (or unzip ORBITA-mac.zip and open Install-ORBITA.command)
