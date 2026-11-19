@@ -1,6 +1,8 @@
 # ÓRBITA · Polaris Sound Lab
 
-**A generative instrument: FM synthesis, euclidean rhythms and phase plots.** Three FM voices (a sub bass, a prism and a crystal) play euclidean rhythms over a scale, and the screen draws each voice as an orbit. Every note you hear is a point on its curve.
+**A generative instrument: FM synthesis, euclidean rhythms and phase plots.** Four FM voices (a sub bass, a prism, a crystal and a halo) play euclidean rhythms over a scale, and the screen draws each voice as an orbit. Every note you hear is a point on its curve.
+
+**ÓRBITA 2** is the same instrument on the web and in your DAW: one engine (WebAssembly in the browser, native in the plug-in) and one interface, so both sound and look exactly alike. New in 2: **GRAVITY** (glide the whole sound from one scene to another with one knob), **EVOLVE** (the orbit wanders by itself, never far from home), the **TIME MACHINE** (every change and every evolution is kept; click to go back), **HARMONY keys** (hold a chord and the orbit plays only those notes), per-voice **polymeter**, six voice models, a stereo echo, a deep reverb, **MIDI OUT** and **drag-a-clip** onto your tracks. The four classic scenes still play ÓRBITA 1's notes, note for note.
 
 *Dark Funk Durcal design · built at Polaris Sound Lab, Mérida, Yucatán* · [Instagram](https://www.instagram.com/polaris.sound.lab/) · [YouTube](https://www.youtube.com/@PolarisSoundLab)
 
@@ -19,8 +21,8 @@
 
 ## Manual
 
-17 illustrated pages, from installing to playing (web, Ableton Live, FM-1, recipes, answers):
-**[English](docs/Orbita-EN.pdf)** · **[Español](docs/Orbita-ES.pdf)** · [English + Español](docs/Orbita-EN-ES.pdf)
+**ÓRBITA 2** (web and plug-in), 13 illustrated pages: **[English](docs/Orbita-EN.pdf)** · **[Español](docs/Orbita-ES.pdf)** · [English + Español](docs/Orbita-EN-ES.pdf)
+**ÓRBITA 1 and the FM-1 edition** (firmware, voices, fm1-dock), 17 pages: [English](docs/Orbita-1-EN.pdf) · [Español](docs/Orbita-1-ES.pdf) · [English + Español](docs/Orbita-1-EN-ES.pdf)
 
 ## Quick guide
 
@@ -42,18 +44,21 @@ Everything is in English by default, with Spanish one click away: in the web hea
 
 | Folder | |
 |---|---|
-| `docs/` | The web instrument (GitHub Pages), the install guide, `install.sh`, the manuals |
-| `Orbita-VST3/` | Plug-in source (JUCE 8). The Mac build runs in GitHub Actions and is published in each release (pluginval and auval checks). `Construir-en-Mac.command` builds it yourself. |
+| `engine/` | ÓRBITA 2's engine: one C++ header (no libraries), built to WebAssembly for the web and natively for the plug-in |
+| `ui/` | The interface (one page for the web and the plug-in); `tools/build_web.py` builds `docs/index.html` and `plugin/ui/index.html` |
+| `plugin/` | The plug-in (JUCE 8: VST3 · AU · App). The Mac build runs in GitHub Actions with pluginval and auval. `Build-on-Mac.command` builds it yourself. |
+| `test/` | Engine tests: ÓRBITA 1's notes and rhythms in every case, levels, sync, MIDI out |
+| `docs/` | The web instrument (GitHub Pages), ÓRBITA 1 in `docs/classic/`, the install guide, `install.sh`, the manuals |
 | `Orbita-FM1/` | The 32 DX7 voices, the full bank, four MIDI clips and the source of an ÓRBITA module for the community firmware [fm1-dock](https://github.com/joakimeriksson/fm1-dock) |
 | `tools/manual/` | The manual's sources (`shots.mjs` → `manual.py` → `pdf.mjs`) |
 
-**Status.** The web version is complete. The plug-in is built and checked automatically on macOS, but it hasn't been played inside Live yet. The FM-1 installer was tested on a computer against the FM-1 firmware's own code (ANDROMEDA's) with `tools/fm1-check`: every reply, the names read back, each voice loaded and played, and *Remove*. It hasn't been tried on a physical FM-1 yet, nor on the official firmware. The fm1-dock module is source only: it isn't built for the FM-1's JieLi chip yet and hasn't been tested on hardware.
+**Status.** ÓRBITA 2's web edition and engine are tested in the browser and by the engine tests (every one of ÓRBITA 1's 82,944 note and rhythm cases matches). The plug-in is built and checked automatically (pluginval, auval), but it hasn't been played inside Live yet. The FM-1 installer was tested on a computer against the FM-1 firmware's own code (ANDROMEDA's) with `tools/fm1-check`: every reply, the names read back, each voice loaded and played, and *Remove*. It hasn't been tried on a physical FM-1 yet, nor on the official firmware. The fm1-dock module is source only: it isn't built for the FM-1's JieLi chip yet and hasn't been tested on hardware.
 
 ---
 
 ### En español
 
-**Un instrumento generativo: síntesis FM, ritmos euclidianos y gráficos de fase.** Tócalo en el navegador ([drophlex.github.io/ORBITA](https://drophlex.github.io/ORBITA/)) o en Ableton Live. Para instalarlo en Mac, pega en Terminal `curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash`. Para tu M-VAVE FM-1 hay un **[firmware ÓRBITA completo (beta)](https://drophlex.github.io/ORBITA/firmware/)**: las cuatro escenas, el plano de fase en su pantalla, los mismos patrones de la web y sus tres voces originales; se instala con un botón desde Chrome o Edge, guarda un respaldo y puede volver al firmware oficial (probado en computadora, aún no en un FM-1 físico). Si sólo quieres las voces, hay un **[instalador de un clic](https://drophlex.github.io/ORBITA/fm1/)**: conecta el FM-1 por USB, ábrelo en Chrome o Edge, pulsa el botón y él escribe y comprueba las 32 voces. Tienes la guía paso a paso en [drophlex.github.io/ORBITA/guide](https://drophlex.github.io/ORBITA/guide/) y el manual en [español](docs/Orbita-ES.pdf).
+**Un instrumento generativo: síntesis FM, ritmos euclidianos y gráficos de fase.** ÓRBITA 2 es el mismo instrumento en la web y en tu DAW (un solo motor y una sola interfaz): cuatro voces, GRAVEDAD para deslizarte de una escena a otra, EVOLUCIÓN, la MÁQUINA DEL TIEMPO, teclas de ARMONÍA, polimetría, MIDI OUT y arrastrar clips a tus pistas. Tócalo en el navegador ([drophlex.github.io/ORBITA](https://drophlex.github.io/ORBITA/)) o en Ableton Live. Para instalarlo en Mac, pega en Terminal `curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash`. Para tu M-VAVE FM-1 hay un **[firmware ÓRBITA completo (beta)](https://drophlex.github.io/ORBITA/firmware/)**: las cuatro escenas, el plano de fase en su pantalla, los mismos patrones de la web y sus tres voces originales; se instala con un botón desde Chrome o Edge, guarda un respaldo y puede volver al firmware oficial (probado en computadora, aún no en un FM-1 físico). Si sólo quieres las voces, hay un **[instalador de un clic](https://drophlex.github.io/ORBITA/fm1/)**: conecta el FM-1 por USB, ábrelo en Chrome o Edge, pulsa el botón y él escribe y comprueba las 32 voces. Tienes la guía paso a paso en [drophlex.github.io/ORBITA/guide](https://drophlex.github.io/ORBITA/guide/) y el manual en [español](docs/Orbita-ES.pdf).
 
 ---
 

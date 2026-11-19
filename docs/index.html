@@ -1,7 +1,958 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#171a18"><title>Órbita — Polaris Sound Lab</title><link rel="stylesheet" href="style.css">
-<header><div class="brand"><b>✳</b> POLARIS <span>SOUND LAB</span></div><nav><a href="guide/">Instalar</a><a id="manual" href="Orbita-ES.pdf" target="_blank">Manual de usuario ↗</a><select id="language" aria-label="Idioma / Language"><option value="es">Español</option><option value="en">English</option></select></nav><span class="serial">MÉRIDA / YUCATÁN</span></header>
-<main><section class="mast"><div><small>INSTRUMENTOS GENERATIVOS</small><h1>Órbita</h1><div class="sig"><span>diseño de Dark Funk Durcal · creado en Polaris Sound Lab · Mérida, Yucatán</span><a class="don" href="https://www.paypal.com/donate/?business=drophlex%40gmail.com&amp;no_recurring=0&amp;item_name=ORBITA&amp;currency_code=USD" target="_blank" rel="noopener">♥ <span>DONAR</span></a></div></div><div class="transport"><label>BPM <input id="tempo" type="number" min="40" max="220" value="112"></label><button id="play" class="play">▶ &nbsp; Tocar</button></div></section>
-<div class="rack"><section class="screen"><div class="screenhead"><span><i></i> PLANO DE FASE</span><output id="pos">01 / 16</output></div><canvas id="plot" aria-label="Órbitas de las tres voces y posiciones de sus notas"></canvas><div class="legend"><span class="c0">● &nbsp;Subgrave</span><span class="c1">● &nbsp;Prisma</span><span class="c2">● &nbsp;Cristal</span></div></section>
-<section class="panel"><small>MEMORIA DE ESCENA</small><select id="scene" aria-label="Escena"></select><p id="desc"></p><div class="pair"><label>Geometría<select id="shape"><option>Lissajous</option><option>Rosa polar</option><option>Epiciclo</option></select></label><label>Escala<select id="scale"><option>Re dórico</option><option>Fa menor</option><option>La pentatónica</option></select></label></div><div class="sliders" id="sliders"></div></section></div>
-<section class="seq"><div class="seqhead"><h2>Secuenciador</h2><small>16 PASOS / 4/4</small></div><div id="tracks"></div></section>
-<details><summary>Conexiones y descargas</summary><div class="conn"><label>Salida MIDI <select id="out"><option value="">Sólo audio web</option></select></label><button id="connect">Detectar FM1 / MIDI</button><button id="midi">Exportar clip MIDI</button><a href="https://github.com/drophlex/ORBITA/releases/latest/download/ORBITA-mac.zip">Plug-in Mac (VST3 · AU) ↓</a><a href="firmware/">ÓRBITA completo en el FM1 (beta) ▸</a><a href="fm1/">Voces para el FM1 ▸</a><a href="Orbita-FM1.zip" download>Edición FM1 ↓</a><a href="guide/">Guía de instalación</a></div><p id="msg" role="status">Conecta el FM1 por USB y selecciona su salida para enviar las tres voces por los canales 1, 2 y 3. Escucha el hardware desde su propia salida.</p></details><footer>POLARIS SOUND LAB <span class="credit"><span>diseño de Dark Funk Durcal · construido en Polaris Sound Lab</span><a href="https://www.instagram.com/polaris.sound.lab/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.youtube.com/@PolarisSoundLab" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1z"/></svg></a><a class="don" href="https://www.paypal.com/donate/?business=drophlex%40gmail.com&amp;no_recurring=0&amp;item_name=ORBITA&amp;currency_code=USD" target="_blank" rel="noopener">♥ <span>DONAR</span></a></span><span>ÓRBITA / EDICIÓN 01</span></footer></main><script src="language.js"></script><script src="app.js"></script></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171a18">
+<title>&#xd3;RBITA 2 &#xb7; Polaris Sound Lab</title>
+<meta name="description" content="&#xd3;RBITA 2: a generative FM instrument. Four voices play euclidean rhythms over a scale and draw their orbits. Free, for the web and as a VST3/AU plug-in.">
+<style>
+:root{--paper:#e9e8df;--card:#f2f1e9;--ink:#1a1c19;--mute:#5a5f52;--line:#b4b7aa;--screen:#121512;--screen2:#1b201b;--lime:#ceff78;--c0:#ceff78;--c1:#af9af1;--c2:#f1a07d;--c3:#7fd6ee;--accent:#cefe65;--mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;--r:10px}
+:root.night{--paper:#121412;--card:#1a1d1a;--ink:#e7eadf;--mute:#9aa091;--line:#353a33;--screen:#090b09;--screen2:#121512}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.4 var(--sans);-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit}
+.mono,small,.lbl{font-family:var(--mono);letter-spacing:.8px}
+#app{max-width:1500px;margin:0 auto;padding:0 18px 20px}
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;height:58px;border-bottom:1px solid var(--line);flex-wrap:nowrap}
+.brand{font-weight:900;letter-spacing:-.4px;white-space:nowrap;display:flex;align-items:center;gap:6px}.brand b{font:26px Arial}.brand span{font-weight:400}
+.brand em{font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:1px;border:1px solid var(--ink);border-radius:99px;padding:1px 8px;margin-left:6px}
+.transport{display:flex;align-items:center;gap:8px;margin-left:12px}
+.play{background:var(--accent);color:#1a1c19;border:1px solid #24271d;border-radius:8px;font-weight:800;min-width:108px;padding:9px 16px;letter-spacing:.3px}
+.play.on{background:#1a1c19;color:var(--accent)}
+.num{display:flex;align-items:center;gap:4px;font:11px var(--mono);letter-spacing:1px;color:var(--mute)}
+.num input{width:56px;background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px;font:15px var(--mono);color:var(--ink);text-align:center}
+.tb{background:transparent;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font:11px var(--mono);letter-spacing:.8px;white-space:nowrap}
+.tb:hover{border-color:var(--ink)}.tb.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tb.big{font-weight:700}
+.sp{flex:1}
+.don{border:1px solid var(--ink);border-radius:99px;padding:6px 12px;font:700 11px var(--mono);letter-spacing:1px;text-decoration:none;white-space:nowrap}
+.don:hover{background:var(--ink);color:var(--paper)}
+select.lang{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px}
+/* main */
+.main{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(330px,1fr);gap:12px;margin-top:12px}
+.screen{position:relative;background:radial-gradient(120% 90% at 50% 45%,var(--screen2),var(--screen));border-radius:var(--r);min-height:470px;overflow:hidden;color:#e8ebe1;box-shadow:inset 0 0 0 1px #ffffff10}
+.screen canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.ov{position:absolute;z-index:2;pointer-events:none;font:11px var(--mono);letter-spacing:1px}
+.ov.tl{left:20px;top:16px;max-width:60%}.ov.tr{right:20px;top:16px;text-align:right}
+.ov.tl h1{font:750 clamp(30px,3.6vw,52px)/1 var(--sans);letter-spacing:-.06em;margin:6px 0 6px;color:#f4f6ee;text-shadow:0 2px 18px #000c}
+.ov.tl p{font:13px/1.45 var(--sans);letter-spacing:0;color:#aab0a3;margin:0;max-width:440px}
+.ov i.dot{display:inline-block;width:7px;height:7px;border-radius:100%;background:var(--lime);margin-right:6px;vertical-align:1px}
+.ov.tr b{display:block;font:600 22px var(--mono);color:#f4f6ee;letter-spacing:0}
+.chips{position:absolute;left:16px;right:16px;bottom:14px;z-index:2;display:flex;gap:8px;flex-wrap:wrap}
+.chip{pointer-events:auto;background:#ffffff0c;border:1px solid #ffffff22;border-radius:99px;padding:5px 11px;color:#e8ebe1;font:11px var(--mono);letter-spacing:.6px;display:flex;align-items:center;gap:7px}
+.chip i{width:9px;height:9px;border-radius:100%;background:var(--col)}.chip.off{opacity:.35}.chip.sel{border-color:var(--col);background:#ffffff16}
+.gravbar{position:absolute;right:16px;bottom:14px;z-index:2;font:11px var(--mono);color:#cfd5c6;letter-spacing:1px;display:none;align-items:center;gap:8px;background:#0008;border-radius:99px;padding:5px 12px}
+.gravbar.show{display:flex}
+/* side */
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px}
+.card h3{margin:0 0 10px;font:700 11px var(--mono);letter-spacing:1.4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h3 span{font-weight:400;color:var(--mute);letter-spacing:.6px}
+.scenes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.sc{position:relative;border:1px solid var(--line);border-radius:8px;background:transparent;padding:7px 7px 6px;text-align:left;min-height:52px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.sc b{font:700 11.5px/1.15 var(--sans);letter-spacing:-.1px;padding-right:24px}.sc small{font-size:9px;color:var(--mute);letter-spacing:.4px}
+.sc canvas{position:absolute;right:3px;top:3px;width:26px;height:26px;opacity:.75}
+.sc.cur{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}.sc.tgt{background:repeating-linear-gradient(135deg,#0000 0 6px,#0000000c 6px 12px)}
+.sc.tgt::after{content:'B';position:absolute;right:6px;bottom:4px;font:700 10px var(--mono)}
+.sc.user b{color:var(--mute)}.sc.user.full b{color:var(--ink)}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.row.sb{justify-content:space-between}
+.hint{font-size:12px;color:var(--mute);margin:8px 0 0}
+.knobs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px 4px}
+.knob{display:flex;flex-direction:column;align-items:center;gap:2px;user-select:none;touch-action:none;cursor:ns-resize;min-width:0}
+.knob svg{width:52px;height:52px;overflow:visible}.knob .lbl{font-size:9.5px;letter-spacing:.7px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.knob .val{font:10px var(--mono);color:var(--mute)}
+.knob.hero svg .arc{stroke:var(--ink)}
+.knob:focus-visible{outline:2px solid #8466aa;border-radius:8px}
+.sel2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sel2 label{display:flex;flex-direction:column;gap:3px;font:10px var(--mono);letter-spacing:.8px;color:var(--mute);min-width:0}
+.sel2 select{border:1px solid var(--line);border-radius:7px;padding:6px;background:transparent;font:13px var(--sans);letter-spacing:0;color:var(--ink);width:100%}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.seg button{flex:1;border:0;background:transparent;padding:7px 4px;font:10.5px var(--mono);letter-spacing:.6px}.seg button.on{background:var(--ink);color:var(--paper)}
+/* lanes */
+.lanes{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.lane{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;--col:var(--c0)}
+.lane.off{opacity:.5}.lane.sel{box-shadow:inset 3px 0 0 var(--col)}
+.lname{display:flex;align-items:center;gap:8px;min-width:0}
+.lname button.nm{border:0;background:transparent;font:700 13px var(--sans);padding:0;text-align:left;display:flex;align-items:center;gap:8px;min-width:0}
+.lname button.nm i{width:12px;height:12px;border-radius:100%;background:var(--col);flex:none;box-shadow:0 0 0 3px #0000}
+.lname small{font-size:9.5px;color:var(--mute)}
+.mbtn{border:1px solid var(--line);background:transparent;border-radius:6px;font:700 10px var(--mono);width:24px;height:24px;padding:0}
+.mbtn.on{background:var(--ink);color:var(--paper)}
+.cells{display:grid;gap:3px;grid-template-columns:repeat(16,minmax(0,1fr))}
+.cell{height:26px;border:0;border-radius:4px;background:#00000014;padding:0;position:relative}
+:root.night .cell{background:#ffffff12}
+.cell.on{background:var(--col);box-shadow:inset 0 0 0 1px #0002}
+.cell.now{outline:2px solid var(--ink);outline-offset:-1px}
+.cell.beat::before{content:'';position:absolute;left:50%;bottom:2px;width:3px;height:3px;margin-left:-1.5px;border-radius:100%;background:#0003}
+.cell.x{visibility:hidden}
+.lctl{display:flex;gap:4px;align-items:center}
+.mini{display:flex;flex-direction:column;align-items:center;font:9px var(--mono);letter-spacing:.5px;color:var(--mute);gap:1px;min-width:42px;user-select:none;touch-action:none;cursor:ns-resize}
+.mini b{font:600 13px var(--mono);color:var(--ink)}
+.mini:focus-visible{outline:2px solid #8466aa;border-radius:6px}
+.lctl select{border:1px solid var(--line);border-radius:6px;background:transparent;padding:4px;font:11px var(--mono)}
+/* drawer: one lane's sound */
+.drawer{margin-top:6px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:none}
+.drawer.open{display:block}
+.drawer .knobs{grid-template-columns:repeat(9,minmax(0,1fr))}
+.drawer h3{margin:0 0 10px;font:700 11px var(--mono);letter-spacing:1.4px;display:flex;align-items:center;gap:10px}
+/* bottom: time machine + keys */
+.bottom{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;margin-top:12px}
+.tm{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;min-height:74px}
+.snap{flex:none;width:68px;height:68px;border:1px solid var(--line);border-radius:8px;background:var(--screen);position:relative;padding:0;overflow:hidden}
+.snap canvas{width:100%;height:100%}.snap small{position:absolute;left:4px;bottom:3px;color:#cfd5c6;font-size:8.5px}
+.snap.cur{outline:2px solid var(--ink)}
+.snap.empty{background:transparent;border-style:dashed;color:var(--mute);font:10px var(--mono);display:flex;align-items:center;justify-content:center;text-align:center}
+.keys{display:flex;height:74px;position:relative;user-select:none;touch-action:none}
+.k{flex:1;border:1px solid var(--line);border-radius:0 0 6px 6px;background:#fbfaf4;margin-right:-1px;position:relative}
+:root.night .k{background:#d9dcd2}
+.k.b{position:absolute;width:5.2%;height:60%;background:#1a1c19;border-color:#1a1c19;z-index:2;margin:0}
+.k.dn{background:var(--accent)!important}.k.held{background:#af9af1!important}
+.k span{position:absolute;bottom:3px;left:0;right:0;text-align:center;font:8.5px var(--mono);color:#888}
+/* connections */
+details.more{margin-top:12px;border-block:1px solid var(--line);padding:12px 0}
+details.more summary{cursor:pointer;font-weight:700}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.links a,.links button{border:1px solid var(--line);border-radius:8px;padding:8px 11px;text-decoration:none;background:transparent;font-size:13px}
+.links a:hover,.links button:hover{border-color:var(--ink)}
+#msg{font-size:12.5px;color:var(--mute);margin:10px 0 0}
+footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0 4px;font:10px var(--mono);letter-spacing:1px;color:var(--mute);flex-wrap:wrap}
+footer .credit{display:flex;align-items:center;gap:10px}footer a{text-decoration:none;display:inline-flex}footer a:hover{color:var(--ink)}
+/* overlays */
+.veil{position:fixed;inset:0;background:#0b0d0bcc;z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.veil.show{display:flex}
+.sheet{background:var(--card);color:var(--ink);border-radius:14px;max-width:620px;width:100%;padding:24px 26px;max-height:88vh;overflow:auto;box-shadow:0 30px 80px #0008}
+.sheet h2{margin:0 0 4px;font:800 28px/1.05 var(--sans);letter-spacing:-.04em}.sheet h4{margin:18px 0 6px;font:700 11px var(--mono);letter-spacing:1.3px}
+.sheet p,.sheet li{font-size:14px;line-height:1.5}.sheet ol{padding-left:20px;margin:6px 0}
+.sheet .go{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.coachStep{display:flex;gap:12px;align-items:flex-start;margin:12px 0}.coachStep b{flex:none;width:28px;height:28px;border-radius:100%;background:var(--accent);color:#1a1c19;display:flex;align-items:center;justify-content:center;font:800 13px var(--mono)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#1a1c19;color:#eef1e6;border-radius:99px;padding:9px 16px;font:12px var(--mono);letter-spacing:.5px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.plugonly{display:none}.isplug .plugonly{display:revert}.isplug .webonly{display:none}
+button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #8466aa;outline-offset:1px}
+@media (max-width:1100px){.main{grid-template-columns:1fr}.screen{min-height:380px}.bottom{grid-template-columns:1fr}.drawer .knobs{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:760px){#app{padding:0 10px 16px}.top{flex-wrap:wrap;height:auto;padding:8px 0;gap:8px}.transport{margin-left:0}.hidem{display:none}
+ .screen{min-height:320px}.lane{grid-template-columns:1fr;gap:6px}.lctl{flex-wrap:wrap}.knobs{grid-template-columns:repeat(5,minmax(0,1fr))}.drawer .knobs{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .scenes{grid-template-columns:repeat(2,minmax(0,1fr))}.ov.tl{max-width:64%}.ov.tl h1{font-size:24px}.ov.tl p{display:none}.chips{bottom:10px}.gravbar{bottom:auto;top:84px;right:12px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="top">
+  <div class="brand"><b>&#x2733;</b> POLARIS <span>SOUND LAB</span><em>&#xd3;RBITA 2</em></div>
+  <div class="transport">
+    <button id="play" class="play">&#x25b6;&nbsp; <span data-t>Play</span></button>
+    <label class="num">BPM <input id="bpm" type="number" min="40" max="220" value="112"></label>
+    <button id="sync" class="tb plugonly" data-t-title="Follow the DAW's tempo and transport">SYNC</button>
+  </div>
+  <button id="newOrbit" class="tb big" data-t-title="A new orbit: scale, geometry, rhythm and sound, all musical">&#x2726; <span data-t>NEW ORBIT</span></button>
+  <button id="mutate" class="tb hidem" data-t-title="Change a few things, keep the feel">&#x2248; <span data-t>MUTATE</span></button>
+  <button id="undo" class="tb hidem" data-t-title="Back one step in the time machine">&#x21b6;</button>
+  <div class="sp"></div>
+  <button id="drag" class="tb" data-t-title="Drag it onto a MIDI track (plug-in) or download it (web): 4 bars, one track per voice">&#x21e3; MIDI</button>
+  <button id="midiOut" class="tb plugonly" data-t-title="Send the notes out of the plug-in too, to play your other instruments (channels 1-4)">MIDI OUT</button>
+  <button id="theme" class="tb hidem" data-t-title="Paper or night">&#x25d0;</button>
+  <button id="helpBtn" class="tb" data-t-title="Quick guide">?</button>
+  <select id="lang" class="lang" aria-label="Language / Idioma"><option value="en">EN</option><option value="es">ES</option></select>
+  <a class="don" id="don" href="https://www.paypal.com/donate/?business=drophlex%40gmail.com&amp;no_recurring=0&amp;item_name=ORBITA&amp;currency_code=USD" target="_blank" rel="noopener">&#x2665; <span data-t>DONATE</span></a>
+</header>
+
+<div class="main">
+  <section class="screen" id="screen">
+    <canvas id="stage" aria-label="The orbits of the four voices"></canvas>
+    <div class="ov tl"><span><i class="dot"></i><span data-t>PHASE PLANE</span> &#xb7; <span id="geoName"></span></span><h1 id="sceneName">M&#xe9;rida Ring</h1><p id="sceneDesc"></p></div>
+    <div class="ov tr"><span data-t>STEP</span><b id="pos">01 &#xb7; 16</b><span id="evo"></span></div>
+    <div class="chips" id="chips"></div>
+    <div class="gravbar" id="gravbar"><span data-t>GRAVITY</span> <b id="gravVal">0%</b> &#x2192; <span id="gravTgt"></span></div>
+  </section>
+  <aside class="side">
+    <div class="card"><h3><span class="t" data-t>SCENES</span><span data-t>click: load &#xb7; B: gravity target</span></h3><div class="scenes" id="scenes"></div>
+      <div class="row sb" style="margin-top:8px"><div class="row"><button class="tb" id="saveScene">&#x2605; <span data-t>SAVE TO SLOT</span></button><button class="tb" id="bMode" data-t-title="The next scene you click becomes GRAVITY's target">B</button></div><button class="tb" id="clearB" data-t>NO TARGET</button></div></div>
+    <div class="card"><h3><span data-t>MACROS</span><span data-t>drag &#xb7; double-click resets</span></h3><div class="knobs" id="macros"></div></div>
+    <div class="card"><h3><span data-t>HARMONY</span><span id="keyInfo"></span></h3>
+      <div class="sel2"><label><span data-t>ROOT</span><select id="root"></select></label><label><span data-t>SCALE</span><select id="scale"></select></label>
+      <label><span data-t>GEOMETRY</span><select id="geom"></select></label><label><span data-t>KEYS PLAY</span><select id="playLane"></select></label></div>
+      <div style="margin-top:8px" class="seg" id="keyMode"><button data-v="0" data-t>PLAY</button><button data-v="1" data-t>TRANSPOSE</button><button data-v="2" data-t>HARMONY</button></div>
+      <p class="hint" id="keyHint"></p></div>
+  </aside>
+</div>
+
+<section class="lanes" id="lanes"></section>
+<section class="drawer" id="drawer"><h3><i id="dDot" style="width:12px;height:12px;border-radius:100%;display:inline-block"></i><span id="dName"></span><select id="dModel" class="lang" style="padding:4px"></select><span class="sp"></span><button class="tb" id="dReset" data-t>RESET VOICE</button><button class="tb" id="dClose">&#x2715;</button></h3><div class="knobs" id="dKnobs"></div></section>
+
+<div class="bottom">
+  <div class="card"><h3><span data-t>TIME MACHINE</span><span data-t>every change and every evolution is kept &#xb7; click to go back</span></h3><div class="tm" id="tm"></div></div>
+  <div class="card"><h3><span data-t>KEYS</span><span id="kbInfo" data-t>computer keys A&#x2013;K &#xb7; MIDI in</span></h3><div class="keys" id="keys"></div></div>
+</div>
+
+<details class="more webonly" id="more"><summary data-t>Connections, downloads and the other editions</summary>
+  <div class="links">
+    <label class="num"><span data-t>MIDI OUTPUT</span> <select id="out" style="border:1px solid var(--line);border-radius:8px;padding:7px;background:transparent"><option value="" data-t>Browser audio only</option></select></label>
+    <button id="connect" data-t>Find FM-1 / MIDI</button>
+    <a href="https://github.com/drophlex/ORBITA/releases/latest/download/ORBITA-mac.zip"><span data-t>Mac plug-in (VST3 &#xb7; AU)</span> &#x2193;</a>
+    <a href="firmware/"><span data-t>&#xd3;RBITA on the FM-1 (beta)</span> &#x25b8;</a>
+    <a href="fm1/"><span data-t>Voices for the FM-1</span> &#x25b8;</a>
+    <a href="guide/"><span data-t>Install guide</span></a>
+    <a id="manual" href="Orbita-EN.pdf" target="_blank" rel="noopener"><span data-t>Manual</span> &#x2197;</a>
+    <a href="classic/"><span data-t>&#xd3;RBITA 1 (classic)</span></a>
+    <a href="https://github.com/drophlex/ORBITA">GitHub &#x2197;</a>
+  </div>
+  <p id="msg" data-t>Connect the FM-1 by USB and pick its output: the four voices go out on channels 1 to 4.</p>
+</details>
+
+<footer><span>POLARIS SOUND LAB &#xb7; <span data-t>FREE AND OPEN SOURCE</span></span>
+  <span class="credit"><span>DARK FUNK DURCAL DESIGN &#xb7; <span data-t>BUILT AT POLARIS SOUND LAB &#xb7; M&#xc9;RIDA, YUCAT&#xc1;N, M&#xc9;XICO</span></span>
+  <a href="https://www.instagram.com/polaris.sound.lab/" target="_blank" rel="noopener" aria-label="Instagram @polaris.sound.lab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+  <a href="https://www.youtube.com/@PolarisSoundLab" target="_blank" rel="noopener" aria-label="YouTube @PolarisSoundLab"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1z"/></svg></a>
+  <a class="don" href="https://www.paypal.com/donate/?business=drophlex%40gmail.com&amp;no_recurring=0&amp;item_name=ORBITA&amp;currency_code=USD" target="_blank" rel="noopener">&#x2665; <span data-t>DONATE</span></a></span>
+  <span>&#xd3;RBITA / <span data-t>EDITION</span> 02</span></footer>
+</div>
+
+<div class="veil" id="coach"><div class="sheet">
+  <small data-t>WELCOME</small><h2 data-t>Three moves and it's music.</h2>
+  <div class="coachStep"><b>1</b><div><strong data-t>Press Play.</strong> <span data-t>Four voices start orbiting: every dot on a curve is a note you hear.</span></div></div>
+  <div class="coachStep"><b>2</b><div><strong data-t>Pick a scene, or press &#x2726; NEW ORBIT.</strong> <span data-t>Each one is a scale, a geometry, a rhythm and a sound.</span></div></div>
+  <div class="coachStep"><b>3</b><div><strong data-t>Press B on another scene and turn GRAVITY.</strong> <span data-t>The music glides from one world to the other. EVOLVE lets it wander by itself; the TIME MACHINE keeps every moment.</span></div></div>
+  <div class="go"><button class="play" id="coachGo">&#x25b6;&nbsp; <span data-t>Play and start</span></button><button class="tb" id="coachSkip" data-t>Close</button></div>
+</div></div>
+
+<div class="veil" id="help"><div class="sheet" id="helpBody"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const WASM_B64 = "AGFzbQEAAAABXBBgAX0AYAF/AX9gAn99AGABfwBgBH9/f38AYAR/fX19AGADf39/AGACf38Bf2AAAX9gAABgAn9/AGAFf39/fX8AYAR/f39/AX9gA399fwF9YAJ/fwF9YAN/f30AAy4tAAECAwMDBAUGAQcICAgIAgIJCQkDCgQGCwoGCAgICAcMDQgIDggJBwEHDwEBBQYBAYAEgAQGCQF/AUGwj5sBCwfrAh8GbWVtb3J5AgAHb3hfaW5pdAAACm94X3Byb2Nlc3MABQhveF9vdXRfbAALCG94X291dF9yAAwJb3hfcGFyYW1zAA0Ob3hfcGFyYW1fY291bnQADghveF9wYXJhbQAPCW94X3RhcmdldAAQD294X2NsZWFyX3RhcmdldAARB294X3BsYXkAEgdveF9zdG9wABMGb3hfa2V5ABUJb3hfY3VzdG9tABkLb3hfYXVkaXRpb24AGgdveF90ZWxlABsKb3hfc2NvcGVfbAAcCm94X3Njb3BlX3IAHQpveF9zY29wZV93AB4Hb3hfbm90ZQAfC294X2V2X2NvdW50ACIFb3hfZXYAIwhveF9yYW5nZQAkBm94X2VmZgAlCm94X2NvbXB1dGUAJgZveF9oaXQAJwdveF9tYXNrACgGb3hfdmVsACkGb3hfZXZvACoMb3hfY3VzdG9tX29uACsOb3hfY3VzdG9tX21hc2sALArMsgItPABB8I6AgABBAEGouJYB/AsAQfCOgIAAEIGAgIAAGkEAQfCOgIAANgKYx5aBAEHwjoCAACAAEIKAgIAAC9kKAQJ/IABBADoAhAwgAEGAgO65BDYCACAAQYgMakEAQYgi/AsAQaBqIQEDQCAAIAFqIgJB9MMAakIANwIAIAJB8MMAakEAOgAAIAJB/MMAakIANwIAIAJBjMQAakIANwIAIAJBhMQAakKAgICAcDcCACACQZTEAGpCADcCACACQZzEAGpCADcCACACQaTEAGpCADcCACACQazEAGpBADYCACACQeDEAGpBgIDuuQQ2AgAgAkHMxABqQZqz5vQDNgIAIAJBxMQAakLNmbPus+bMmT83AgAgAkG8xABqQoCAgICg4fWRPDcCACACQbjEAGpBADYCACACQbDEAGpCgICA/PPO778/NwIAIAFB9ABqIgENAAsgAEIANwOARCAAQX82AvxDIABBADoA+EMgAEKBgICA4NkVNwPwQyAAQgA3A7hEIABBADoAqEQgAEIANwOgRCAAQYCAwJcENgKYRCAAQgA3AapEIABBADYCkFUgAEEANgKMRSAAQQA7AchEIABCgICAgHA3A8BEIABBiMQAakIANwMAIABBjsQAakIANwEAIABBssQAakEANgEAIABBlNkAakEAQbTU4QD8CwAgAEEANgK8tJYBIABByK3iAGpB76SM2AM2AgAgAEHMreIAakEAQfCGMvwLACAAQgA3Avy0lgEgAEGas+b4AzYC+LSWASAAQgE3A/C0lgEgAEKas+b4AzcD6LSWASAAQgE3A+C0lgEgAEKas+b4AzcD2LSWASAAQgE3A9C0lgEgAEKas+b4AzcDyLSWASAAQgE3A8C0lgEgAEGEtZYBakIANwIAIABCADcDkLWWASAAQYCAgPwDNgKMtZYBIABBmLWWAWpCADcDACAAQaC1lgFqQgA3AwAgAEGAgID8AzYCqLWWASAAQgA3Aqy1lgEgAEG0tZYBakIANwIAIABBvLWWAWpCADcCACAAQgA3A8i1lgEgAEGAgID8AzYCxLWWASAAQdC1lgFqQgA3AwAgAEHYtZYBakIANwMAIABBgICA/AM2AuC1lgEgAEIANwLktZYBIABB7LWWAWpCADcCACAAQfS1lgFqQgA3AgAgAEGAgID8AzYC/LWWASAAQgA3A4C2lgEgAEGItpYBakIANwMAIABBkLaWAWpCADcDACAAQYCAgPwDNgKYtpYBIABCADcCnLaWASAAQaS2lgFqQgA3AgAgAEGstpYBakIANwIAIABBgICA/AM2ArS2lgEgAEHItpYBakIANwMAIABBwLaWAWpCADcDACAAQgA3A7i2lgEgAEIANwLUtpYBIABBgICA/AM2AtC2lgEgAEHctpYBakIANwIAIABB5LaWAWpCADcCACAAQey2lgFqQgA3AgAgAEH0tpYBakIANwIAIABB/LaWAWpBADYCACAAQQE6AMy3lgEgAEEBOgC8t5YBIABBAToArLeWASAAQQE6AJy3lgEgAEGAgID8AzYCmLeWASAAQYCAgPwDNgKot5YBIABBgICA/AM2Ari3lgEgAEGAgID8AzYCyLeWASAAQgA3A8C3lgEgAEIANwOwt5YBIABCADcDoLeWASAAQgA3A5C3lgEgAEGIt5YBakKAgID8g4CAwD83AwAgAEKAgID8g4CAwD83A4C3lgEgAEHYt5YBakIANwMAIABCADcD0LeWASAAQoCAgICAgIDaQjcD6LeWASAAQoCAgPwDNwPgt5YBIABBoLiWAWpBADYCACAAQZi4lgFqQgA3AwAgAEGQuJYBakIANwMAIABBiLiWAWpCADcDACAAQYC4lgFqQgA3AwAgAEH4t5YBakIANwMAIABCADcD8LeWASAAC49AAwZ/An0BfyOAgICAAEEgayICJICAgIAAIAAgATgCACAAQQRqEIOAgIAAQYB8IQMDQCAAIANqIgRBhAhqIARBhARqKQIANwIAIARBjAhqIARBjARqKQIANwIAIANBEGoiAw0ACyAAEISAgIAAIAAqAgAhASACQQpqIgRBADoAACACQRNqIgNCADcAACACQRtqIgVBADYAACAAQQA6AJAuIABBrC5qQgA3AgAgAEGoLmpBfzYCACAAQbQuakIANwIAIABBvC5qQgA3AgAgAEHELmpCADcCACAAQcwuakEANgIAIAJCADcACyACQQA7AQggACACKQEINwCRLiAAQZkuaiACQQhqQQhqIgYpAQA3AAAgAEGgLmogAkEXaiIHKQAANwAAIABB7C5qQZqz5vQDNgIAIABB5C5qQs2Zs+6z5syZPzcCACAAQdwuakKAgICAoOH1kTw3AgAgAEHYLmpBADYCACAAQdAuakKAgID8887vvz83AwAgAEH4LmpCADcDACAAQfAuakIANwMAIABBgC9qIAE4AgBDAAD8QkM9VrTDIAGVIgggCEMAAPxCXhtDAAD8wpciCCAIjiIJkyIIQ3vFrjqUQzyVHTySIAiUQ0RYYz2SIAiUQ/D9dT6SIAiUQxhyMT+SIAiUQwAAgD+SIQgCQAJAIAlDAAD+QpIiCYtDAAAAT11FDQAgCaghCgwBC0GAgICAeCEKCyAAQfwuakMAAIA/IAggCkEXdL6UkyIIOAIAIARBADoAACADQgA3AAAgBUEANgAAIABBhC9qQQA6AAAgAEGgL2pCADcDACAAQZwvakF/NgIAIABBqC9qQgA3AwAgAEGwL2pCADcDACAAQbgvakIANwMAIABBwC9qQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3AIUvIABBjS9qIAYpAQA3AAAgAEGUL2ogBykAADcAACAAQeAvakGas+b0AzYCACAAQdgvakLNmbPus+bMmT83AwAgAEHQL2pCgICAgKDh9ZE8NwMAIABBzC9qQQA2AgAgAEHEL2pCgICA/PPO778/NwIAIABB7C9qQgA3AgAgAEHkL2pCADcCACAAQfAvaiAIOAIAIABB9C9qIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEH4L2pBADoAACAAQZQwakIANwIAIABBkDBqQX82AgAgAEGcMGpCADcCACAAQaQwakIANwIAIABBrDBqQgA3AgAgAEG0MGpBADYCACACQgA3AAsgAkEAOwEIIAAgAikBCDcA+S8gAEGBMGogBikBADcAACAAQYgwaiAHKQAANwAAIABB1DBqQZqz5vQDNgIAIABBzDBqQs2Zs+6z5syZPzcCACAAQcQwakKAgICAoOH1kTw3AgAgAEHAMGpBADYCACAAQbgwakKAgID8887vvz83AwAgAEHgMGpCADcDACAAQdgwakIANwMAIABB5DBqIAg4AgAgAEHoMGogATgCACAEQQA6AAAgA0IANwAAIAVBADYAACAAQewwakEAOgAAIABBiDFqQgA3AwAgAEGEMWpBfzYCACAAQZAxakIANwMAIABBmDFqQgA3AwAgAEGgMWpCADcDACAAQagxakEANgIAIAJCADcACyACQQA7AQggACACKQEINwDtMCAAQfUwaiAGKQEANwAAIABB/DBqIAcpAAA3AAAgAEHIMWpBmrPm9AM2AgAgAEHAMWpCzZmz7rPmzJk/NwMAIABBuDFqQoCAgICg4fWRPDcDACAAQbQxakEANgIAIABBrDFqQoCAgPzzzu+/PzcCACAAQdQxakIANwIAIABBzDFqQgA3AgAgAEHYMWogCDgCACAAQdwxaiABOAIAIARBADoAACADQgA3AAAgBUEANgAAIABB4DFqQQA6AAAgAEH8MWpCADcCACAAQfgxakF/NgIAIABBhDJqQgA3AgAgAEGMMmpCADcCACAAQZQyakIANwIAIABBnDJqQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3AOExIABB6TFqIAYpAQA3AAAgAEHwMWogBykAADcAACAAQbwyakGas+b0AzYCACAAQbQyakLNmbPus+bMmT83AgAgAEGsMmpCgICAgKDh9ZE8NwIAIABBqDJqQQA2AgAgAEGgMmpCgICA/PPO778/NwMAIABByDJqQgA3AwAgAEHAMmpCADcDACAAQcwyaiAIOAIAIABB0DJqIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEHUMmpBADoAACAAQfAyakIANwMAIABB7DJqQX82AgAgAEH4MmpCADcDACAAQYAzakIANwMAIABBiDNqQgA3AwAgAEGQM2pBADYCACACQgA3AAsgAkEAOwEIIAAgAikBCDcA1TIgAEHdMmogBikBADcAACAAQeQyaiAHKQAANwAAIABBsDNqQZqz5vQDNgIAIABBqDNqQs2Zs+6z5syZPzcDACAAQaAzakKAgICAoOH1kTw3AwAgAEGcM2pBADYCACAAQZQzakKAgID8887vvz83AgAgAEG8M2pCADcCACAAQbQzakIANwIAIABBwDNqIAg4AgAgAEHEM2ogATgCACAEQQA6AAAgA0IANwAAIAVBADYAACAAQcgzakEAOgAAIABB5DNqQgA3AgAgAEHgM2pBfzYCACAAQewzakIANwIAIABB9DNqQgA3AgAgAEH8M2pCADcCACAAQYQ0akEANgIAIAJCADcACyACQQA7AQggACACKQEINwDJMyAAQdEzaiAGKQEANwAAIABB2DNqIAcpAAA3AAAgAEGkNGpBmrPm9AM2AgAgAEGcNGpCzZmz7rPmzJk/NwIAIABBlDRqQoCAgICg4fWRPDcCACAAQZA0akEANgIAIABBiDRqQoCAgPzzzu+/PzcDACAAQbA0akIANwMAIABBqDRqQgA3AwAgAEG0NGogCDgCACAAQbg0aiABOAIAIARBADoAACADQgA3AAAgBUEANgAAIABBvDRqQQA6AAAgAEHYNGpCADcDACAAQdQ0akF/NgIAIABB4DRqQgA3AwAgAEHoNGpCADcDACAAQfA0akIANwMAIABB+DRqQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3AL00IABBxTRqIAYpAQA3AAAgAEHMNGogBykAADcAACAAQZg1akGas+b0AzYCACAAQZA1akLNmbPus+bMmT83AwAgAEGINWpCgICAgKDh9ZE8NwMAIABBhDVqQQA2AgAgAEH8NGpCgICA/PPO778/NwIAIABBpDVqQgA3AgAgAEGcNWpCADcCACAAQag1aiAIOAIAIABBrDVqIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEGwNWpBADoAACAAQcw1akIANwIAIABByDVqQX82AgAgAEHUNWpCADcCACAAQdw1akIANwIAIABB5DVqQgA3AgAgAEHsNWpBADYCACACQgA3AAsgAkEAOwEIIAAgAikBCDcAsTUgAEG5NWogBikBADcAACAAQcA1aiAHKQAANwAAIABBjDZqQZqz5vQDNgIAIABBhDZqQs2Zs+6z5syZPzcCACAAQfw1akKAgICAoOH1kTw3AgAgAEH4NWpBADYCACAAQfA1akKAgID8887vvz83AwAgAEGYNmpCADcDACAAQZA2akIANwMAIABBnDZqIAg4AgAgAEGgNmogATgCACAEQQA6AAAgA0IANwAAIAVBADYAACAAQaQ2akEAOgAAIABBwDZqQgA3AwAgAEG8NmpBfzYCACAAQcg2akIANwMAIABB0DZqQgA3AwAgAEHYNmpCADcDACAAQeA2akEANgIAIAJCADcACyACQQA7AQggACACKQEINwClNiAAQa02aiAGKQEANwAAIABBtDZqIAcpAAA3AAAgAEGAN2pBmrPm9AM2AgAgAEH4NmpCzZmz7rPmzJk/NwMAIABB8DZqQoCAgICg4fWRPDcDACAAQew2akEANgIAIABB5DZqQoCAgPzzzu+/PzcCACAAQYw3akIANwIAIABBhDdqQgA3AgAgAEGQN2ogCDgCACAAQZQ3aiABOAIAIARBADoAACADQgA3AAAgBUEANgAAIABBmDdqQQA6AAAgAEG0N2pCADcCACAAQbA3akF/NgIAIABBvDdqQgA3AgAgAEHEN2pCADcCACAAQcw3akIANwIAIABB1DdqQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3AJk3IABBoTdqIAYpAQA3AAAgAEGoN2ogBykAADcAACAAQfQ3akGas+b0AzYCACAAQew3akLNmbPus+bMmT83AgAgAEHkN2pCgICAgKDh9ZE8NwIAIABB4DdqQQA2AgAgAEHYN2pCgICA/PPO778/NwMAIABBgDhqQgA3AwAgAEH4N2pCADcDACAAQYQ4aiAIOAIAIABBiDhqIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEGMOGpBADoAACAAQag4akIANwMAIABBpDhqQX82AgAgAEGwOGpCADcDACAAQbg4akIANwMAIABBwDhqQgA3AwAgAEHIOGpBADYCACACQgA3AAsgAkEAOwEIIAAgAikBCDcAjTggAEGVOGogBikBADcAACAAQZw4aiAHKQAANwAAIABB6DhqQZqz5vQDNgIAIABB4DhqQs2Zs+6z5syZPzcDACAAQdg4akKAgICAoOH1kTw3AwAgAEHUOGpBADYCACAAQcw4akKAgID8887vvz83AgAgAEH0OGpCADcCACAAQew4akIANwIAIABB+DhqIAg4AgAgAEH8OGogATgCACAEQQA6AAAgA0IANwAAIAVBADYAACAAQYA5akEAOgAAIABBnDlqQgA3AgAgAEGYOWpBfzYCACAAQaQ5akIANwIAIABBrDlqQgA3AgAgAEG0OWpCADcCACAAQbw5akEANgIAIAJCADcACyACQQA7AQggACACKQEINwCBOSAAQYk5aiAGKQEANwAAIABBkDlqIAcpAAA3AAAgAEHcOWpBmrPm9AM2AgAgAEHUOWpCzZmz7rPmzJk/NwIAIABBzDlqQoCAgICg4fWRPDcCACAAQcg5akEANgIAIABBwDlqQoCAgPzzzu+/PzcDACAAQeg5akIANwMAIABB4DlqQgA3AwAgAEHsOWogCDgCACAAQfA5aiABOAIAIARBADoAACADQgA3AAAgBUEANgAAIABB9DlqQQA6AAAgAEGQOmpCADcDACAAQYw6akF/NgIAIABBmDpqQgA3AwAgAEGgOmpCADcDACAAQag6akIANwMAIABBsDpqQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3APU5IABB/TlqIAYpAQA3AAAgAEGEOmogBykAADcAACAAQdA6akGas+b0AzYCACAAQcg6akLNmbPus+bMmT83AwAgAEHAOmpCgICAgKDh9ZE8NwMAIABBvDpqQQA2AgAgAEG0OmpCgICA/PPO778/NwIAIABB3DpqQgA3AgAgAEHUOmpCADcCACAAQeA6aiAIOAIAIABB5DpqIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEHoOmpBADoAACAAQYQ7akIANwIAIABBgDtqQX82AgAgAEGMO2pCADcCACAAQZQ7akIANwIAIABBnDtqQgA3AgAgAEGkO2pBADYCACACQgA3AAsgAkEAOwEIIAAgAikBCDcA6TogAEHxOmogBikBADcAACAAQfg6aiAHKQAANwAAIABBxDtqQZqz5vQDNgIAIABBvDtqQs2Zs+6z5syZPzcCACAAQbQ7akKAgICAoOH1kTw3AgAgAEGwO2pBADYCACAAQag7akKAgID8887vvz83AwAgAEHQO2pCADcDACAAQcg7akIANwMAIABB1DtqIAg4AgAgAEHYO2ogATgCACAEQQA6AAAgA0IANwAAIAVBADYAACAAQdw7akEAOgAAIABB+DtqQgA3AwAgAEH0O2pBfzYCACAAQYA8akIANwMAIABBiDxqQgA3AwAgAEGQPGpCADcDACAAQZg8akEANgIAIAJCADcACyACQQA7AQggACACKQEINwDdOyAAQeU7aiAGKQEANwAAIABB7DtqIAcpAAA3AAAgAEG4PGpBmrPm9AM2AgAgAEGwPGpCzZmz7rPmzJk/NwMAIABBqDxqQoCAgICg4fWRPDcDACAAQaQ8akEANgIAIABBnDxqQoCAgPzzzu+/PzcCACAAQcQ8akIANwIAIABBvDxqQgA3AgAgAEHIPGogCDgCACAAQcw8aiABOAIAIARBADoAACADQgA3AAAgBUEANgAAIABB0DxqQQA6AAAgAEHsPGpCADcCACAAQeg8akF/NgIAIABB9DxqQgA3AgAgAEH8PGpCADcCACAAQYQ9akIANwIAIABBjD1qQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3ANE8IABB2TxqIAYpAQA3AAAgAEHgPGogBykAADcAACAAQaw9akGas+b0AzYCACAAQaQ9akLNmbPus+bMmT83AgAgAEGcPWpCgICAgKDh9ZE8NwIAIABBmD1qQQA2AgAgAEGQPWpCgICA/PPO778/NwMAIABBuD1qQgA3AwAgAEGwPWpCADcDACAAQbw9aiAIOAIAIABBwD1qIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEHEPWpBADoAACAAQeA9akIANwMAIABB3D1qQX82AgAgAEHoPWpCADcDACAAQfA9akIANwMAIABB+D1qQgA3AwAgAEGAPmpBADYCACACQgA3AAsgAkEAOwEIIAAgAikBCDcAxT0gAEHNPWogBikBADcAACAAQdQ9aiAHKQAANwAAIABBoD5qQZqz5vQDNgIAIABBmD5qQs2Zs+6z5syZPzcDACAAQZA+akKAgICAoOH1kTw3AwAgAEGMPmpBADYCACAAQYQ+akKAgID8887vvz83AgAgAEGsPmpCADcCACAAQaQ+akIANwIAIABBsD5qIAg4AgAgAEG0PmogATgCACAEQQA6AAAgA0IANwAAIAVBADYAACAAQbg+akEAOgAAIABB1D5qQgA3AgAgAEHQPmpBfzYCACAAQdw+akIANwIAIABB5D5qQgA3AgAgAEHsPmpCADcCACAAQfQ+akEANgIAIAJCADcACyACQQA7AQggACACKQEINwC5PiAAQcE+aiAGKQEANwAAIABByD5qIAcpAAA3AAAgAEGUP2pBmrPm9AM2AgAgAEGMP2pCzZmz7rPmzJk/NwIAIABBhD9qQoCAgICg4fWRPDcCACAAQYA/akEANgIAIABB+D5qQoCAgPzzzu+/PzcDACAAQaA/akIANwMAIABBmD9qQgA3AwAgAEGkP2ogCDgCACAAQag/aiABOAIAIARBADoAACADQgA3AAAgBUEANgAAIABBrD9qQQA6AAAgAEHIP2pCADcDACAAQcQ/akF/NgIAIABB0D9qQgA3AwAgAEHYP2pCADcDACAAQeA/akIANwMAIABB6D9qQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3AK0/IABBtT9qIAYpAQA3AAAgAEG8P2ogBykAADcAACAAQYjAAGpBmrPm9AM2AgAgAEGAwABqQs2Zs+6z5syZPzcDACAAQfg/akKAgICAoOH1kTw3AwAgAEH0P2pBADYCACAAQew/akKAgID8887vvz83AgAgAEGUwABqQgA3AgAgAEGMwABqQgA3AgAgAEGYwABqIAg4AgAgAEGcwABqIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEGgwABqQQA6AAAgAEG8wABqQgA3AgAgAEG4wABqQX82AgAgAEHEwABqQgA3AgAgAEHMwABqQgA3AgAgAEHUwABqQgA3AgAgAEHcwABqQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3AKFAIABBqcAAaiAGKQEANwAAIABBsMAAaiAHKQAANwAAIABB/MAAakGas+b0AzYCACAAQfTAAGpCzZmz7rPmzJk/NwIAIABB7MAAakKAgICAoOH1kTw3AgAgAEHowABqQQA2AgAgAEHgwABqQoCAgPzzzu+/PzcDACAAQYjBAGpCADcDACAAQYDBAGpCADcDACAAQYzBAGogCDgCACAAQZDBAGogATgCACAEQQA6AAAgA0IANwAAIAVBADYAACAAQZTBAGpBADoAACAAQbDBAGpCADcDACAAQazBAGpBfzYCACAAQbjBAGpCADcDACAAQcDBAGpCADcDACAAQcjBAGpCADcDACAAQdDBAGpBADYCACACQgA3AAsgAkEAOwEIIAAgAikBCDcAlUEgAEGdwQBqIAYpAQA3AAAgAEGkwQBqIAcpAAA3AAAgAEHwwQBqQZqz5vQDNgIAIABB6MEAakLNmbPus+bMmT83AwAgAEHgwQBqQoCAgICg4fWRPDcDACAAQdzBAGpBADYCACAAQdTBAGpCgICA/PPO778/NwIAIABB/MEAakIANwIAIABB9MEAakIANwIAIABBgMIAaiAIOAIAIABBhMIAaiABOAIAIARBADoAACADQgA3AAAgBUEANgAAIABBiMIAakEAOgAAIABBpMIAakIANwIAIABBoMIAakF/NgIAIABBrMIAakIANwIAIABBtMIAakIANwIAIABBvMIAakIANwIAIABBxMIAakEANgIAIAJCADcACyACQQA7AQggACACKQEINwCJQiAAQZHCAGogBikBADcAACAAQZjCAGogBykAADcAACAAQeTCAGpBmrPm9AM2AgAgAEHcwgBqQs2Zs+6z5syZPzcCACAAQdTCAGpCgICAgKDh9ZE8NwIAIABB0MIAakEANgIAIABByMIAakKAgID8887vvz83AwAgAEHwwgBqQgA3AwAgAEHowgBqQgA3AwAgAEH0wgBqIAg4AgAgAEH4wgBqIAE4AgAgBEEAOgAAIANCADcAACAFQQA2AAAgAEH8wgBqQQA6AAAgAEGYwwBqQgA3AwAgAEGUwwBqQX82AgAgAEGgwwBqQgA3AwAgAEGowwBqQgA3AwAgAEGwwwBqQgA3AwAgAEG4wwBqQQA2AgAgAkIANwALIAJBADsBCCAAIAIpAQg3AP1CIABBhcMAaiAGKQEANwAAIABBjMMAaiAHKQAANwAAIABB2MMAakGas+b0AzYCACAAQdDDAGpCzZmz7rPmzJk/NwMAIABByMMAakKAgICAoOH1kTw3AwAgAEHEwwBqQQA2AgAgAEG8wwBqQoCAgPzzzu+/PzcCACAAQeTDAGpCADcCACAAQdzDAGpCADcCACAAQejDAGogCDgCACAA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gEAAAIA/AAAAAAAAAEAAAIA/AAAAAAAAgD8AAAAAAAAAAAAAgD+amVk/AAAAAAAAgD/NzEw9AAAAAAAAgD/NzMw+AAAAAAAAgD8AAAAAAAAAAAAAgD+amZk+AAAAAAAAgD8AAIA/AAAAAAAAgD/NzMw9AAAAAAAAgD/NzEw+AAAAAAAAgD+amZk+AAAAAAAAgD8AAAAAAAAAAAAAgD8AAAA/AAAAAAAAoEAAAAAAAIMHBG5hbWUADAtvcmJpdGEud2FzbQHNBi0AB294X2luaXQBGG9yYml0YTo6RW5naW5lOjpFbmdpbmUoKQIbb3JiaXRhOjpFbmdpbmU6OmluaXQoZmxvYXQpAxhvcmJpdGE6OmRlZmF1bHRzKGZsb2F0KikEHG9yYml0YTo6RW5naW5lOjpjb21wdXRlRWZmKCkFCm94X3Byb2Nlc3MGLG9yYml0YTo6RW5naW5lOjpwcm9jZXNzKGZsb2F0KiwgZmxvYXQqLCBpbnQpByVvcmJpdGE6OlNWRjo6c2V0KGZsb2F0LCBmbG9hdCwgZmxvYXQpCB9vcmJpdGE6OkVuZ2luZTo6c3RlcChsb25nLCBpbnQpCRhvcmJpdGE6OlNpblRhYjo6U2luVGFiKCkKI29yYml0YTo6RW5naW5lOjpsYW5lTWFzayhpbnQpIGNvbnN0CwhveF9vdXRfbAwIb3hfb3V0X3INCW94X3BhcmFtcw4Ob3hfcGFyYW1fY291bnQPCG94X3BhcmFtEAlveF90YXJnZXQRD294X2NsZWFyX3RhcmdldBIHb3hfcGxheRMHb3hfc3RvcBQYb3JiaXRhOjpFbmdpbmU6OmFsbE9mZigpFQZveF9rZXkWJm9yYml0YTo6RW5naW5lOjprZXlEb3duKGludCwgaW50LCBpbnQpFyFvcmJpdGE6OkVuZ2luZTo6bm90ZU9mZihpbnQsIGludCkYLG9yYml0YTo6RW5naW5lOjpub3RlT24oaW50LCBpbnQsIGZsb2F0LCBpbnQpGQlveF9jdXN0b20aC294X2F1ZGl0aW9uGwdveF90ZWxlHApveF9zY29wZV9sHQpveF9zY29wZV9yHgpveF9zY29wZV93HwdveF9ub3RlIDBvcmJpdGE6OkVuZ2luZTo6bGFuZU5vdGUoaW50LCBpbnQsIGZsb2F0KikgY29uc3QhHm9yYml0YTo6Z2VvbWYoaW50LCBmbG9hdCwgaW50KSILb3hfZXZfY291bnQjBW94X2V2JAhveF9yYW5nZSUGb3hfZWZmJgpveF9jb21wdXRlJwZveF9oaXQoB294X21hc2spBm94X3ZlbCoGb3hfZXZvKwxveF9jdXN0b21fb24sDm94X2N1c3RvbV9tYXNrBxIBAA9fX3N0YWNrX3BvaW50ZXIJCgEABy5yb2RhdGEAOAlwcm9kdWNlcnMBDHByb2Nlc3NlZC1ieQEMVWJ1bnR1IGNsYW5nETE4LjEuMyAoMXVidW50dTEpADkPdGFyZ2V0X2ZlYXR1cmVzAysLYnVsay1tZW1vcnkrD211dGFibGUtZ2xvYmFscysIc2lnbi1leHQ=";
+
+/* ---- i18n.js ---- */
+/* i18n.js \u2014 English by default, Espa\u00f1ol one click away */
+'use strict';
+const ES = {
+  'Play': 'Tocar', 'Stop': 'Detener', 'NEW ORBIT': 'NUEVA \u00d3RBITA', 'MUTATE': 'MUTAR', 'DONATE': 'DONAR',
+  'PHASE PLANE': 'PLANO DE FASE', 'STEP': 'PASO', 'SCENES': 'ESCENAS', 'click: load \u00b7 B: gravity target': 'clic: cargar \u00b7 B: destino de gravedad',
+  'SAVE TO SLOT': 'GUARDAR EN RANURA', 'NO TARGET': 'SIN DESTINO', 'MACROS': 'MACROS', 'drag \u00b7 double-click resets': 'arrastra \u00b7 doble clic restablece',
+  'HARMONY': 'ARMON\u00cdA', 'ROOT': 'T\u00d3NICA', 'SCALE': 'ESCALA', 'GEOMETRY': 'GEOMETR\u00cdA', 'KEYS PLAY': 'LAS TECLAS TOCAN', 'PLAY': 'TOCAR', 'TRANSPOSE': 'TRANSPONER',
+  'RESET VOICE': 'RESTABLECER VOZ', 'TIME MACHINE': 'M\u00c1QUINA DEL TIEMPO', 'every change and every evolution is kept \u00b7 click to go back': 'cada cambio y cada evoluci\u00f3n se guarda \u00b7 clic para volver',
+  'KEYS': 'TECLADO', 'computer keys A\u2013K \u00b7 MIDI in': 'teclas A\u2013K de la computadora \u00b7 entrada MIDI',
+  'Connections, downloads and the other editions': 'Conexiones, descargas y las otras ediciones', 'MIDI OUTPUT': 'SALIDA MIDI', 'Browser audio only': 'S\u00f3lo audio del navegador',
+  'Find FM-1 / MIDI': 'Detectar FM-1 / MIDI', 'Mac plug-in (VST3 \u00b7 AU)': 'Plug-in Mac (VST3 \u00b7 AU)', '\u00d3RBITA on the FM-1 (beta)': '\u00d3RBITA en el FM-1 (beta)', 'Voices for the FM-1': 'Voces para el FM-1',
+  'Install guide': 'Gu\u00eda de instalaci\u00f3n', 'Manual': 'Manual', '\u00d3RBITA 1 (classic)': '\u00d3RBITA 1 (cl\u00e1sica)',
+  'Connect the FM-1 by USB and pick its output: the four voices go out on channels 1 to 4.': 'Conecta el FM-1 por USB y elige su salida: las cuatro voces salen por los canales 1 a 4.',
+  'FREE AND OPEN SOURCE': 'LIBRE Y GRATUITO', 'BUILT AT POLARIS SOUND LAB \u00b7 M\u00c9RIDA, YUCAT\u00c1N, M\u00c9XICO': 'DESARROLLADO EN POLARIS SOUND LAB \u00b7 M\u00c9RIDA, YUCAT\u00c1N, M\u00c9XICO', 'EDITION': 'EDICI\u00d3N',
+  'WELCOME': 'BIENVENIDA', "Three moves and it's music.": 'Tres movimientos y ya es m\u00fasica.', 'Press Play.': 'Pulsa Tocar.',
+  'Four voices start orbiting: every dot on a curve is a note you hear.': 'Cuatro voces empiezan a orbitar: cada punto de una curva es una nota que escuchas.',
+  'Pick a scene, or press \u2726 NEW ORBIT.': 'Elige una escena o pulsa \u2726 NUEVA \u00d3RBITA.', 'Each one is a scale, a geometry, a rhythm and a sound.': 'Cada una es una escala, una geometr\u00eda, un ritmo y un sonido.',
+  'Press B on another scene and turn GRAVITY.': 'Pulsa B en otra escena y gira GRAVEDAD.',
+  'The music glides from one world to the other. EVOLVE lets it wander by itself; the TIME MACHINE keeps every moment.': 'La m\u00fasica se desliza de un mundo al otro. EVOLUCI\u00d3N la deja vagar sola; la M\u00c1QUINA DEL TIEMPO guarda cada momento.',
+  'Play and start': 'Tocar y empezar', 'Close': 'Cerrar',
+  // controls
+  'DENSITY': 'DENSIDAD', 'PHASE': 'FASE', 'FM RATIO': 'RELACI\u00d3N FM', 'GRAVITY': 'GRAVEDAD', 'EVOLVE': 'EVOLUCI\u00d3N', 'CHAOS': 'CAOS', 'BLOOM': 'BRILLO FM',
+  'SPACE': 'ESPACIO', 'ECHO': 'ECO', 'WARMTH': 'CALIDEZ', 'ECHO TIME': 'TIEMPO ECO', 'FEEDBACK': 'REPETICIONES', 'ECHO TONE': 'TONO ECO', 'SIZE': 'TAMA\u00d1O', 'DAMP': 'AMORTIGUAR',
+  'CHORUS': 'CORO', 'WIDTH': 'ANCHURA', 'SWING': 'SWING', 'HUMAN': 'HUMANO', 'TILT': 'TONO', 'MASTER': 'SALIDA', 'FX & MIX': 'EFECTOS Y MEZCLA',
+  'PULSES': 'PULSOS', 'STEPS': 'PASOS', 'ROTATE': 'ROTAR', 'OCT': 'OCT', 'LEVEL': 'NIVEL', 'PAN': 'PANEO',
+  'RATIO': 'RELACI\u00d3N', 'INDEX': '\u00cdNDICE', 'MOD ENV': 'ENV MOD', 'ATTACK': 'ATAQUE', 'DECAY': 'CA\u00cdDA', 'SUSTAIN': 'SOST\u00c9N', 'RELEASE': 'LIBERAR', 'CUTOFF': 'CORTE',
+  'RESONANCE': 'RESONANCIA', 'ECHO SEND': 'ENV\u00cdO ECO', 'SPACE SEND': 'ENV\u00cdO ESPACIO', 'DETUNE': 'DESAFINAR', 'GATE': 'DURACI\u00d3N', 'CHANCE': 'PROBABILIDAD', 'ACCENT': 'ACENTO',
+  // lanes and models
+  'SUB': 'SUBGRAVE', 'PRISM': 'PRISMA', 'CRYSTAL': 'CRISTAL', 'HALO': 'HALO', 'GLASS': 'VIDRIO', 'DUST': 'POLVO',
+  'Sub bass': 'Subgrave', 'Prism': 'Prisma', 'Crystal': 'Cristal', 'Halo': 'Halo', 'mute': 'silenciar', 'solo': 'solo',
+  // scales, geometries, notes
+  'Dorian': 'D\u00f3rico', 'Minor': 'Menor', 'Minor pentatonic': 'Pentat\u00f3nica menor', 'Phrygian': 'Frigio', 'Lydian': 'Lidio', 'Major pentatonic': 'Pentat\u00f3nica mayor',
+  'Phrygian dominant': 'Frigio dominante', 'Whole tone': 'Tonos enteros', 'Harmonic minor': 'Menor arm\u00f3nica', 'Hirajoshi': 'Hirajoshi',
+  'Lissajous': 'Lissajous', 'Polar rose': 'Rosa polar', 'Epicycle': 'Epiciclo', 'Spiral': 'Espiral',
+  // messages
+  'Saved in slot': 'Guardado en la ranura', 'Gravity target': 'Destino de gravedad', 'Target cleared': 'Sin destino', 'MIDI clip saved': 'Clip MIDI guardado',
+  'Drag the clip onto a MIDI track': 'Arrastra el clip a una pista MIDI', 'Pick the scene for B': 'Elige la escena para B', 'Back in time': 'De vuelta en el tiempo',
+  'empty': 'vac\u00eda', 'slot': 'ranura', 'evolving': 'evolucionando', 'held': 'sostenidas',
+  'The keys play': 'Las teclas tocan', 'A key sets the root: the whole orbit follows it.': 'Una tecla fija la t\u00f3nica: toda la \u00f3rbita la sigue.',
+  'Hold notes: they become the scale the orbit plays.': 'Mant\u00e9n notas: se vuelven la escala que toca la \u00f3rbita.',
+  'No MIDI outputs found. Check the USB data cable.': 'No hay salidas MIDI. Revisa el cable USB de datos.', 'Pick the FM-1 in MIDI output.': 'Elige el FM-1 en Salida MIDI.',
+  'Open the web edition in Chrome or Edge for Web MIDI.': 'Abre la edici\u00f3n web en Chrome o Edge para usar Web MIDI.', 'The audio could not start.': 'No se pudo iniciar el audio.',
+  'Follow the DAW\'s tempo and transport': 'Seguir el tempo y el transporte del DAW', 'A new orbit: scale, geometry, rhythm and sound, all musical': 'Una \u00f3rbita nueva: escala, geometr\u00eda, ritmo y sonido, todo musical',
+  'Change a few things, keep the feel': 'Cambia algunas cosas y conserva la sensaci\u00f3n', 'Back one step in the time machine': 'Un paso atr\u00e1s en la m\u00e1quina del tiempo',
+  'Drag it onto a MIDI track (plug-in) or download it (web): 4 bars, one track per voice': 'Arr\u00e1stralo a una pista MIDI (plug-in) o desc\u00e1rgalo (web): 4 compases, una pista por voz',
+  'Send the notes out of the plug-in too, to play your other instruments (channels 1-4)': 'Env\u00eda tambi\u00e9n las notas fuera del plug-in, para tocar tus otros instrumentos (canales 1-4)',
+  'Paper or night': 'Papel o noche', 'Quick guide': 'Gu\u00eda r\u00e1pida', 'The next scene you click becomes GRAVITY\'s target': 'La siguiente escena que pulses ser\u00e1 el destino de GRAVEDAD',
+  'MIDI out on': 'Salida MIDI activada', 'MIDI out off': 'Salida MIDI desactivada', 'Following the DAW': 'Siguiendo al DAW', 'Own tempo': 'Tempo propio'
+};
+let LANG = 'en';
+function T(s) { return LANG === 'es' && ES[s] !== undefined ? ES[s] : s; }
+function applyLang(root = document) {
+  document.documentElement.lang = LANG;
+  root.querySelectorAll('[data-t]').forEach(el => { if (el.dataset.en === undefined) el.dataset.en = el.textContent.trim(); el.textContent = T(el.dataset.en); });
+  root.querySelectorAll('[data-t-title]').forEach(el => { el.title = T(el.dataset.tTitle); el.setAttribute('aria-label', el.title); });
+}
+
+/* ---- bridge.js ---- */
+/* bridge.js \u2014 the \u00d3RBITA 2 engine runs as WebAssembly in an AudioWorklet (web) or natively in the plug-in (JUCE).
+   The page talks to it with the same small messages either way. */
+'use strict';
+const WORKLET_CODE = `
+class OrbitaProc extends AudioWorkletProcessor {
+  constructor(o) {
+    super({});
+    this.X = new WebAssembly.Instance(new WebAssembly.Module(o.processorOptions.wasm), {}).exports;
+    this.X.ox_init(sampleRate); this.n = 0; this.evOn = false;
+    this.port.onmessage = e => this.msg(e.data);
+  }
+  msg(d) {
+    const X = this.X;
+    switch (d.t) {
+      case 'param': X.ox_param(d.id, d.v); break;
+      case 'params': for (const [id, v] of d.list) X.ox_param(id, v); break;
+      case 'target': for (const [id, v] of d.list) X.ox_target(id, v); break;
+      case 'clearTarget': X.ox_clear_target(); break;
+      case 'play': X.ox_play(); break;
+      case 'stop': X.ox_stop(); break;
+      case 'key': X.ox_key(d.note, d.vel); break;
+      case 'custom': X.ox_custom(d.lane, d.mask); break;
+      case 'audition': X.ox_audition(d.lane, d.note, d.vel); break;
+      case 'events': this.evOn = d.on; break;
+      case 'evo': X.ox_evo(d.p, d.d, d.r); break;
+    }
+  }
+  process(inputs, outputs) {
+    const X = this.X, o = outputs[0], n = o[0].length, mem = X.memory.buffer;
+    X.ox_process(n);
+    o[0].set(new Float32Array(mem, X.ox_out_l(), n)); if (o[1]) o[1].set(new Float32Array(mem, X.ox_out_r(), n));
+    if (this.evOn) { const c = X.ox_ev_count(); if (c) { const dv = new DataView(mem), b = X.ox_ev(), list = [];
+      for (let k = 0; k < c; k++) { const p = b + k * 8; list.push([dv.getUint8(p), dv.getUint8(p + 1), dv.getUint8(p + 2), dv.getUint8(p + 3), dv.getInt32(p + 4, true)]); }
+      this.port.postMessage({ t: 'ev', list, time: currentTime }); } }
+    if (++this.n % 4 === 0) {
+      const tele = new Float32Array(mem, X.ox_tele(), 64).slice(), w = X.ox_scope_w(), sl = new Float32Array(mem, X.ox_scope_l(), 512), sr = new Float32Array(mem, X.ox_scope_r(), 512);
+      const L = new Float32Array(256), R = new Float32Array(256); for (let k = 0; k < 256; k++) { const j = (w - 256 + k + 512) & 511; L[k] = sl[j]; R[k] = sr[j]; }
+      this.port.postMessage({ t: 'tele', tele, L, R }, [tele.buffer, L.buffer, R.buffer]);
+    }
+    return true;
+  }
+}
+registerProcessor('orbita-proc', OrbitaProc);`;
+
+function b64bytes(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+
+const Bridge = {
+  kind: 'web', ready: false, onTele: null, onEv: null, onParams: null, _id: 1,
+  isPlugin() { return !!(window.__JUCE__ && window.__JUCE__.backend); },
+  // the web: the audio starts on the first press (browsers need a gesture)
+  async startWeb() {
+    if (this.ready) { await this.ctx.resume(); return; }
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+    const url = URL.createObjectURL(new Blob([WORKLET_CODE], { type: 'application/javascript' }));
+    await this.ctx.audioWorklet.addModule(url);
+    this.node = new AudioWorkletNode(this.ctx, 'orbita-proc', { numberOfInputs: 0, outputChannelCount: [2], processorOptions: { wasm: b64bytes(WASM_B64).buffer } });
+    this.node.connect(this.ctx.destination);
+    this.node.port.onmessage = e => { const d = e.data; if (d.t === 'tele' && this.onTele) this.onTele(d.tele, d.L, d.R); else if (d.t === 'ev' && this.onEv) this.onEv(d.list, d.time); };
+    this.ready = true; await this.ctx.resume();
+    if (this.queue) { for (const m of this.queue) this.node.port.postMessage(m); this.queue = null; }
+  },
+  startPlugin() {
+    this.kind = 'plugin'; this.ready = true; const B = window.__JUCE__.backend;
+    B.addEventListener('tele', d => this.onTele && this.onTele(Float32Array.from(d.tele), Float32Array.from(d.L), Float32Array.from(d.R)));
+    B.addEventListener('params', d => this.onParams && this.onParams(d.list));
+    B.addEventListener('state', d => this.onState && this.onState(d));
+  },
+  call(name, ...args) {
+    if (!this.isPlugin()) return Promise.resolve(null);
+    const B = window.__JUCE__.backend, id = this._id++;
+    return new Promise(res => { const tok = B.addEventListener('__juce__complete', e => { if (e.promiseId === id) { B.removeEventListener(tok); res(e.result); } }); B.emitEvent('__juce__invoke', { name, params: args, resultId: id }); });
+  },
+  send(m) {
+    if (this.kind === 'plugin') { this.call('msg', JSON.stringify(m)); return; }
+    if (this.node) this.node.port.postMessage(m); else (this.queue = this.queue || []).push(m);
+  }
+};
+
+// a second, silent copy of the engine on the page: it answers "which steps play, which notes" for the drawing and the MIDI export
+const Mirror = {
+  X: null,
+  init() { const X = new WebAssembly.Instance(new WebAssembly.Module(b64bytes(WASM_B64)), {}).exports; X.ox_init(48000); this.X = X; this.P = new Float32Array(X.memory.buffer, X.ox_params(), X.ox_param_count()); },
+  range(id) { return [this.X.ox_range(id, 0), this.X.ox_range(id, 1), this.X.ox_range(id, 2)]; },
+  eff() { this.X.ox_compute(); return new Float32Array(this.X.memory.buffer, this.X.ox_eff(), this.X.ox_param_count()); }
+};
+
+/* ---- app.js ---- */
+/* app.js \u2014 \u00d3RBITA 2's interface: the phase plane, scenes, GRAVITY, the lanes, the time machine, the keys */
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const G = { BPM: 0, SWING: 1, ROOT: 2, SCALE: 3, GEOM: 4, DENSITY: 5, PHASE: 6, RATIO: 7, GRAVITY: 8, EVOLVE: 9, CHAOS: 10, ECHO: 11, ECHOTIME: 12, ECHOFB: 13, ECHOTONE: 14, SPACE: 15,
+  SIZE: 16, DAMP: 17, CHORUS: 18, WIDTH: 19, WARMTH: 20, TILT: 21, MASTER: 22, KEYMODE: 23, PLAYLANE: 24, HUMAN: 25, BLOOM: 26 }, NG = 32;
+const L = { ON: 0, LEVEL: 1, PAN: 2, PULSES: 3, STEPS: 4, ROT: 5, OCT: 6, PROB: 7, GATE: 8, RATIO: 9, INDEX: 10, FB: 11, ENVIDX: 12, ATK: 13, DEC: 14, SUS: 15, REL: 16,
+  CUT: 17, RES: 18, ECHO: 19, SPACE: 20, DETUNE: 21, VEL: 22, MODEL: 23 }, NLP = 24, NL = 4;
+const LP = (l, k) => NG + l * NLP + k;
+const TAU = Math.PI * 2;
+const COLORS = ['#ceff78', '#af9af1', '#f1a07d', '#7fd6ee'];
+const MODELS = ['SUB', 'PRISM', 'CRYSTAL', 'HALO', 'GLASS', 'DUST'];
+const LANE_NAMES = ['Sub bass', 'Prism', 'Crystal', 'Halo'];
+const SCALES = ['Dorian', 'Minor', 'Minor pentatonic', 'Phrygian', 'Lydian', 'Major pentatonic', 'Phrygian dominant', 'Whole tone', 'Harmonic minor', 'Hirajoshi'];
+const GEOMS = ['Lissajous', 'Polar rose', 'Epicycle', 'Spiral'];
+const NOTES = ['C', 'C\u266f', 'D', 'E\u266d', 'E', 'F', 'F\u266f', 'G', 'A\u266d', 'A', 'B\u266d', 'B'];
+const ECHO_DIV = ['1/16', '1/8', '3/16', '1/4', '3/8', '1/2', '1/8T', '1/4T'];
+
+Mirror.init();
+const NP = Mirror.X.ox_param_count();
+const DEF = Float32Array.from(Mirror.P);
+let P = Float32Array.from(DEF);
+let custom = [null, null, null, null];           // a lane's own steps (bit mask) when you have clicked them
+let target = null, targetName = '', bMode = false;
+let curScene = 0, sceneTitle = '', sceneText = '';
+let playing = false, tele = new Float32Array(64), scope = [new Float32Array(256), new Float32Array(256)];
+let selLane = -1, userScenes = [null, null, null, null], solo = -1;
+const plugin = Bridge.isPlugin();
+if (plugin) document.documentElement.classList.add('isplug');
+
+// ------------------------------------------------------------------ scenes (the first four are \u00d3RBITA 1's, note for note)
+function S(name, es, desc, descEs, g, lanes) { return { name, es, desc, descEs, g, lanes: lanes || [] }; }
+const SCENES = [
+  S('M\u00e9rida Ring', 'Anillo de M\u00e9rida', 'A spaced sub bass holds two bells that cross.', 'Un grave espaciado sostiene dos campanas que se cruzan.',
+    { BPM: 112, GEOM: 0, SCALE: 0, ROOT: 2, DENSITY: 7, PHASE: 2, RATIO: 2 }, [{}, {}, {}, { LEVEL: 0.32 }]),
+  S('Skewed Crystal', 'Cristal sesgado', 'Metallic off-beat attacks in a five-petal rose.', 'Ataques met\u00e1licos a contratiempo en una rosa de cinco p\u00e9talos.',
+    { BPM: 136, GEOM: 1, SCALE: 1, ROOT: 5, DENSITY: 10, PHASE: 5, RATIO: 4, ECHO: 0.28, ECHOTIME: 2 }, [{}, {}, {}, { LEVEL: 0.28, MODEL: 4 }]),
+  S('Lunar Drift', 'Deriva lunar', 'A slow pulse and open resonances on a pentatonic scale.', 'Un pulso lento y resonancias abiertas sobre una escala pentat\u00f3nica.',
+    { BPM: 74, GEOM: 2, SCALE: 2, ROOT: 9, DENSITY: 4, PHASE: 3, RATIO: 1.5, SPACE: 0.5, SIZE: 0.75 }, [{}, {}, {}, { LEVEL: 0.45 }]),
+  S('Discrete Acid', '\u00c1cido discreto', 'A dense web of sixteenths with bright modulation.', 'Una trama densa de semicorcheas con modulaci\u00f3n brillante.',
+    { BPM: 148, GEOM: 0, SCALE: 0, ROOT: 2, DENSITY: 12, PHASE: 9, RATIO: 3.5, WARMTH: 0.3, SPACE: 0.18 }, [{ CUT: 0.55, RES: 0.35 }, {}, {}, { ON: 0 }]),
+  S('Cenote', 'Cenote', 'Glass drops falling into deep water, a spiral that never repeats.', 'Gotas de vidrio cayendo en agua profunda, una espiral que nunca se repite.',
+    { BPM: 92, GEOM: 3, SCALE: 5, ROOT: 7, DENSITY: 6, PHASE: 3, RATIO: 1, SPACE: 0.62, SIZE: 0.86, ECHO: 0.3, ECHOTIME: 3, EVOLVE: 0.35, CHORUS: 0.4 },
+    [{ LEVEL: 0.78 }, { MODEL: 4, INDEX: 0.7 }, { MODEL: 2, STEPS: 12 }, { LEVEL: 0.55, STEPS: 10 }]),
+  S('Nebula Polymeter', 'Nebulosa polim\u00e9trica', 'Four cycles of 16, 12, 10 and 7 steps: they meet again every few minutes.', 'Cuatro ciclos de 16, 12, 10 y 7 pasos: se vuelven a encontrar cada pocos minutos.',
+    { BPM: 120, GEOM: 2, SCALE: 4, ROOT: 0, DENSITY: 7, PHASE: 1, RATIO: 2.5, ECHO: 0.34, ECHOTIME: 1, ECHOFB: 0.5, CHORUS: 0.5, SPACE: 0.4 },
+    [{}, { STEPS: 12 }, { STEPS: 10, MODEL: 4 }, { STEPS: 7, PULSES: -3, LEVEL: 0.48 }]),
+  S('Hijaz Ritual', 'Ritual Hijaz', 'Phrygian dominant, dust and a rose that turns: a ceremony at night.', 'Frigio dominante, polvo y una rosa que gira: una ceremonia nocturna.',
+    { BPM: 104, GEOM: 1, SCALE: 6, ROOT: 4, DENSITY: 9, PHASE: 6, RATIO: 3, CHAOS: 0.2, SPACE: 0.42, WARMTH: 0.25 },
+    [{}, { DETUNE: 0.3 }, { MODEL: 5, LEVEL: 0.6 }, { MODEL: 3, LEVEL: 0.4 }]),
+  S('Deep Orbit', '\u00d3rbita profunda', 'Sub-heavy, 126 BPM, echoes in eighths: a techno orbit for the club.', 'Grave al frente, 126 BPM, ecos en corcheas: una \u00f3rbita techno para el club.',
+    { BPM: 126, GEOM: 0, SCALE: 1, ROOT: 9, DENSITY: 8, PHASE: 4, RATIO: 0.5, WARMTH: 0.35, ECHO: 0.3, ECHOTIME: 1, ECHOFB: 0.48, SPACE: 0.25 },
+    [{ PULSES: -4, LEVEL: 0.9, CUT: 0.5, RES: 0.3 }, { RATIO: 2 }, { RATIO: 3 }, { LEVEL: 0.3 }])
+];
+function buildScene(sc) {
+  const p = Float32Array.from(DEF);
+  for (const k in sc.g) p[G[k]] = sc.g[k];
+  sc.lanes.forEach((o, l) => { for (const k in o) p[LP(l, L[k])] = o[k]; });
+  // keep what belongs to the player, not to the scene
+  for (const id of [G.MASTER, G.KEYMODE, G.PLAYLANE, G.GRAVITY]) p[id] = P[id];
+  if (plugin && syncOn) p[G.BPM] = P[G.BPM];
+  return p;
+}
+
+// ------------------------------------------------------------------ parameters
+function rng(id) { return Mirror.range(id); }
+function clampP(id, v) { const [a, b] = rng(id); return Math.min(b, Math.max(a, v)); }
+let saveT = 0, histT = 0;
+function setP(id, v, opt = {}) {
+  v = clampP(id, v); if (P[id] === v && !opt.force) return;
+  P[id] = v; Mirror.X.ox_param(id, v);
+  if (!opt.quiet) Bridge.send({ t: 'param', id, v });
+  const lk = id >= NG ? (id - NG) % NLP : -1;
+  if (id === G.DENSITY || id === G.PHASE) custom = custom.map(() => null);
+  if (lk === L.PULSES || lk === L.STEPS || lk === L.ROT) custom[(id - NG) / NLP | 0] = null;
+  if (!opt.noUi) refreshSoon();
+  if (!opt.noHist && id !== G.GRAVITY) { clearTimeout(histT); histT = setTimeout(() => commit(), 1400); }
+  saveSoon();
+}
+function pushAll() {
+  for (let i = 0; i < NP; i++) Mirror.X.ox_param(i, P[i]);
+  Bridge.send({ t: 'params', list: [...P].map((v, i) => [i, v]) });
+  custom.forEach((m, l) => { if (m !== null) { Mirror.X.ox_custom(l, m); Bridge.send({ t: 'custom', lane: l, mask: m }); } });
+}
+function loadScene(i, opt = {}) {
+  if (bMode && !opt.force) { setTarget(i); return; }
+  const sc = i < SCENES.length ? SCENES[i] : null;
+  if (!sc) { const u = userScenes[i - SCENES.length]; if (!u) return; P = Float32Array.from(u.P); custom = u.custom.slice(); sceneTitle = u.name; sceneText = T('slot') + ' ' + (i - SCENES.length + 1); }
+  else { P = buildScene(sc); custom = [null, null, null, null]; sceneTitle = LANG === 'es' ? sc.es : sc.name; sceneText = LANG === 'es' ? sc.descEs : sc.desc; }
+  curScene = i; P[G.GRAVITY] = target ? P[G.GRAVITY] : 0;
+  pushAll(); Bridge.send({ t: 'evo', p: 0, d: 0, r: 0 });
+  refresh(); commit(); saveSoon();
+}
+function sceneParams(i) { if (i < SCENES.length) return buildScene(SCENES[i]); const u = userScenes[i - SCENES.length]; return u ? Float32Array.from(u.P) : null; }
+function setTarget(i) {
+  bMode = false; $('#bMode').classList.remove('on');
+  const p = sceneParams(i); if (!p) return;
+  target = i; targetName = i < SCENES.length ? (LANG === 'es' ? SCENES[i].es : SCENES[i].name) : userScenes[i - SCENES.length].name;
+  const list = [...p].map((v, id) => [id, v]);
+  for (const [id, v] of list) Mirror.X.ox_target(id, v);
+  Bridge.send({ t: 'target', list });
+  toast(T('Gravity target') + ': ' + targetName); refresh(); saveSoon();
+}
+function clearTarget() { target = null; Mirror.X.ox_clear_target(); Bridge.send({ t: 'clearTarget' }); setP(G.GRAVITY, 0); toast(T('Target cleared')); refresh(); }
+
+// ------------------------------------------------------------------ knobs
+const knobs = [];
+function fmtDefault(id, v) { const [a, b] = rng(id); return (b - a) > 20 || Number.isInteger(a) && Number.isInteger(b) && (b - a) <= 16 && id !== G.RATIO ? String(Math.round(v)) : Math.round((v - a) / (b - a) * 100) + ''; }
+function makeKnob(parent, id, label, o = {}) {
+  const el = document.createElement('div'); el.className = 'knob' + (o.hero ? ' hero' : ''); el.tabIndex = 0;
+  el.innerHTML = `<svg viewBox="-30 -30 60 60"><circle r="22" fill="none" stroke="currentColor" stroke-opacity=".14" stroke-width="5"/><path class="arc" fill="none" stroke-width="5" stroke-linecap="round"/><circle class="cap" r="15" fill="var(--paper)" stroke="currentColor" stroke-opacity=".28"/><line class="ptr" x1="0" y1="-6" x2="0" y2="-14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><div class="lbl">${T(label)}</div><div class="val"></div>`;
+  el.dataset.label = label; parent.append(el);
+  const k = { el, id: typeof id === 'function' ? id : () => id, label, fmt: o.fmt, col: o.col, step: o.step };
+  const get = () => P[k.id()], [lo, hi] = rng(k.id());
+  let startY = 0, startV = 0, drag = false;
+  el.addEventListener('pointerdown', e => { drag = true; startY = e.clientY; startV = get(); el.setPointerCapture(e.pointerId); e.preventDefault(); });
+  el.addEventListener('pointermove', e => { if (!drag) return; const [a, b] = rng(k.id()); const sens = (e.shiftKey ? 0.15 : 1) * (b - a) / 180; let v = startV + (startY - e.clientY) * sens; if (k.step) v = Math.round(v / k.step) * k.step; setP(k.id(), v); });
+  el.addEventListener('pointerup', () => drag = false);
+  el.addEventListener('dblclick', () => setP(k.id(), k.reset ? k.reset() : DEF[k.id()]));
+  el.addEventListener('wheel', e => { e.preventDefault(); const [a, b] = rng(k.id()); let d = (b - a) / 100 * (e.deltaY < 0 ? 1 : -1); if (k.step) d = Math.sign(d) * k.step; setP(k.id(), get() + d); }, { passive: false });
+  el.addEventListener('keydown', e => { const [a, b] = rng(k.id()); const d = k.step || (b - a) / 50; if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { setP(k.id(), get() + d); e.preventDefault(); } if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { setP(k.id(), get() - d); e.preventDefault(); } });
+  k.update = () => {
+    const id = k.id(), [a, b] = rng(id), v = P[id], t = (v - a) / (b - a), A0 = -135, A1 = A0 + 270 * t;
+    const pt = d => [22 * Math.sin(d * Math.PI / 180), -22 * Math.cos(d * Math.PI / 180)];
+    const [x0, y0] = pt(A0), [x1, y1] = pt(A1);
+    el.querySelector('.arc').setAttribute('d', t <= 0.001 ? '' : `M${x0} ${y0} A22 22 0 ${A1 - A0 > 180 ? 1 : 0} 1 ${x1} ${y1}`);
+    el.querySelector('.arc').setAttribute('stroke', k.col ? k.col() : 'var(--ink)');
+    el.querySelector('.ptr').setAttribute('transform', `rotate(${A1})`);
+    el.querySelector('.val').textContent = k.fmt ? k.fmt(v) : fmtDefault(id, v);
+    el.querySelector('.lbl').textContent = T(k.label);
+    el.title = T(k.label);
+  };
+  knobs.push(k); k.update(); return k;
+}
+const pct = v => Math.round(v * 100) + '%';
+function buildMacros() {
+  const m = $('#macros'); m.innerHTML = '';
+  makeKnob(m, G.DENSITY, 'DENSITY', { step: 1, fmt: v => v.toFixed(0) });
+  makeKnob(m, G.PHASE, 'PHASE', { step: 1, fmt: v => v.toFixed(0) });
+  makeKnob(m, G.RATIO, 'FM RATIO', { step: 0.25, fmt: v => v.toFixed(2) });
+  makeKnob(m, G.GRAVITY, 'GRAVITY', { hero: true, fmt: pct, col: () => target !== null ? '#8466aa' : 'var(--mute)' });
+  makeKnob(m, G.EVOLVE, 'EVOLVE', { fmt: pct });
+  makeKnob(m, G.CHAOS, 'CHAOS', { fmt: pct });
+  makeKnob(m, G.BLOOM, 'BLOOM', { fmt: pct });
+  makeKnob(m, G.SPACE, 'SPACE', { fmt: pct });
+  makeKnob(m, G.ECHO, 'ECHO', { fmt: pct });
+  makeKnob(m, G.WARMTH, 'WARMTH', { fmt: pct });
+  const more = document.createElement('details'); more.style.gridColumn = '1/-1'; more.innerHTML = `<summary class="mono" style="font-size:10.5px;cursor:pointer;margin-top:4px">${T('FX & MIX')}</summary><div class="knobs" style="margin-top:8px"></div>`;
+  m.append(more); const f = more.querySelector('.knobs');
+  makeKnob(f, G.ECHOTIME, 'ECHO TIME', { step: 1, fmt: v => ECHO_DIV[Math.round(v)] });
+  makeKnob(f, G.ECHOFB, 'FEEDBACK', { fmt: pct }); makeKnob(f, G.ECHOTONE, 'ECHO TONE', { fmt: pct });
+  makeKnob(f, G.SIZE, 'SIZE', { fmt: pct }); makeKnob(f, G.DAMP, 'DAMP', { fmt: pct });
+  makeKnob(f, G.CHORUS, 'CHORUS', { fmt: pct }); makeKnob(f, G.WIDTH, 'WIDTH', { fmt: v => Math.round(v * 200) + '%' });
+  makeKnob(f, G.SWING, 'SWING', { fmt: pct }); makeKnob(f, G.HUMAN, 'HUMAN', { fmt: pct });
+  makeKnob(f, G.TILT, 'TILT', { fmt: v => (v > 0 ? '+' : '') + v.toFixed(2) }); makeKnob(f, G.MASTER, 'MASTER', { fmt: pct });
+}
+function buildDrawer() {
+  const d = $('#dKnobs'); d.innerHTML = ''; const lid = k => () => LP(Math.max(0, selLane), k), col = () => COLORS[Math.max(0, selLane)];
+  const list = [['RATIO', L.RATIO, v => '\u00d7' + v.toFixed(2)], ['INDEX', L.INDEX, pct], ['FEEDBACK', L.FB, pct], ['MOD ENV', L.ENVIDX, pct], ['ATTACK', L.ATK, pct], ['DECAY', L.DEC, pct],
+    ['SUSTAIN', L.SUS, pct], ['RELEASE', L.REL, pct], ['GATE', L.GATE, v => v.toFixed(1)], ['CUTOFF', L.CUT, pct], ['RESONANCE', L.RES, pct], ['DETUNE', L.DETUNE, pct],
+    ['ECHO SEND', L.ECHO, pct], ['SPACE SEND', L.SPACE, pct], ['CHANCE', L.PROB, pct], ['ACCENT', L.VEL, pct], ['PAN', L.PAN, v => v === 0 ? 'C' : (v < 0 ? 'L' : 'R') + Math.round(Math.abs(v) * 100)], ['LEVEL', L.LEVEL, pct]];
+  for (const [lab, k, fmt] of list) { const kn = makeKnob(d, lid(k), lab, { fmt, col }); kn.reset = () => DEF[LP(Math.max(0, selLane), k)]; }
+}
+
+// ------------------------------------------------------------------ lanes
+const minis = [];
+function makeMini(parent, idf, label, fmt) {
+  const el = document.createElement('div'); el.className = 'mini'; el.tabIndex = 0; el.innerHTML = `<span>${T(label)}</span><b></b>`; parent.append(el);
+  let sy = 0, sv = 0, drag = false, moved = false;
+  el.addEventListener('pointerdown', e => { drag = true; moved = false; sy = e.clientY; sv = P[idf()]; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e => { if (!drag) return; const dy = sy - e.clientY; if (Math.abs(dy) > 3) moved = true; const [a, b] = rng(idf()); const step = (b - a) > 3 ? 1 : 0.05; setP(idf(), Math.round((sv + dy / (b - a > 3 ? 8 : 120) * ((b - a) > 3 ? 1 : 1)) / step) * step); });
+  el.addEventListener('pointerup', () => { drag = false; });
+  el.addEventListener('wheel', e => { e.preventDefault(); const [a, b] = rng(idf()); const step = (b - a) > 3 ? 1 : 0.05; setP(idf(), P[idf()] + (e.deltaY < 0 ? step : -step)); }, { passive: false });
+  el.addEventListener('dblclick', () => setP(idf(), DEF[idf()]));
+  el.addEventListener('keydown', e => { const [a, b] = rng(idf()); const step = (b - a) > 3 ? 1 : 0.05; if (e.key === 'ArrowUp') setP(idf(), P[idf()] + step); if (e.key === 'ArrowDown') setP(idf(), P[idf()] - step); });
+  const m = { el, update: () => { el.querySelector('b').textContent = fmt(P[idf()]); el.querySelector('span').textContent = T(label); } }; minis.push(m); m.update(); return m;
+}
+function laneMask(l) { return Mirror.X.ox_mask(l); }
+function buildLanes() {
+  const box = $('#lanes'); box.innerHTML = ''; minis.length = 0;
+  for (let l = 0; l < NL; l++) {
+    const row = document.createElement('div'); row.className = 'lane'; row.style.setProperty('--col', COLORS[l]); row.dataset.l = l;
+    row.innerHTML = `<div class="lname"><button class="mbtn m" title="${T('mute')}">M</button><button class="mbtn s" title="${T('solo')}">S</button><button class="nm"><i></i><span><span class="lnm"></span><br><small class="mdl"></small></span></button></div><div class="cells"></div><div class="lctl"></div>`;
+    const cells = row.querySelector('.cells');
+    for (let s = 0; s < 16; s++) { const c = document.createElement('button'); c.className = 'cell' + (s % 4 === 0 ? ' beat' : ''); c.setAttribute('aria-label', T(LANE_NAMES[l]) + ' ' + (s + 1));
+      c.onclick = () => toggleStep(l, s); cells.append(c); }
+    row.querySelector('.m').onclick = () => setP(LP(l, L.ON), P[LP(l, L.ON)] > 0.5 ? 0 : 1);
+    row.querySelector('.s').onclick = () => doSolo(l);
+    row.querySelector('.nm').onclick = () => openDrawer(selLane === l && $('#drawer').classList.contains('open') ? -1 : l);
+    const ctl = row.querySelector('.lctl');
+    makeMini(ctl, () => LP(l, L.PULSES), 'PULSES', v => String(Math.max(1, Math.min(P[LP(l, L.STEPS)], Math.round(P[G.DENSITY] + v)))));
+    makeMini(ctl, () => LP(l, L.STEPS), 'STEPS', v => v.toFixed(0));
+    makeMini(ctl, () => LP(l, L.ROT), 'ROTATE', v => (v > 0 ? '+' : '') + v.toFixed(0));
+    makeMini(ctl, () => LP(l, L.OCT), 'OCT', v => (v > 0 ? '+' : '') + v.toFixed(0));
+    makeMini(ctl, () => LP(l, L.LEVEL), 'LEVEL', v => Math.round(v * 100));
+    box.append(row);
+  }
+}
+function toggleStep(l, s) {
+  const steps = P[LP(l, L.STEPS)]; if (s >= steps) return;
+  const m = (custom[l] !== null ? custom[l] : laneMask(l)) ^ (1 << s);
+  custom[l] = m; Mirror.X.ox_custom(l, m); Bridge.send({ t: 'custom', lane: l, mask: m });
+  if (!playing) Bridge.send({ t: 'audition', lane: l, note: Mirror.X.ox_note(l, s), vel: 100 });
+  refreshSoon(); clearTimeout(histT); histT = setTimeout(() => commit(), 1400); saveSoon();
+}
+let soloSaved = null;
+function doSolo(l) {
+  if (solo === l) { if (soloSaved) soloSaved.forEach((v, k) => setP(LP(k, L.ON), v)); solo = -1; soloSaved = null; }
+  else { if (!soloSaved) soloSaved = [0, 1, 2, 3].map(k => P[LP(k, L.ON)]); solo = l; for (let k = 0; k < NL; k++) setP(LP(k, L.ON), k === l ? 1 : 0); }
+  refresh();
+}
+function openDrawer(l) {
+  selLane = l; const d = $('#drawer');
+  if (l < 0) { d.classList.remove('open'); refresh(); return; }
+  d.classList.add('open'); $('#dDot').style.background = COLORS[l]; $('#dName').textContent = T(LANE_NAMES[l]).toUpperCase();
+  refresh();
+}
+
+// ------------------------------------------------------------------ harmony controls
+function buildSelects() {
+  const fill = (sel, arr, tr) => { sel.innerHTML = ''; arr.forEach((n, i) => sel.add(new Option(tr ? T(n) : n, i))); };
+  fill($('#root'), NOTES); fill($('#scale'), SCALES, true); fill($('#geom'), GEOMS, true); fill($('#playLane'), LANE_NAMES, true); fill($('#dModel'), MODELS, true);
+}
+$('#root').onchange = e => setP(G.ROOT, +e.target.value);
+$('#scale').onchange = e => setP(G.SCALE, +e.target.value);
+$('#geom').onchange = e => setP(G.GEOM, +e.target.value);
+$('#playLane').onchange = e => setP(G.PLAYLANE, +e.target.value);
+$('#dModel').onchange = e => { if (selLane >= 0) setP(LP(selLane, L.MODEL), +e.target.value); };
+$('#dReset').onclick = () => { if (selLane < 0) return; for (let k = 1; k < NLP; k++) if (![L.PULSES, L.STEPS, L.ROT, L.OCT].includes(k)) setP(LP(selLane, k), DEF[LP(selLane, k)]); };
+$('#dClose').onclick = () => openDrawer(-1);
+$$('#keyMode button').forEach(b => b.onclick = () => setP(G.KEYMODE, +b.dataset.v));
+
+// ------------------------------------------------------------------ refresh
+let refT = 0;
+function refreshSoon() { if (!refT) refT = requestAnimationFrame(() => { refT = 0; refresh(); }); }
+function refresh() {
+  knobs.forEach(k => k.update()); minis.forEach(m => m.update());
+  $('#bpm').value = Math.round(P[G.BPM]);
+  $('#root').value = P[G.ROOT]; $('#scale').value = P[G.SCALE]; $('#geom').value = P[G.GEOM]; $('#playLane').value = P[G.PLAYLANE];
+  $$('#keyMode button').forEach(b => b.classList.toggle('on', +b.dataset.v === Math.round(P[G.KEYMODE])));
+  const km = Math.round(P[G.KEYMODE]);
+  $('#keyHint').textContent = km === 0 ? T('The keys play') + ': ' + T(LANE_NAMES[Math.round(P[G.PLAYLANE])]) : km === 1 ? T('A key sets the root: the whole orbit follows it.') : T('Hold notes: they become the scale the orbit plays.');
+  $('#geoName').textContent = T(GEOMS[Math.round(P[G.GEOM])]).toUpperCase() + ' \u00b7 ' + NOTES[Math.round(P[G.ROOT])] + ' ' + T(SCALES[Math.round(P[G.SCALE])]).toUpperCase();
+  $('#sceneName').textContent = sceneTitle; $('#sceneDesc').textContent = sceneText;
+  $$('.lane').forEach(row => {
+    const l = +row.dataset.l, on = P[LP(l, L.ON)] > 0.5, steps = Math.round(P[LP(l, L.STEPS)]), m = laneMask(l);
+    row.classList.toggle('off', !on); row.classList.toggle('sel', l === selLane && $('#drawer').classList.contains('open'));
+    row.querySelector('.m').classList.toggle('on', !on); row.querySelector('.s').classList.toggle('on', solo === l);
+    row.querySelector('.lnm').textContent = T(LANE_NAMES[l]); row.querySelector('.mdl').textContent = T(MODELS[Math.round(P[LP(l, L.MODEL)])]) + (custom[l] !== null ? ' \u00b7 \u270e' : '');
+    [...row.querySelectorAll('.cell')].forEach((c, s) => { c.classList.toggle('x', s >= steps); c.classList.toggle('on', s < steps && !!(m >> s & 1)); });
+  });
+  if (selLane >= 0) $('#dModel').value = Math.round(P[LP(selLane, L.MODEL)]);
+  // chips on the screen
+  const chips = $('#chips'); if (!chips.children.length) for (let l = 0; l < NL; l++) { const c = document.createElement('button'); c.className = 'chip'; c.style.setProperty('--col', COLORS[l]); c.innerHTML = '<i></i><span></span>'; c.onclick = () => setP(LP(l, L.ON), P[LP(l, L.ON)] > 0.5 ? 0 : 1); chips.append(c); }
+  [...chips.children].forEach((c, l) => { c.querySelector('span').textContent = T(LANE_NAMES[l]); c.classList.toggle('off', P[LP(l, L.ON)] < 0.5); });
+  // scenes
+  $$('.sc').forEach(b => { const i = +b.dataset.i; b.classList.toggle('cur', i === curScene); b.classList.toggle('tgt', i === target); });
+  $('#gravbar').classList.toggle('show', target !== null); $('#gravVal').textContent = pct(P[G.GRAVITY]); $('#gravTgt').textContent = targetName;
+  $('#play').classList.toggle('on', playing); $('#play').innerHTML = (playing ? '\u25a0&nbsp; ' : '\u25b6&nbsp; ') + '<span>' + T(playing ? 'Stop' : 'Play') + '</span>';
+}
+function buildScenes() {
+  const box = $('#scenes'); box.innerHTML = '';
+  const all = SCENES.length + userScenes.length;
+  for (let i = 0; i < all; i++) {
+    const b = document.createElement('button'), u = i >= SCENES.length ? userScenes[i - SCENES.length] : null;
+    b.className = 'sc' + (i >= SCENES.length ? ' user' + (u ? ' full' : '') : ''); b.dataset.i = i;
+    const nm = i < SCENES.length ? (LANE_NAMES && LANG === 'es' ? SCENES[i].es : SCENES[i].name) : (u ? u.name : '\u2605 ' + T('slot') + ' ' + (i - SCENES.length + 1));
+    const sub = i < SCENES.length ? Math.round(buildScene(SCENES[i])[G.BPM]) + ' BPM' : (u ? Math.round(u.P[G.BPM]) + ' BPM' : T('empty'));
+    b.innerHTML = `<canvas width="52" height="52"></canvas><b>${nm}</b><small>${sub}</small>`;
+    b.onclick = () => loadScene(i);
+    b.oncontextmenu = e => { e.preventDefault(); setTarget(i); };
+    box.append(b);
+    const p = sceneParams(i); if (p) thumb(b.querySelector('canvas'), p, true);
+  }
+}
+$('#bMode').onclick = () => { bMode = !bMode; $('#bMode').classList.toggle('on', bMode); if (bMode) toast(T('Pick the scene for B')); };
+$('#clearB').onclick = clearTarget;
+$('#saveScene').onclick = () => {
+  let k = userScenes.findIndex(u => !u); if (k < 0) k = (saveRot = (saveRot + 1) % userScenes.length);
+  const name = (sceneTitle || '\u00d3RBITA').replace(/^\u2605 /, '') + ' \u2605';
+  userScenes[k] = { name, P: [...P], custom: custom.slice() }; buildScenes(); refresh(); saveSoon(); toast(T('Saved in slot') + ' ' + (k + 1));
+};
+let saveRot = -1;
+
+// ------------------------------------------------------------------ the orbit geometry (\u00d3RBITA 1's curves, plus the spiral)
+function orbitPt(geom, a, v, p, k) {
+  switch (geom) {
+    case 0: return [Math.sin(2 * a + p + k), Math.sin(3 * a + v * 0.3)];
+    case 1: { const r = Math.cos(5 * a + p + k); return [r * Math.cos(a), r * Math.sin(a)]; }
+    case 2: return [0.7 * Math.cos(a) + 0.3 * Math.cos(4 * a + p + k), 0.7 * Math.sin(a) - 0.3 * Math.sin(4 * a + p + k)];
+    default: { const r = 0.55 + 0.45 * Math.sin(3 * a + p + k); return [r * Math.cos(a + 0.4 * Math.sin(2 * a)), r * Math.sin(a + 0.4 * Math.sin(2 * a)) * 0.95]; }
+  }
+}
+function thumb(cv, p, small) {
+  const g = cv.getContext('2d'), w = cv.width, h = cv.height; g.clearRect(0, 0, w, h);
+  if (!small) { g.fillStyle = '#121512'; g.fillRect(0, 0, w, h); }
+  const geom = Math.round(p[G.GEOM]), ph = Math.round(p[G.PHASE]), R = w * 0.36;
+  for (let v = 0; v < NL; v++) { if (p[LP(v, L.ON)] < 0.5) continue; g.strokeStyle = small ? (v === 0 ? '#3d4a2a' : v === 1 ? '#6a5aa0' : v === 2 ? '#b4704c' : '#3d8aa0') : COLORS[v]; g.globalAlpha = small ? 0.9 : 0.85; g.lineWidth = small ? 1.4 : 1.2;
+    g.beginPath(); for (let j = 0; j <= 120; j++) { const [x, y] = orbitPt(geom, j * TAU / 120, v, ph * TAU / 16 + v * 0.44, 0); const X = w / 2 + x * R * 1.2, Y = h / 2 + y * R * (1 - v * 0.065); j ? g.lineTo(X, Y) : g.moveTo(X, Y); } g.stroke(); }
+  g.globalAlpha = 1;
+}
+
+// ------------------------------------------------------------------ the stage
+const cv = $('#stage'), gx = cv.getContext('2d');
+const stars = Array.from({ length: 140 }, () => [Math.random(), Math.random(), Math.random() * 1.2 + 0.2, Math.random() * TAU]);
+const parts = [], rings = [], MONO_FONT = '10px ui-monospace, SFMono-Regular, Menlo, monospace';
+let lastStep = [-1, -1, -1, -1], dots = [];
+function draw(ts) {
+  const w = cv.clientWidth, h = cv.clientHeight, px = Math.min(devicePixelRatio || 1, 2);
+  if (cv.width !== Math.round(w * px) || cv.height !== Math.round(h * px)) { cv.width = Math.round(w * px); cv.height = Math.round(h * px); }
+  gx.setTransform(px, 0, 0, px, 0, 0); gx.clearRect(0, 0, w, h);
+  const E = Mirror.eff(), geom = Math.round(E[G.GEOM]), t = ts / 1000;
+  const phaseE = Math.round(E[G.PHASE]) + (playing ? tele[5] : 0), ratioE = E[G.RATIO] + (playing ? tele[7] : 0);
+  const cx = w / 2 + (w > 700 ? w * 0.06 : 0), cy = h / 2 + 8, R = Math.min(w * 0.33, h * 0.36);
+  // the sky: stars and polar rings
+  for (const s of stars) { gx.globalAlpha = 0.18 + 0.22 * Math.sin(t * s[2] + s[3]) ** 2; gx.fillStyle = '#dfe6d4'; gx.fillRect(s[0] * w, s[1] * h, s[2], s[2]); }
+  gx.globalAlpha = 1; gx.strokeStyle = '#ffffff10'; gx.lineWidth = 1;
+  for (let r = 1; r <= 4; r++) { gx.beginPath(); gx.arc(cx, cy, R * r * 0.34, 0, TAU); gx.stroke(); }
+  gx.save(); gx.translate(cx, cy); gx.rotate(t * 0.02); gx.beginPath(); for (let k = 0; k < 16; k++) { const a = k * TAU / 16; gx.moveTo(Math.cos(a) * R * 0.2, Math.sin(a) * R * 0.2); gx.lineTo(Math.cos(a) * R * 1.45, Math.sin(a) * R * 1.45); } gx.strokeStyle = '#ffffff07'; gx.stroke(); gx.restore();
+  // the core: the sound itself, drawn as an XY figure
+  gx.globalCompositeOperation = 'lighter';
+  gx.beginPath(); const sL = scope[0], sR = scope[1];
+  for (let k = 0; k < 256; k++) { const x = cx + (sL[k] - sR[k]) * R * 0.9, y = cy - (sL[k] + sR[k]) * R * 0.9; k ? gx.lineTo(x, y) : gx.moveTo(x, y); }
+  gx.strokeStyle = '#e8f4d855'; gx.lineWidth = 1; gx.stroke();
+  // the four orbits
+  dots = [];
+  for (let v = 0; v < NL; v++) {
+    const on = E[LP(v, L.ON)] > 0.5, steps = Math.round(E[LP(v, L.STEPS)]), m = laneMask(v), env = playing ? Math.min(1, tele[16 + v] * 1.5) * (v === 3 ? 0.55 : 1) : 0;
+    const p = phaseE * TAU / 16 + v * 0.44, sy = 1 - v * 0.065, col = COLORS[v];
+    const pt = (a, k) => { const [x, y] = orbitPt(geom, a, v, p, k); return [cx + x * R * 1.38, cy + y * R * sy]; };
+    gx.strokeStyle = col;
+    for (let k = 6; k >= 0; k--) {
+      gx.globalAlpha = !on ? 0.03 : k === 0 ? 0.55 + env * 0.45 : 0.06 + env * 0.06;
+      gx.lineWidth = k === 0 ? 1.3 + env * 1.4 : 1;
+      gx.beginPath(); for (let j = 0; j <= 300; j++) { const [x, y] = pt(j * TAU / 300, k * 0.032 * ratioE); j ? gx.lineTo(x, y) : gx.moveTo(x, y); } gx.stroke();
+    }
+    if (on && env > 0.02) { gx.globalAlpha = env * 0.12; gx.lineWidth = 7; gx.beginPath(); for (let j = 0; j <= 160; j++) { const [x, y] = pt(j * TAU / 160, 0); j ? gx.lineTo(x, y) : gx.moveTo(x, y); } gx.stroke(); }
+    // the notes
+    const cur = playing ? tele[12 + v] : -1;
+    gx.fillStyle = col;
+    for (let s = 0; s < steps; s++) {
+      const hit = (m >> s) & 1, [x, y] = pt(s * TAU / steps, 0); dots.push([x, y, v, s]);
+      if (!hit) { gx.globalAlpha = on ? 0.16 : 0.05; gx.beginPath(); gx.arc(x, y, 1.2, 0, TAU); gx.fill(); continue; }
+      gx.globalAlpha = on ? 1 : 0.12; gx.beginPath(); gx.arc(x, y, s === cur ? 6 : 2.8, 0, TAU); gx.fill();
+    }
+    if (on && cur >= 0) {
+      const [x, y] = pt(cur * TAU / steps, 0); gx.globalAlpha = 0.9; gx.lineWidth = 1.2; gx.beginPath(); gx.arc(x, y, 9, 0, TAU); gx.stroke();
+      if (cur !== lastStep[v]) { lastStep[v] = cur; if ((m >> cur) & 1) { rings.push({ x, y, r: 6, a: 0.8, col }); for (let q = 0; q < 7; q++) { const a = Math.random() * TAU, sp = 0.4 + Math.random() * 1.3; parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, col }); } }
+        const note = tele[20 + v]; if ((m >> cur) & 1 && note > 0) { gx.globalAlpha = 0.85; gx.font = MONO_FONT; gx.fillText(NOTES[note % 12] + (Math.floor(note / 12) - 1), x + 12, y - 10); } }
+    } else lastStep[v] = -1;
+  }
+  // GRAVITY: the target orbit, dashed
+  if (target !== null && E[G.GRAVITY] < 0.999) {
+    const tp = sceneParams(target), tg = Math.round(tp[G.GEOM]), tph = Math.round(tp[G.PHASE]);
+    gx.setLineDash([3, 6]); gx.lineWidth = 1;
+    for (let v = 0; v < NL; v++) { if (tp[LP(v, L.ON)] < 0.5) continue; gx.strokeStyle = COLORS[v]; gx.globalAlpha = 0.18 * (1 - E[G.GRAVITY]) + 0.05;
+      gx.beginPath(); for (let j = 0; j <= 200; j++) { const [x, y] = orbitPt(tg, j * TAU / 200, v, tph * TAU / 16 + v * 0.44, 0); const X = cx + x * R * 1.38, Y = cy + y * R * (1 - v * 0.065); j ? gx.lineTo(X, Y) : gx.moveTo(X, Y); } gx.stroke(); }
+    gx.setLineDash([]);
+  }
+  // sparks
+  for (let i = rings.length - 1; i >= 0; i--) { const r = rings[i]; r.r += 1.4; r.a *= 0.93; gx.globalAlpha = r.a; gx.strokeStyle = r.col; gx.lineWidth = 1; gx.beginPath(); gx.arc(r.x, r.y, r.r, 0, TAU); gx.stroke(); if (r.a < 0.03) rings.splice(i, 1); }
+  for (let i = parts.length - 1; i >= 0; i--) { const q = parts[i]; q.x += q.vx; q.y += q.vy; q.vx *= 0.97; q.vy *= 0.97; q.a *= 0.95; gx.globalAlpha = q.a; gx.fillStyle = q.col; gx.fillRect(q.x, q.y, 1.6, 1.6); if (q.a < 0.03) parts.splice(i, 1); }
+  gx.globalAlpha = 1; gx.globalCompositeOperation = 'source-over';
+  if (rings.length > 80) rings.splice(0, rings.length - 80); if (parts.length > 500) parts.splice(0, parts.length - 500);
+  requestAnimationFrame(draw);
+}
+cv.addEventListener('click', e => { const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; let best = null, bd = 14 * 14;
+  for (const d of dots) { const dd = (d[0] - x) ** 2 + (d[1] - y) ** 2; if (dd < bd) { bd = dd; best = d; } } if (best) toggleStep(best[2], best[3]); });
+
+// telemetry from the engine
+let lastEvo = '';
+Bridge.onTele = (t, l, r) => {
+  tele = t; scope[0] = l; scope[1] = r;
+  const was = playing; playing = t[1] > 0.5; if (was !== playing) refresh();
+  const gs = t[0]; $('#pos').textContent = gs < 0 || !playing ? '01 \u00b7 16' : String((gs % 16) + 1).padStart(2, '0') + ' \u00b7 ' + String(Math.floor(gs / 16) + 1).padStart(3, '0');
+  if (plugin && syncOn) $('#bpm').value = Math.round(t[2]);
+  const evo = t[5] + '/' + t[6] + '/' + t[7].toFixed(2);
+  Mirror.X.ox_evo(t[5] | 0, t[6] | 0, t[7]);
+  $('#evo').textContent = playing && P[G.EVOLVE] > 0.001 ? '\u2726 ' + T('evolving') + (t[5] ? ' \u03a6' + (t[5] > 0 ? '+' : '') + t[5] : '') : '';
+  if (playing && evo !== lastEvo) { const first = lastEvo === ''; lastEvo = evo; if (!first && P[G.EVOLVE] > 0.001) commit(true); }
+  if (t[9] !== heldMask) { heldMask = t[9]; paintKeys(); }
+  if (target !== null && P[G.GRAVITY] !== undefined) $('#gravVal').textContent = pct(P[G.GRAVITY]);
+};
+Bridge.onParams = list => { for (const [id, v] of list) { P[id] = v; Mirror.X.ox_param(id, v); } refreshSoon(); };
+
+// ------------------------------------------------------------------ time machine
+const TM = []; let tmIdx = -1;
+function commit(evolved) {
+  const p = Float32Array.from(P);
+  if (evolved) { p[G.PHASE] = Math.max(0, Math.min(15, p[G.PHASE] + tele[5])); p[G.DENSITY] = Math.max(1, Math.min(16, p[G.DENSITY] + tele[6])); p[G.RATIO] = Math.max(0.5, Math.min(8, p[G.RATIO] + tele[7])); }
+  const last = TM[TM.length - 1];
+  if (last && last.P.every((v, i) => v === p[i]) && JSON.stringify(last.custom) === JSON.stringify(custom)) return;
+  TM.push({ P: p, custom: custom.slice(), name: sceneTitle, evolved: !!evolved, at: new Date() });
+  if (TM.length > 40) TM.shift(); tmIdx = TM.length - 1; drawTM();
+}
+function drawTM() {
+  const box = $('#tm'); box.innerHTML = '';
+  TM.forEach((s, i) => { const b = document.createElement('button'); b.className = 'snap' + (i === tmIdx ? ' cur' : ''); b.title = s.name + ' \u00b7 ' + s.at.toLocaleTimeString();
+    b.innerHTML = `<canvas width="136" height="136"></canvas><small>${s.evolved ? '\u2726 ' : ''}${s.at.toLocaleTimeString([], { hour12: false, minute: '2-digit', second: '2-digit' })}</small>`;
+    thumb(b.querySelector('canvas'), s.P, false); b.onclick = () => restore(i); box.append(b); });
+  if (!TM.length) box.innerHTML = '<div class="snap empty">\u2726</div>';
+  box.scrollLeft = box.scrollWidth;
+}
+function restore(i) {
+  const s = TM[i]; if (!s) return; tmIdx = i;
+  const keep = [G.MASTER, G.KEYMODE, G.PLAYLANE, G.GRAVITY].map(id => P[id]);
+  P = Float32Array.from(s.P); [G.MASTER, G.KEYMODE, G.PLAYLANE, G.GRAVITY].forEach((id, k) => P[id] = keep[k]);
+  P[G.EVOLVE] = 0;                       // you came back to this moment: it stays (turn EVOLVE up to let it wander again)
+  custom = s.custom.slice(); sceneTitle = s.name; pushAll(); Bridge.send({ t: 'evo', p: 0, d: 0, r: 0 }); lastEvo = '';
+  refresh(); drawTM(); toast(T('Back in time') + ' \u00b7 ' + s.at.toLocaleTimeString()); saveSoon();
+}
+$('#undo').onclick = () => restore(Math.max(0, tmIdx - 1));
+
+// ------------------------------------------------------------------ new orbit / mutate
+const pick = a => a[Math.floor(Math.random() * a.length)], ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), rf = (a, b) => a + Math.random() * (b - a);
+const WORDS = ['Perihelion', 'Cenote', 'Sascab', 'Equinox', 'Henequ\u00e9n', 'Puuc', 'Nadir', 'Zenith', 'Albedo', 'Umbra', 'Selva', 'Halo', 'Kin', 'Sisal', 'Aphelion', 'Ceiba', 'Corona', 'Penumbra'];
+function newOrbit() {
+  const p = Float32Array.from(DEF);
+  for (const id of [G.BPM, G.MASTER, G.KEYMODE, G.PLAYLANE, G.EVOLVE, G.SWING, G.HUMAN]) p[id] = P[id];
+  p[G.ROOT] = ri(0, 11); p[G.SCALE] = pick([0, 0, 1, 1, 2, 2, 3, 4, 5, 5, 6, 8, 9]); p[G.GEOM] = ri(0, 3); p[G.DENSITY] = ri(4, 11); p[G.PHASE] = ri(0, 15);
+  p[G.RATIO] = pick([0.5, 1, 1.5, 2, 2, 2.5, 3, 3.5, 4, 5, 7]); p[G.SPACE] = rf(0.2, 0.6); p[G.SIZE] = rf(0.4, 0.9); p[G.ECHO] = rf(0.08, 0.38); p[G.ECHOTIME] = pick([1, 2, 3, 3, 4, 6]);
+  p[G.ECHOFB] = rf(0.25, 0.55); p[G.CHORUS] = rf(0, 0.5); p[G.CHAOS] = Math.random() < 0.3 ? rf(0.05, 0.25) : 0; p[G.BLOOM] = Math.random() < 0.4 ? rf(0.05, 0.4) : 0; p[G.WARMTH] = rf(0.05, 0.35);
+  const poly = Math.random() < 0.35;
+  const models = [[0, 0, 0, 5], [1, 4, 2, 1], [2, 4, 5, 2, 1], [3, 3, 3, 1, 4]], offs = [[-4, -1], [-1, 1], [0, 3], [-5, -2]];
+  for (let l = 0; l < NL; l++) {
+    p[LP(l, L.MODEL)] = pick(models[l]); p[LP(l, L.PULSES)] = ri(...offs[l]); p[LP(l, L.INDEX)] = rf(0.5, 1.3); p[LP(l, L.FB)] = Math.random() < 0.25 ? rf(0.1, 0.5) : 0;
+    if (poly && l > 0) p[LP(l, L.STEPS)] = pick([16, 12, 10, 9, 7, 14, 15]);
+    if (Math.random() < 0.2) p[LP(l, L.ROT)] = ri(-3, 3);
+    if (l === 0) p[LP(l, L.CUT)] = rf(0.45, 0.72);
+    if (p[LP(l, L.MODEL)] === 3) { p[LP(l, L.ATK)] = rf(0.3, 0.6); p[LP(l, L.SUS)] = rf(0.4, 0.7); p[LP(l, L.REL)] = rf(0.4, 0.7); p[LP(l, L.GATE)] = pick([2, 3, 4, 6]); p[LP(l, L.DETUNE)] = rf(0.2, 0.6); }
+  }
+  p[LP(3, L.LEVEL)] = rf(0.3, 0.5); if (Math.random() < 0.2) p[LP(3, L.ON)] = 0;
+  P = p; custom = [null, null, null, null]; curScene = -1;
+  sceneTitle = pick(WORDS) + ' ' + ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'][ri(0, 8)];
+  sceneText = NOTES[p[G.ROOT]] + ' ' + T(SCALES[p[G.SCALE]]) + ' \u00b7 ' + T(GEOMS[p[G.GEOM]]) + (poly ? ' \u00b7 ' + [0, 1, 2, 3].map(l => p[LP(l, L.STEPS)]).join('/') : '');
+  pushAll(); Bridge.send({ t: 'evo', p: 0, d: 0, r: 0 }); refresh(); commit(); saveSoon();
+}
+function mutate() {
+  const moves = [
+    () => setP(G.PHASE, (P[G.PHASE] + pick([-3, -2, -1, 1, 2, 3]) + 16) % 16, { noHist: true }),
+    () => setP(G.DENSITY, P[G.DENSITY] + pick([-1, 1]), { noHist: true }),
+    () => setP(G.RATIO, pick([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5]), { noHist: true }),
+    () => { const l = ri(0, 3); setP(LP(l, L.ROT), P[LP(l, L.ROT)] + pick([-1, 1]), { noHist: true }); },
+    () => { const l = ri(1, 3); setP(LP(l, L.PULSES), P[LP(l, L.PULSES)] + pick([-1, 1]), { noHist: true }); },
+    () => { if (Math.random() < 0.35) setP(G.GEOM, (P[G.GEOM] + 1) % 4, { noHist: true }); },
+    () => { const l = ri(1, 3); setP(LP(l, L.INDEX), P[LP(l, L.INDEX)] + rf(-0.25, 0.25), { noHist: true }); }
+  ];
+  for (let k = 0; k < 3; k++) pick(moves)();
+  refresh(); commit();
+}
+$('#newOrbit').onclick = newOrbit; $('#mutate').onclick = mutate;
+
+// ------------------------------------------------------------------ MIDI clip (4 bars, one track per voice)
+function vlq(n) { const a = [n & 127]; while ((n >>= 7) > 0) a.unshift((n & 127) | 128); return a; }
+function midiClip() {
+  const ppq = 480, st = 120, tempo = Math.round(60000000 / P[G.BPM]), tracks = [];
+  const track0 = [0, 255, 81, 3, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255, 0, 255, 88, 4, 4, 2, 24, 8, 0, 255, 47, 0];
+  for (let l = 0; l < NL; l++) {
+    if (P[LP(l, L.ON)] < 0.5) continue;
+    const steps = Math.round(P[LP(l, L.STEPS)]), gate = Math.max(30, Math.round(P[LP(l, L.GATE)] * st * 0.92)), ev = [];
+    for (let gs = 0; gs < 64; gs++) { const s = gs % steps; if (!Mirror.X.ox_hit(l, s)) continue; const n = Mirror.X.ox_note(l, s), v = Mirror.X.ox_vel(l, s);
+      const sw = (gs & 1) ? Math.round(P[G.SWING] * 0.33 * st) : 0; ev.push([gs * st + sw, 0x90 | l, n, v], [gs * st + sw + gate, 0x80 | l, n, 0]); }
+    ev.sort((a, b) => a[0] - b[0] || (a[1] & 0xf0) - (b[1] & 0xf0));
+    const name = [...new TextEncoder().encode(T(LANE_NAMES[l]))];
+    const d = [0, 255, 3, name.length, ...name]; let last = 0; for (const e of ev) { d.push(...vlq(e[0] - last), e[1], e[2], e[3]); last = e[0]; }
+    d.push(...vlq(Math.max(0, 64 * st - last)), 255, 47, 0); tracks.push(d);
+  }
+  const chunk = d => [77, 84, 114, 107, (d.length >>> 24) & 255, (d.length >> 16) & 255, (d.length >> 8) & 255, d.length & 255, ...d];
+  const n = tracks.length + 1, bytes = [77, 84, 104, 100, 0, 0, 0, 6, 0, 1, 0, n, ppq >> 8, ppq & 255, ...chunk(track0)];
+  for (const t of tracks) bytes.push(...chunk(t));
+  return new Uint8Array(bytes);
+}
+function clipName() { return 'ORBITA-' + (sceneTitle || 'orbit').normalize('NFD').replace(/[^\w]+/g, '-').replace(/-+$/, '') + '-' + Math.round(P[G.BPM]) + 'bpm.mid'; }
+function toB64(u) { let s = ''; for (let i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s); }
+if (plugin) $('#drag').addEventListener('pointerdown', () => { Bridge.call('dragMidi', clipName(), toB64(midiClip())); toast(T('Drag the clip onto a MIDI track')); });
+else $('#drag').onclick = () => { const a = document.createElement('a'), url = URL.createObjectURL(new Blob([midiClip()], { type: 'audio/midi' })); a.href = url; a.download = clipName(); a.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); toast(T('MIDI clip saved')); };
+
+// ------------------------------------------------------------------ keys (on screen, the computer's keyboard)
+let heldMask = 0, kbOct = 4; const downKeys = new Set();
+function buildKeys() {
+  const box = $('#keys'); box.innerHTML = ''; const whites = [0, 2, 4, 5, 7, 9, 11], blacks = { 1: 0, 3: 1, 6: 3, 8: 4, 10: 5 };
+  for (let o = 0; o < 2; o++) for (const s of whites) { const k = document.createElement('div'); k.className = 'k'; k.dataset.n = 12 * (kbOct + o) + 12 + s; if (s === 0) k.innerHTML = `<span>C${kbOct + o}</span>`; box.append(k); }
+  for (let o = 0; o < 2; o++) for (const s in blacks) { const k = document.createElement('div'); k.className = 'k b'; k.dataset.n = 12 * (kbOct + o) + 12 + +s; k.style.left = ((o * 7 + blacks[s] + 1) / 14 * 100 - 2.6) + '%'; box.append(k); }
+  box.onpointerdown = e => { const k = e.target.closest('.k'); if (!k) return; box.setPointerCapture(e.pointerId); press(+k.dataset.n, true); box._n = +k.dataset.n; };
+  box.onpointerup = box.onpointercancel = () => { if (box._n) { press(box._n, false); box._n = 0; } };
+  paintKeys();
+}
+async function press(n, down) {
+  if (down && !plugin && !Bridge.ready) await startAudio();
+  if (down) downKeys.add(n); else downKeys.delete(n);
+  Bridge.send({ t: 'key', note: n, vel: down ? 100 : 0 }); paintKeys();
+}
+function paintKeys() { $$('#keys .k').forEach(k => { const n = +k.dataset.n; k.classList.toggle('dn', downKeys.has(n)); k.classList.toggle('held', !downKeys.has(n) && Math.round(P[G.KEYMODE]) === 2 && !!(heldMask >> (n % 12) & 1)); }); }
+const KB = 'awsedftgyhujkolp;'.split('');
+addEventListener('keydown', e => {
+  if (e.target.matches('input,select,textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); return; }
+  if (e.key === 'z') { kbOct = Math.max(1, kbOct - 1); buildKeys(); return; } if (e.key === 'x') { kbOct = Math.min(7, kbOct + 1); buildKeys(); return; }
+  const i = KB.indexOf(e.key.toLowerCase()); if (i < 0 || e.repeat) return; press(12 * kbOct + 12 + i, true);
+});
+addEventListener('keyup', e => { const i = KB.indexOf(e.key.toLowerCase()); if (i >= 0) press(12 * kbOct + 12 + i, false); });
+
+// ------------------------------------------------------------------ transport, web MIDI out, plug-in switches
+async function startAudio() { try { await Bridge.startWeb(); pushAll(); if (target !== null) setTarget(target); if (midiPort) Bridge.send({ t: 'events', on: true }); } catch (e) { toast(T('The audio could not start.') + ' ' + e.message); throw e; } }
+async function togglePlay() {
+  if (!plugin && !Bridge.ready) await startAudio();
+  playing = !playing; Bridge.send({ t: playing ? 'play' : 'stop' }); if (!playing && midiPort) for (let c = 0; c < 4; c++) midiPort.send([0xb0 | c, 123, 0]);
+  lastEvo = ''; refresh();
+}
+$('#play').onclick = togglePlay;
+$('#bpm').onchange = e => setP(G.BPM, +e.target.value);
+let midiAccess = null, midiPort = null;
+$('#connect').onclick = async () => {
+  try { if (!navigator.requestMIDIAccess) throw Error('Open the web edition in Chrome or Edge for Web MIDI.');
+    midiAccess = await navigator.requestMIDIAccess();
+    const fill = () => { const sel = $('#out'); sel.length = 1; for (const o of midiAccess.outputs.values()) if (o.state === 'connected') sel.add(new Option(o.name, o.id)); sel.value = midiPort ? midiPort.id : ''; $('#msg').textContent = T(sel.length > 1 ? 'Pick the FM-1 in MIDI output.' : 'No MIDI outputs found. Check the USB data cable.'); };
+    fill(); midiAccess.onstatechange = fill;
+  } catch (e) { $('#msg').textContent = T(e.message); }
+};
+$('#out').onchange = () => { midiPort = midiAccess && midiAccess.outputs.get($('#out').value) || null; Bridge.send({ t: 'events', on: !!midiPort }); };
+Bridge.onEv = (list, time) => {
+  if (!midiPort || !Bridge.ctx) return; const base = performance.now() + Math.max(0, (time - Bridge.ctx.currentTime)) * 1000 + (Bridge.ctx.outputLatency || 0.02) * 1000, sr = Bridge.ctx.sampleRate;
+  for (const [kind, lane, note, vel, at] of list) midiPort.send(kind ? [0x90 | lane, note, Math.max(1, vel)] : [0x80 | lane, note, 0], base + at / sr * 1000);
+};
+let syncOn = false, midiOutOn = false;
+$('#sync').onclick = () => { syncOn = !syncOn; Bridge.send({ t: 'sync', on: syncOn }); $('#sync').classList.toggle('on', syncOn); toast(T(syncOn ? 'Following the DAW' : 'Own tempo')); saveSoon(); };
+$('#midiOut').onclick = () => { midiOutOn = !midiOutOn; Bridge.send({ t: 'midiOut', on: midiOutOn }); $('#midiOut').classList.toggle('on', midiOutOn); toast(T(midiOutOn ? 'MIDI out on' : 'MIDI out off')); saveSoon(); };
+if (plugin) $$('a[target=_blank]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); Bridge.call('openUrl', a.href); }));
+
+// ------------------------------------------------------------------ language, theme, help, coach, toast
+function setLang(l) { LANG = l; $('#lang').value = l; applyLang(); buildSelects(); buildScenes(); knobs.forEach(k => k.update()); if (curScene >= 0 && curScene < SCENES.length) { sceneTitle = l === 'es' ? SCENES[curScene].es : SCENES[curScene].name; sceneText = l === 'es' ? SCENES[curScene].descEs : SCENES[curScene].desc; }
+  buildLanes(); $('#manual').href = l === 'es' ? 'Orbita-ES.pdf' : 'Orbita-EN.pdf'; helpHtml(); refresh(); saveSoon(); }
+$('#lang').onchange = e => setLang(e.target.value);
+$('#theme').onclick = () => { document.documentElement.classList.toggle('night'); saveSoon(); };
+function helpHtml() {
+  const en = `<small>QUICK GUIDE</small><h2>\u00d3RBITA 2</h2><p>Four FM voices play euclidean rhythms over a scale. Each voice draws its orbit: every bright dot is a note, the ring is where it is now.</p>
+  <h4>PLAY</h4><ol><li><b>\u25b6 Play</b> (or the space bar). Pick a <b>scene</b>, or press <b>\u2726 NEW ORBIT</b> for a fresh, musical one; <b>\u2248 MUTATE</b> changes a few things and keeps the feel.</li><li><b>DENSITY</b> is how many notes in a cycle, <b>PHASE</b> where they fall (and which notes), <b>FM RATIO</b> warm to metallic.</li><li>Click a dot on the screen or a cell in a lane to add or remove that note.</li></ol>
+  <h4>THE THINGS NOBODY ELSE HAS</h4><ol><li><b>GRAVITY</b>: press <b>B</b> and pick a second scene (or right-click it). Turn GRAVITY and the whole sound glides from one world to the other: rhythm, harmony, timbre and space. Automate it in your DAW for transitions.</li><li><b>EVOLVE</b>: the orbit wanders by itself, a little every bar, and never far from home.</li><li><b>TIME MACHINE</b>: every change and every evolution is kept. Heard something great a minute ago? Click it and it's back.</li><li><b>HARMONY keys</b>: in HARMONY, hold a chord on your keyboard and the orbit plays only those notes. TRANSPOSE moves everything to the key you press. PLAY plays a voice like a synth.</li><li><b>Polymeter</b>: give each voice its own STEPS (7, 10, 12\u2026) and the four cycles drift and meet again.</li><li><b>\u21e3 MIDI</b>: drag 4 bars (one track per voice) onto your DAW, or turn on <b>MIDI OUT</b> to play your other instruments live.</li></ol>
+  <h4>SOUND</h4><p>Click a voice's name to open its sound: FM ratio and index, envelopes, filter, detune, sends. Six models: SUB, PRISM, CRYSTAL, HALO, GLASS, DUST.</p>
+  <p class="hint">Free and open source \u00b7 Dark Funk Durcal design \u00b7 built at Polaris Sound Lab, M\u00e9rida, Yucat\u00e1n, M\u00e9xico.</p>`;
+  const es = `<small>GU\u00cdA R\u00c1PIDA</small><h2>\u00d3RBITA 2</h2><p>Cuatro voces FM tocan ritmos euclidianos sobre una escala. Cada voz dibuja su \u00f3rbita: cada punto brillante es una nota, el anillo es donde est\u00e1 ahora.</p>
+  <h4>TOCAR</h4><ol><li><b>\u25b6 Tocar</b> (o la barra espaciadora). Elige una <b>escena</b> o pulsa <b>\u2726 NUEVA \u00d3RBITA</b> para una nueva y musical; <b>\u2248 MUTAR</b> cambia algunas cosas y conserva la sensaci\u00f3n.</li><li><b>DENSIDAD</b> es cu\u00e1ntas notas hay en un ciclo, <b>FASE</b> d\u00f3nde caen (y qu\u00e9 notas), <b>RELACI\u00d3N FM</b> de c\u00e1lido a met\u00e1lico.</li><li>Haz clic en un punto de la pantalla o en una celda de un carril para poner o quitar esa nota.</li></ol>
+  <h4>LO QUE NADIE M\u00c1S TIENE</h4><ol><li><b>GRAVEDAD</b>: pulsa <b>B</b> y elige una segunda escena (o clic derecho sobre ella). Gira GRAVEDAD y todo el sonido se desliza de un mundo al otro: ritmo, armon\u00eda, timbre y espacio. Automat\u00edzala en tu DAW para las transiciones.</li><li><b>EVOLUCI\u00d3N</b>: la \u00f3rbita vaga sola, un poco cada comp\u00e1s, sin alejarse de casa.</li><li><b>M\u00c1QUINA DEL TIEMPO</b>: cada cambio y cada evoluci\u00f3n se guarda. \u00bfO\u00edste algo genial hace un minuto? Haz clic y vuelve.</li><li><b>Teclas de ARMON\u00cdA</b>: en ARMON\u00cdA, mant\u00e9n un acorde en tu teclado y la \u00f3rbita toca s\u00f3lo esas notas. TRANSPONER lleva todo a la tecla que pulses. TOCAR toca una voz como un sinte.</li><li><b>Polimetr\u00eda</b>: dale a cada voz sus propios PASOS (7, 10, 12\u2026) y los cuatro ciclos se desfasan y se vuelven a encontrar.</li><li><b>\u21e3 MIDI</b>: arrastra 4 compases (una pista por voz) a tu DAW, o activa <b>MIDI OUT</b> para tocar tus otros instrumentos en vivo.</li></ol>
+  <h4>SONIDO</h4><p>Haz clic en el nombre de una voz para abrir su sonido: relaci\u00f3n e \u00edndice FM, envolventes, filtro, desafinaci\u00f3n, env\u00edos. Seis modelos: SUBGRAVE, PRISMA, CRISTAL, HALO, VIDRIO, POLVO.</p>
+  <p class="hint">Libre y gratuito \u00b7 dise\u00f1o de Dark Funk Durcal \u00b7 desarrollado en Polaris Sound Lab, M\u00e9rida, Yucat\u00e1n, M\u00e9xico.</p>`;
+  $('#helpBody').innerHTML = (LANG === 'es' ? es : en) + `<div class="go"><button class="tb" onclick="document.getElementById('help').classList.remove('show')">${T('Close')}</button></div>`;
+}
+$('#helpBtn').onclick = () => $('#help').classList.add('show');
+$('#help').onclick = e => { if (e.target.id === 'help') $('#help').classList.remove('show'); };
+$('#coachGo').onclick = async () => { $('#coach').classList.remove('show'); coachSeen = true; saveSoon(); if (!playing) await togglePlay(); };
+$('#coachSkip').onclick = () => { $('#coach').classList.remove('show'); coachSeen = true; saveSoon(); };
+let toastT = 0; function toast(s) { const t = $('#toast'); t.textContent = s; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); }
+
+// ------------------------------------------------------------------ saving (the browser's storage on the web, the project in the plug-in)
+let coachSeen = false;
+function uiState() { return { v: 2, lang: LANG, night: document.documentElement.classList.contains('night'), coach: coachSeen, user: userScenes, scene: curScene, title: sceneTitle, text: sceneText, target, sync: syncOn, midiOut: midiOutOn, custom, P: plugin ? undefined : [...P] }; }
+function saveSoon() { clearTimeout(saveT); saveT = setTimeout(() => { const s = JSON.stringify(uiState()); if (plugin) Bridge.call('setUi', s); else try { localStorage.setItem('orbita2', s); } catch (e) {} }, 400); }
+function applyUi(s) {
+  if (!s) return; if (s.lang) LANG = s.lang; if (s.night) document.documentElement.classList.add('night'); coachSeen = !!s.coach;
+  if (Array.isArray(s.user)) userScenes = s.user.slice(0, 4).concat([null, null, null, null]).slice(0, 4);
+  curScene = s.scene ?? 0; sceneTitle = s.title || ''; sceneText = s.text || ''; syncOn = !!s.sync; midiOutOn = !!s.midiOut;
+  if (Array.isArray(s.custom)) custom = s.custom.slice(0, 4);
+  if (s.P && s.P.length === NP) P = Float32Array.from(s.P);
+  return s.target ?? null;
+}
+
+// ------------------------------------------------------------------ boot
+async function boot() {
+  let tgt = null, fresh = true;
+  if (plugin) {
+    Bridge.startPlugin();
+    const st = await Bridge.call('getState');
+    if (st && st.params && st.params.length === NP) { P = Float32Array.from(st.params); fresh = false; }
+    if (st && st.ui) { try { tgt = applyUi(JSON.parse(st.ui)); } catch (e) {} }
+    if (st) { syncOn = !!st.sync; midiOutOn = !!st.midiOut; playing = !!st.playing; }
+    $('#sync').classList.toggle('on', syncOn); $('#midiOut').classList.toggle('on', midiOutOn);
+  } else {
+    try { const s = JSON.parse(localStorage.getItem('orbita2') || 'null'); if (s) { tgt = applyUi(s); fresh = !s.P; } } catch (e) {}
+  }
+  for (let i = 0; i < NP; i++) Mirror.X.ox_param(i, P[i]);
+  custom.forEach((m, l) => { if (m !== null && m !== undefined) Mirror.X.ox_custom(l, m); else custom[l] = null; });
+  $('#lang').value = LANG; applyLang(); buildSelects(); buildMacros(); buildDrawer(); buildLanes(); buildScenes(); buildKeys(); helpHtml();
+  if (fresh) loadScene(0, { force: true }); else { if (plugin) pushAll(); refresh(); commit(); }
+  if (tgt !== null && sceneParams(tgt)) { const g = P[G.GRAVITY]; setTarget(tgt); P[G.GRAVITY] = g; }
+  drawTM(); requestAnimationFrame(draw);
+  if (!coachSeen) $('#coach').classList.add('show');
+}
+boot();
+
+</script>
+</body>
+</html>

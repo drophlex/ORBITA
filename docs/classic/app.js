@@ -46,7 +46,7 @@ function applyLanguage() {
   document.documentElement.lang=language;
   $('language').value=language;
   for(const [node,key,original] of textBindings) node.textContent=original.replace(key,tr(key));
-  $('manual').href=language==='en'?'Orbita-EN.pdf':'Orbita-ES.pdf';
+  $('manual').href=language==='en'?'../Orbita-1-EN.pdf':'../Orbita-1-ES.pdf';
   for(const [id,key] of [['plot','Órbitas de las tres voces y posiciones de sus notas'],['scene','Escena'],['density','Densidad'],['phase','Fase'],['ratio','Relación FM']]) $(id).setAttribute('aria-label',tr(key));
   $('desc').textContent=tr(scenes[$('scene').selectedIndex][1]);
   $('play').textContent=active?'■  '+tr('Detener'):'▶  '+tr('Tocar');

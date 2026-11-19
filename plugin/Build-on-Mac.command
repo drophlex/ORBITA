@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 cd "$(dirname "$0")"
-if [[ "$(uname -s)" != Darwin ]]; then echo "Ejecuta este archivo en macOS."; exit 1; fi
+if [[ "$(uname -s)" != Darwin ]]; then echo "Run this on macOS · Ejecuta este archivo en macOS."; exit 1; fi
 if ! xcrun --find clang++ >/dev/null 2>&1; then echo "Instala las herramientas de Apple con xcode-select --install y vuelve a abrir este archivo."; exit 1; fi
 if ! command -v cmake >/dev/null 2>&1; then
     if [[ -x /Applications/CMake.app/Contents/bin/cmake ]]; then export PATH="/Applications/CMake.app/Contents/bin:$PATH"
@@ -17,4 +17,4 @@ codesign --verify --deep --strict "$bundle"
 target="$HOME/Library/Audio/Plug-Ins/VST3"
 mkdir -p "$target"
 ditto "$bundle" "$target/Polaris Orbita.vst3"
-echo "Instalado. Abre Live > Ajustes > Plug-ins, activa VST3 y vuelve a escanear."
+echo "Installed · Instalado. Live: Settings → Plug-ins → Rescan · Ajustes → Plug-ins → Volver a escanear."

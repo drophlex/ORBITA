@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171a18">
+<title>ÓRBITA 2 · Polaris Sound Lab</title>
+<meta name="description" content="ÓRBITA 2: a generative FM instrument. Four voices play euclidean rhythms over a scale and draw their orbits. Free, for the web and as a VST3/AU plug-in.">
+<style>
+:root{--paper:#e9e8df;--card:#f2f1e9;--ink:#1a1c19;--mute:#5a5f52;--line:#b4b7aa;--screen:#121512;--screen2:#1b201b;--lime:#ceff78;--c0:#ceff78;--c1:#af9af1;--c2:#f1a07d;--c3:#7fd6ee;--accent:#cefe65;--mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;--r:10px}
+:root.night{--paper:#121412;--card:#1a1d1a;--ink:#e7eadf;--mute:#9aa091;--line:#353a33;--screen:#090b09;--screen2:#121512}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.4 var(--sans);-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit}
+.mono,small,.lbl{font-family:var(--mono);letter-spacing:.8px}
+#app{max-width:1500px;margin:0 auto;padding:0 18px 20px}
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;height:58px;border-bottom:1px solid var(--line);flex-wrap:nowrap}
+.brand{font-weight:900;letter-spacing:-.4px;white-space:nowrap;display:flex;align-items:center;gap:6px}.brand b{font:26px Arial}.brand span{font-weight:400}
+.brand em{font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:1px;border:1px solid var(--ink);border-radius:99px;padding:1px 8px;margin-left:6px}
+.transport{display:flex;align-items:center;gap:8px;margin-left:12px}
+.play{background:var(--accent);color:#1a1c19;border:1px solid #24271d;border-radius:8px;font-weight:800;min-width:108px;padding:9px 16px;letter-spacing:.3px}
+.play.on{background:#1a1c19;color:var(--accent)}
+.num{display:flex;align-items:center;gap:4px;font:11px var(--mono);letter-spacing:1px;color:var(--mute)}
+.num input{width:56px;background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px;font:15px var(--mono);color:var(--ink);text-align:center}
+.tb{background:transparent;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font:11px var(--mono);letter-spacing:.8px;white-space:nowrap}
+.tb:hover{border-color:var(--ink)}.tb.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tb.big{font-weight:700}
+.sp{flex:1}
+.don{border:1px solid var(--ink);border-radius:99px;padding:6px 12px;font:700 11px var(--mono);letter-spacing:1px;text-decoration:none;white-space:nowrap}
+.don:hover{background:var(--ink);color:var(--paper)}
+select.lang{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px}
+/* main */
+.main{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(330px,1fr);gap:12px;margin-top:12px}
+.screen{position:relative;background:radial-gradient(120% 90% at 50% 45%,var(--screen2),var(--screen));border-radius:var(--r);min-height:470px;overflow:hidden;color:#e8ebe1;box-shadow:inset 0 0 0 1px #ffffff10}
+.screen canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.ov{position:absolute;z-index:2;pointer-events:none;font:11px var(--mono);letter-spacing:1px}
+.ov.tl{left:20px;top:16px;max-width:60%}.ov.tr{right:20px;top:16px;text-align:right}
+.ov.tl h1{font:750 clamp(30px,3.6vw,52px)/1 var(--sans);letter-spacing:-.06em;margin:6px 0 6px;color:#f4f6ee;text-shadow:0 2px 18px #000c}
+.ov.tl p{font:13px/1.45 var(--sans);letter-spacing:0;color:#aab0a3;margin:0;max-width:440px}
+.ov i.dot{display:inline-block;width:7px;height:7px;border-radius:100%;background:var(--lime);margin-right:6px;vertical-align:1px}
+.ov.tr b{display:block;font:600 22px var(--mono);color:#f4f6ee;letter-spacing:0}
+.chips{position:absolute;left:16px;right:16px;bottom:14px;z-index:2;display:flex;gap:8px;flex-wrap:wrap}
+.chip{pointer-events:auto;background:#ffffff0c;border:1px solid #ffffff22;border-radius:99px;padding:5px 11px;color:#e8ebe1;font:11px var(--mono);letter-spacing:.6px;display:flex;align-items:center;gap:7px}
+.chip i{width:9px;height:9px;border-radius:100%;background:var(--col)}.chip.off{opacity:.35}.chip.sel{border-color:var(--col);background:#ffffff16}
+.gravbar{position:absolute;right:16px;bottom:14px;z-index:2;font:11px var(--mono);color:#cfd5c6;letter-spacing:1px;display:none;align-items:center;gap:8px;background:#0008;border-radius:99px;padding:5px 12px}
+.gravbar.show{display:flex}
+/* side */
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px}
+.card h3{margin:0 0 10px;font:700 11px var(--mono);letter-spacing:1.4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h3 span{font-weight:400;color:var(--mute);letter-spacing:.6px}
+.scenes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.sc{position:relative;border:1px solid var(--line);border-radius:8px;background:transparent;padding:7px 7px 6px;text-align:left;min-height:52px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.sc b{font:700 11.5px/1.15 var(--sans);letter-spacing:-.1px;padding-right:24px}.sc small{font-size:9px;color:var(--mute);letter-spacing:.4px}
+.sc canvas{position:absolute;right:3px;top:3px;width:26px;height:26px;opacity:.75}
+.sc.cur{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}.sc.tgt{background:repeating-linear-gradient(135deg,#0000 0 6px,#0000000c 6px 12px)}
+.sc.tgt::after{content:'B';position:absolute;right:6px;bottom:4px;font:700 10px var(--mono)}
+.sc.user b{color:var(--mute)}.sc.user.full b{color:var(--ink)}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.row.sb{justify-content:space-between}
+.hint{font-size:12px;color:var(--mute);margin:8px 0 0}
+.knobs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px 4px}
+.knob{display:flex;flex-direction:column;align-items:center;gap:2px;user-select:none;touch-action:none;cursor:ns-resize;min-width:0}
+.knob svg{width:52px;height:52px;overflow:visible}.knob .lbl{font-size:9.5px;letter-spacing:.7px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.knob .val{font:10px var(--mono);color:var(--mute)}
+.knob.hero svg .arc{stroke:var(--ink)}
+.knob:focus-visible{outline:2px solid #8466aa;border-radius:8px}
+.sel2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sel2 label{display:flex;flex-direction:column;gap:3px;font:10px var(--mono);letter-spacing:.8px;color:var(--mute);min-width:0}
+.sel2 select{border:1px solid var(--line);border-radius:7px;padding:6px;background:transparent;font:13px var(--sans);letter-spacing:0;color:var(--ink);width:100%}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.seg button{flex:1;border:0;background:transparent;padding:7px 4px;font:10.5px var(--mono);letter-spacing:.6px}.seg button.on{background:var(--ink);color:var(--paper)}
+/* lanes */
+.lanes{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.lane{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;--col:var(--c0)}
+.lane.off{opacity:.5}.lane.sel{box-shadow:inset 3px 0 0 var(--col)}
+.lname{display:flex;align-items:center;gap:8px;min-width:0}
+.lname button.nm{border:0;background:transparent;font:700 13px var(--sans);padding:0;text-align:left;display:flex;align-items:center;gap:8px;min-width:0}
+.lname button.nm i{width:12px;height:12px;border-radius:100%;background:var(--col);flex:none;box-shadow:0 0 0 3px #0000}
+.lname small{font-size:9.5px;color:var(--mute)}
+.mbtn{border:1px solid var(--line);background:transparent;border-radius:6px;font:700 10px var(--mono);width:24px;height:24px;padding:0}
+.mbtn.on{background:var(--ink);color:var(--paper)}
+.cells{display:grid;gap:3px;grid-template-columns:repeat(16,minmax(0,1fr))}
+.cell{height:26px;border:0;border-radius:4px;background:#00000014;padding:0;position:relative}
+:root.night .cell{background:#ffffff12}
+.cell.on{background:var(--col);box-shadow:inset 0 0 0 1px #0002}
+.cell.now{outline:2px solid var(--ink);outline-offset:-1px}
+.cell.beat::before{content:'';position:absolute;left:50%;bottom:2px;width:3px;height:3px;margin-left:-1.5px;border-radius:100%;background:#0003}
+.cell.x{visibility:hidden}
+.lctl{display:flex;gap:4px;align-items:center}
+.mini{display:flex;flex-direction:column;align-items:center;font:9px var(--mono);letter-spacing:.5px;color:var(--mute);gap:1px;min-width:42px;user-select:none;touch-action:none;cursor:ns-resize}
+.mini b{font:600 13px var(--mono);color:var(--ink)}
+.mini:focus-visible{outline:2px solid #8466aa;border-radius:6px}
+.lctl select{border:1px solid var(--line);border-radius:6px;background:transparent;padding:4px;font:11px var(--mono)}
+/* drawer: one lane's sound */
+.drawer{margin-top:6px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:none}
+.drawer.open{display:block}
+.drawer .knobs{grid-template-columns:repeat(9,minmax(0,1fr))}
+.drawer h3{margin:0 0 10px;font:700 11px var(--mono);letter-spacing:1.4px;display:flex;align-items:center;gap:10px}
+/* bottom: time machine + keys */
+.bottom{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;margin-top:12px}
+.tm{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;min-height:74px}
+.snap{flex:none;width:68px;height:68px;border:1px solid var(--line);border-radius:8px;background:var(--screen);position:relative;padding:0;overflow:hidden}
+.snap canvas{width:100%;height:100%}.snap small{position:absolute;left:4px;bottom:3px;color:#cfd5c6;font-size:8.5px}
+.snap.cur{outline:2px solid var(--ink)}
+.snap.empty{background:transparent;border-style:dashed;color:var(--mute);font:10px var(--mono);display:flex;align-items:center;justify-content:center;text-align:center}
+.keys{display:flex;height:74px;position:relative;user-select:none;touch-action:none}
+.k{flex:1;border:1px solid var(--line);border-radius:0 0 6px 6px;background:#fbfaf4;margin-right:-1px;position:relative}
+:root.night .k{background:#d9dcd2}
+.k.b{position:absolute;width:5.2%;height:60%;background:#1a1c19;border-color:#1a1c19;z-index:2;margin:0}
+.k.dn{background:var(--accent)!important}.k.held{background:#af9af1!important}
+.k span{position:absolute;bottom:3px;left:0;right:0;text-align:center;font:8.5px var(--mono);color:#888}
+/* connections */
+details.more{margin-top:12px;border-block:1px solid var(--line);padding:12px 0}
+details.more summary{cursor:pointer;font-weight:700}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.links a,.links button{border:1px solid var(--line);border-radius:8px;padding:8px 11px;text-decoration:none;background:transparent;font-size:13px}
+.links a:hover,.links button:hover{border-color:var(--ink)}
+#msg{font-size:12.5px;color:var(--mute);margin:10px 0 0}
+footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0 4px;font:10px var(--mono);letter-spacing:1px;color:var(--mute);flex-wrap:wrap}
+footer .credit{display:flex;align-items:center;gap:10px}footer a{text-decoration:none;display:inline-flex}footer a:hover{color:var(--ink)}
+/* overlays */
+.veil{position:fixed;inset:0;background:#0b0d0bcc;z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.veil.show{display:flex}
+.sheet{background:var(--card);color:var(--ink);border-radius:14px;max-width:620px;width:100%;padding:24px 26px;max-height:88vh;overflow:auto;box-shadow:0 30px 80px #0008}
+.sheet h2{margin:0 0 4px;font:800 28px/1.05 var(--sans);letter-spacing:-.04em}.sheet h4{margin:18px 0 6px;font:700 11px var(--mono);letter-spacing:1.3px}
+.sheet p,.sheet li{font-size:14px;line-height:1.5}.sheet ol{padding-left:20px;margin:6px 0}
+.sheet .go{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.coachStep{display:flex;gap:12px;align-items:flex-start;margin:12px 0}.coachStep b{flex:none;width:28px;height:28px;border-radius:100%;background:var(--accent);color:#1a1c19;display:flex;align-items:center;justify-content:center;font:800 13px var(--mono)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#1a1c19;color:#eef1e6;border-radius:99px;padding:9px 16px;font:12px var(--mono);letter-spacing:.5px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.plugonly{display:none}.isplug .plugonly{display:revert}.isplug .webonly{display:none}
+button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #8466aa;outline-offset:1px}
+@media (max-width:1100px){.main{grid-template-columns:1fr}.screen{min-height:380px}.bottom{grid-template-columns:1fr}.drawer .knobs{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:760px){#app{padding:0 10px 16px}.top{flex-wrap:wrap;height:auto;padding:8px 0;gap:8px}.transport{margin-left:0}.hidem{display:none}
+ .screen{min-height:320px}.lane{grid-template-columns:1fr;gap:6px}.lctl{flex-wrap:wrap}.knobs{grid-template-columns:repeat(5,minmax(0,1fr))}.drawer .knobs{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .scenes{grid-template-columns:repeat(2,minmax(0,1fr))}.ov.tl{max-width:64%}.ov.tl h1{font-size:24px}.ov.tl p{display:none}.chips{bottom:10px}.gravbar{bottom:auto;top:84px;right:12px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="top">
+  <div class="brand"><b>✳</b> POLARIS <span>SOUND LAB</span><em>ÓRBITA 2</em></div>
+  <div class="transport">
+    <button id="play" class="play">▶&nbsp; <span data-t>Play</span></button>
+    <label class="num">BPM <input id="bpm" type="number" min="40" max="220" value="112"></label>
+    <button id="sync" class="tb plugonly" data-t-title="Follow the DAW's tempo and transport">SYNC</button>
+  </div>
+  <button id="newOrbit" class="tb big" data-t-title="A new orbit: scale, geometry, rhythm and sound, all musical">✦ <span data-t>NEW ORBIT</span></button>
+  <button id="mutate" class="tb hidem" data-t-title="Change a few things, keep the feel">≈ <span data-t>MUTATE</span></button>
+  <button id="undo" class="tb hidem" data-t-title="Back one step in the time machine">↶</button>
+  <div class="sp"></div>
+  <button id="drag" class="tb" data-t-title="Drag it onto a MIDI track (plug-in) or download it (web): 4 bars, one track per voice">⇣ MIDI</button>
+  <button id="midiOut" class="tb plugonly" data-t-title="Send the notes out of the plug-in too, to play your other instruments (channels 1-4)">MIDI OUT</button>
+  <button id="theme" class="tb hidem" data-t-title="Paper or night">◐</button>
+  <button id="helpBtn" class="tb" data-t-title="Quick guide">?</button>
+  <select id="lang" class="lang" aria-label="Language / Idioma"><option value="en">EN</option><option value="es">ES</option></select>
+  <a class="don" id="don" href="https://www.paypal.com/donate/?business=drophlex%40gmail.com&amp;no_recurring=0&amp;item_name=ORBITA&amp;currency_code=USD" target="_blank" rel="noopener">♥ <span data-t>DONATE</span></a>
+</header>
+
+<div class="main">
+  <section class="screen" id="screen">
+    <canvas id="stage" aria-label="The orbits of the four voices"></canvas>
+    <div class="ov tl"><span><i class="dot"></i><span data-t>PHASE PLANE</span> · <span id="geoName"></span></span><h1 id="sceneName">Mérida Ring</h1><p id="sceneDesc"></p></div>
+    <div class="ov tr"><span data-t>STEP</span><b id="pos">01 · 16</b><span id="evo"></span></div>
+    <div class="chips" id="chips"></div>
+    <div class="gravbar" id="gravbar"><span data-t>GRAVITY</span> <b id="gravVal">0%</b> → <span id="gravTgt"></span></div>
+  </section>
+  <aside class="side">
+    <div class="card"><h3><span class="t" data-t>SCENES</span><span data-t>click: load · B: gravity target</span></h3><div class="scenes" id="scenes"></div>
+      <div class="row sb" style="margin-top:8px"><div class="row"><button class="tb" id="saveScene">★ <span data-t>SAVE TO SLOT</span></button><button class="tb" id="bMode" data-t-title="The next scene you click becomes GRAVITY's target">B</button></div><button class="tb" id="clearB" data-t>NO TARGET</button></div></div>
+    <div class="card"><h3><span data-t>MACROS</span><span data-t>drag · double-click resets</span></h3><div class="knobs" id="macros"></div></div>
+    <div class="card"><h3><span data-t>HARMONY</span><span id="keyInfo"></span></h3>
+      <div class="sel2"><label><span data-t>ROOT</span><select id="root"></select></label><label><span data-t>SCALE</span><select id="scale"></select></label>
+      <label><span data-t>GEOMETRY</span><select id="geom"></select></label><label><span data-t>KEYS PLAY</span><select id="playLane"></select></label></div>
+      <div style="margin-top:8px" class="seg" id="keyMode"><button data-v="0" data-t>PLAY</button><button data-v="1" data-t>TRANSPOSE</button><button data-v="2" data-t>HARMONY</button></div>
+      <p class="hint" id="keyHint"></p></div>
+  </aside>
+</div>
+
+<section class="lanes" id="lanes"></section>
+<section class="drawer" id="drawer"><h3><i id="dDot" style="width:12px;height:12px;border-radius:100%;display:inline-block"></i><span id="dName"></span><select id="dModel" class="lang" style="padding:4px"></select><span class="sp"></span><button class="tb" id="dReset" data-t>RESET VOICE</button><button class="tb" id="dClose">✕</button></h3><div class="knobs" id="dKnobs"></div></section>
+
+<div class="bottom">
+  <div class="card"><h3><span data-t>TIME MACHINE</span><span data-t>every change and every evolution is kept · click to go back</span></h3><div class="tm" id="tm"></div></div>
+  <div class="card"><h3><span data-t>KEYS</span><span id="kbInfo" data-t>computer keys A–K · MIDI in</span></h3><div class="keys" id="keys"></div></div>
+</div>
+
+<details class="more webonly" id="more"><summary data-t>Connections, downloads and the other editions</summary>
+  <div class="links">
+    <label class="num"><span data-t>MIDI OUTPUT</span> <select id="out" style="border:1px solid var(--line);border-radius:8px;padding:7px;background:transparent"><option value="" data-t>Browser audio only</option></select></label>
+    <button id="connect" data-t>Find FM-1 / MIDI</button>
+    <a href="https://github.com/drophlex/ORBITA/releases/latest/download/ORBITA-mac.zip"><span data-t>Mac plug-in (VST3 · AU)</span> ↓</a>
+    <a href="firmware/"><span data-t>ÓRBITA on the FM-1 (beta)</span> ▸</a>
+    <a href="fm1/"><span data-t>Voices for the FM-1</span> ▸</a>
+    <a href="guide/"><span data-t>Install guide</span></a>
+    <a id="manual" href="Orbita-EN.pdf" target="_blank" rel="noopener"><span data-t>Manual</span> ↗</a>
+    <a href="classic/"><span data-t>ÓRBITA 1 (classic)</span></a>
+    <a href="https://github.com/drophlex/ORBITA">GitHub ↗</a>
+  </div>
+  <p id="msg" data-t>Connect the FM-1 by USB and pick its output: the four voices go out on channels 1 to 4.</p>
+</details>
+
+<footer><span>POLARIS SOUND LAB · <span data-t>FREE AND OPEN SOURCE</span></span>
+  <span class="credit"><span>DARK FUNK DURCAL DESIGN · <span data-t>BUILT AT POLARIS SOUND LAB · MÉRIDA, YUCATÁN, MÉXICO</span></span>
+  <a href="https://www.instagram.com/polaris.sound.lab/" target="_blank" rel="noopener" aria-label="Instagram @polaris.sound.lab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+  <a href="https://www.youtube.com/@PolarisSoundLab" target="_blank" rel="noopener" aria-label="YouTube @PolarisSoundLab"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1z"/></svg></a>
+  <a class="don" href="https://www.paypal.com/donate/?business=drophlex%40gmail.com&amp;no_recurring=0&amp;item_name=ORBITA&amp;currency_code=USD" target="_blank" rel="noopener">♥ <span data-t>DONATE</span></a></span>
+  <span>ÓRBITA / <span data-t>EDITION</span> 02</span></footer>
+</div>
+
+<div class="veil" id="coach"><div class="sheet">
+  <small data-t>WELCOME</small><h2 data-t>Three moves and it's music.</h2>
+  <div class="coachStep"><b>1</b><div><strong data-t>Press Play.</strong> <span data-t>Four voices start orbiting: every dot on a curve is a note you hear.</span></div></div>
+  <div class="coachStep"><b>2</b><div><strong data-t>Pick a scene, or press ✦ NEW ORBIT.</strong> <span data-t>Each one is a scale, a geometry, a rhythm and a sound.</span></div></div>
+  <div class="coachStep"><b>3</b><div><strong data-t>Press B on another scene and turn GRAVITY.</strong> <span data-t>The music glides from one world to the other. EVOLVE lets it wander by itself; the TIME MACHINE keeps every moment.</span></div></div>
+  <div class="go"><button class="play" id="coachGo">▶&nbsp; <span data-t>Play and start</span></button><button class="tb" id="coachSkip" data-t>Close</button></div>
+</div></div>
+
+<div class="veil" id="help"><div class="sheet" id="helpBody"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+/*JS*/
+</script>
+</body>
+</html>
