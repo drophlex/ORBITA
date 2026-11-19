@@ -1,8 +1,8 @@
 name: Build ORBITA plug-in (macOS)
 on:
   push:
-    branches: [main]
-    paths: ['Orbita-VST3/**', 'Orbita-FM1/**', 'installer/**', 'docs/*.pdf', '.github/workflows/build.yml']
+    branches: [main, orbita-2]
+    paths: ['engine/**', 'plugin/**', 'test/**', 'Orbita-FM1/**', 'installer/**', 'docs/*.pdf', '.github/workflows/build.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -11,10 +11,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Engine test
-        run: c++ -std=c++17 Orbita-VST3/test.cpp -o test-orbita && ./test-orbita
+      - name: Engine tests (ÓRBITA 1's notes and rhythms, levels, sync, MIDI out)
+        run: c++ -std=c++20 -O2 -Iengine test/engine.cpp -o test-orbita && ./test-orbita
       - name: Configure (universal arm64 + x86_64)
-        run: cmake -S Orbita-VST3 -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+        run: cmake -S plugin -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
       - name: Build VST3 + AU + Standalone
         run: cmake --build build --config Release -j 4 -- -quiet
       - name: Sign (ad-hoc) and package
@@ -45,10 +45,11 @@ jobs:
           T=$(gh release list -R "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' | grep '^fm1-' | head -1 || true)
           if [ -n "$T" ]; then gh release download "$T" -R "$GITHUB_REPOSITORY" --pattern ORBITA-FM1.fwsc --clobber || true; fi
       - name: Publish release
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.${{ github.run_number }}
-          name: ORBITA 0.1.${{ github.run_number }} — Mac plug-in (VST3 · AU · App) and FM-1 edition
+          tag_name: v2.0.${{ github.run_number }}
+          name: ORBITA 2.0.${{ github.run_number }} — Mac plug-in (VST3 · AU · App) and FM-1 edition
           make_latest: true
           fail_on_unmatched_files: false
           files: |
@@ -59,7 +60,7 @@ jobs:
             docs/Orbita-ES.pdf
             docs/Orbita-EN-ES.pdf
           body: |
-            ORBITA — a generative FM instrument · Dark Funk Durcal design · built at Polaris Sound Lab
+            ORBITA 2 — a generative FM instrument: four voices, GRAVITY, EVOLVE, the time machine · Dark Funk Durcal design · built at Polaris Sound Lab
             Mac (Ableton Live): paste in Terminal → curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash   (or unzip ORBITA-mac.zip and open Install-ORBITA.command)
             M-VAVE FM-1: ORBITA-FM1.zip — 32 DX7 voices to import with the M-VAVE Workbench, four MIDI clips, the manuals.
             Web: https://drophlex.github.io/ORBITA/ · Guide / Guía: https://drophlex.github.io/ORBITA/guide/

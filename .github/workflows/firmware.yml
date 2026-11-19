@@ -2,7 +2,7 @@ name: Build ÓRBITA for the FM-1 (firmware)
 on:
   push:
     branches: [main]
-    paths: ['firmware/**', 'docs/app.js', 'Orbita-FM1/Orbita-32.syx', '.github/workflows/firmware.yml']
+    paths: ['firmware/**', 'docs/classic/app.js', 'Orbita-FM1/Orbita-32.syx', '.github/workflows/firmware.yml']
   workflow_dispatch:
 permissions:
   contents: write
