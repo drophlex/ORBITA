@@ -27,7 +27,7 @@ jobs:
           cp installer/Install-ORBITA.command docs/Orbita-EN.pdf docs/Orbita-ES.pdf pkg/ORBITA/
           chmod +x pkg/ORBITA/Install-ORBITA.command
           cd pkg && ditto -c -k --keepParent ORBITA ../ORBITA-mac.zip
-          cd .. && rm -rf fm && mkdir -p fm && cp -R Orbita-FM1 fm/ && cp docs/Orbita-EN.pdf docs/Orbita-ES.pdf fm/Orbita-FM1/ && cd fm && zip -qr ../ORBITA-FM1.zip Orbita-FM1
+          cd .. && rm -rf fm && mkdir -p fm && cp -R Orbita-FM1 fm/ && cp docs/Orbita-1-EN.pdf docs/Orbita-1-ES.pdf fm/Orbita-FM1/ && cd fm && zip -qr ../ORBITA-FM1.zip Orbita-FM1
       - name: Validate with pluginval
         run: |
           curl -sSL -o pv.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip
@@ -59,6 +59,8 @@ jobs:
             docs/Orbita-EN.pdf
             docs/Orbita-ES.pdf
             docs/Orbita-EN-ES.pdf
+            docs/Orbita-1-EN.pdf
+            docs/Orbita-1-ES.pdf
           body: |
             ORBITA 2 — a generative FM instrument: four voices, GRAVITY, EVOLVE, the time machine · Dark Funk Durcal design · built at Polaris Sound Lab
             Mac (Ableton Live): paste in Terminal → curl -fsSL https://drophlex.github.io/ORBITA/install.sh | bash   (or unzip ORBITA-mac.zip and open Install-ORBITA.command)

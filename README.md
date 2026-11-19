@@ -21,8 +21,8 @@
 
 ## Manual
 
-17 illustrated pages, from installing to playing (web, Ableton Live, FM-1, recipes, answers):
-**[English](docs/Orbita-EN.pdf)** · **[Español](docs/Orbita-ES.pdf)** · [English + Español](docs/Orbita-EN-ES.pdf)
+**ÓRBITA 2** (web and plug-in), 13 illustrated pages: **[English](docs/Orbita-EN.pdf)** · **[Español](docs/Orbita-ES.pdf)** · [English + Español](docs/Orbita-EN-ES.pdf)
+**ÓRBITA 1 and the FM-1 edition** (firmware, voices, fm1-dock), 17 pages: [English](docs/Orbita-1-EN.pdf) · [Español](docs/Orbita-1-ES.pdf) · [English + Español](docs/Orbita-1-EN-ES.pdf)
 
 ## Quick guide
 
